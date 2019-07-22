@@ -7,14 +7,6 @@ import java.nio.ByteBuffer;
 class PESymbol {
 
     static final int SYM_SIZE = 18;
-    /**
-     char		n_name[8];	// Symbol Name
-     long		n_value;	// Value of Symbol
-     short		n_scnum;	// Section Number
-     unsigned short	n_type;		// Symbol Type
-     char		n_sclass;	// Storage Class
-     char		n_numaux;	// Auxiliary Count
-     **/
     private String      name;           /* Symbol Name */
     private long        value;          /* Value of Symbol */
     private int         section;        /* Section Number */
@@ -116,5 +108,41 @@ class PESymbol {
             out.print(" " + sectionStr);
         }
         out.println(" ctype=" + complexType + " btype=" + baseType + " class=" + storageclass + " numaux=" + numaux);
+    }
+
+    /**
+     char		n_name[8];	// Symbol Name
+     long		n_value;	// Value of Symbol
+     short		n_scnum;	// Section Number
+     unsigned short	n_type;		// Symbol Type
+     char		n_sclass;	// Storage Class
+     char		n_numaux;	// Auxiliary Count
+     **/
+    public String getName() {
+        return name;
+    }
+
+    public long getValue() {
+        return value;
+    }
+
+    public int getSection() {
+        return section;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getStorageclass() {
+        return storageclass;
+    }
+
+    public int getComplexType() {
+        return complexType;
+    }
+
+    public int getBaseType() {
+        return baseType;
     }
 }

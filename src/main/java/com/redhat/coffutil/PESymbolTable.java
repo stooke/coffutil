@@ -21,6 +21,10 @@ class PESymbolTable {
         symbols = Arrays.copyOf(syms, synnum);
     }
 
+    PESymbol get(int idx) {
+        return symbols[idx];
+    }
+
     void dump(PrintStream out) {
         for (PESymbol symbol : symbols) {
             symbol.dump(out);

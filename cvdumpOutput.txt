@@ -1,0 +1,88 @@
+C:\tmp>cvdump graal-8\hellotest\newdebugformat\hello.obj
+Microsoft (R) Debugging Information Dumper  Version 14.00.23611
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+***** SECTION #2
+
+*** SYMBOLS
+
+(00000C) S_OBJNAME: Signature: 00000000, C:\tmp\graal-8\hellotest\hello.obj
+
+(000037) S_COMPILE3:
+         Language: C
+         Target processor: x64
+         Compiled for edit and continue: no
+         Compiled without debugging info: no
+         Compiled with LTCG: no
+         Compiled with /bzalign: no
+         Managed code present: no
+         Compiled with /GS: yes
+         Compiled with /hotpatch: yes
+         Converted by CVTCIL: no
+         MSIL module: no
+         Compiled with /sdl: no
+         Compiled with pgo: no
+         .EXP module: no
+         Pad bits = 0x0000
+         Frontend Version: Major = 16, Minor = 0, Build = 40219, QFE = 1
+         Backend Version: Major = 16, Minor = 0, Build = 40219, QFE = 1
+         Version string: Microsoft (R) Optimizing Compiler
+
+(000073) S_ENVBLOCK:
+         Compiled for edit and continue: no
+         Command block:
+          cwd = 'C:\tmp\graal-8\hellotest'
+          cl = 'C:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\VC\Bin\x86_amd64\cl.exe'
+          cmd = '-Zi -MT -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\VC\INCLUDE -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\INCLUDE -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\INCLUDE\gl -TC -X'
+          src = 'hello.c'
+          pdb = 'C:\tmp\graal-8\hellotest\vc100.pdb'
+
+
+*** SYMBOLS
+
+
+(0001E4) S_GPROC32: [0000:00000000], Cb: 00000036, Type:             0x1007, main
+         Parent: 00000000, End: 00000000, Next: 00000000
+         Debug start: 0000000D, Debug end: 00000031
+
+(000210)  S_FRAMEPROC:
+          Frame size = 0x00000028 bytes
+          Pad size = 0x00000000 bytes
+          Offset of pad in frame = 0x00000000
+          Size of callee save registers = 0x00000000
+          Address of exception handler = 0000:00000000
+          Function info: asynceh invalid_pgo_counts Local=rsp Param=rsp (0x00014200)
+(00022E)  S_REGREL32: rsp+00000030, Type:       T_INT4(0074), argc
+(000241)  S_REGREL32: rsp+00000038, Type:             0x1005, argv
+
+(000254) S_END
+
+
+*** LINES
+
+  0000:00000000-00000036, flags = 0000, fileid = 00000000
+
+      1 00000000      2 0000000D      3 00000019      4 00000025
+      5 0000002F
+
+*** FILECHKSUMS
+
+FileId  St.Offset  Cb  Type  ChksumBytes
+     0  00000001   10  MD5   A9C08DE33413F6FE65E71989B7173954
+
+*** STRINGTABLE
+
+00000000
+00000001 c:\tmp\graal-8\hellotest\hello.c
+
+
+***** SECTION #7
+
+*** TYPES
+
+0x1000 : Length = 58, Leaf = 0x1515 LF_TYPESERVER2
+                GUID={D88232F4-DC0C-4B69-A63F-A58FC6E6601B}, age = 0x00000001, PDB name = 'c:\tmp\graal-8\hellotest\vc100.pdb
+
+
+C:\tmp>

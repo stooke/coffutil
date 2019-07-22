@@ -8,7 +8,7 @@ import java.util.Vector;
 class PECoffObjectFile {
 
     private PEHeader hdr;
-    private PESectionHeader sections[];
+    private PESectionHeader[] sections;
     private PESymbolTable symbols;
 
     PECoffObjectFile() {
@@ -66,7 +66,7 @@ class PECoffObjectFile {
         // parse symbols
         if (hdr.numSymbols > 0) {
             symbols = new PESymbolTable(in, hdr);
-            symbols.dump(out);
+   //         symbols.dump(out);
         }
 
         // look inside sections
@@ -96,6 +96,18 @@ class PECoffObjectFile {
     private void fatal(final String msg) {
         System.err.println("coffutil: fatal:" + msg);
         System.exit(99);
+    }
+
+    public PEHeader getHdr() {
+        return hdr;
+    }
+
+    public PESectionHeader[] getSections() {
+        return sections;
+    }
+
+    public PESymbolTable getSymbols() {
+        return symbols;
     }
 }
 

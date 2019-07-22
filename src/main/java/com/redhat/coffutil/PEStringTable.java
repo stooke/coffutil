@@ -54,4 +54,19 @@ class PEStringTable {
         }
         return new String(buf, 0, len);
     }
+
+    static String getNString(ByteBuffer in, int mlen) {
+        int maxlen = in.getShort();
+        byte[] buf = new byte[maxlen];
+        int len = 0;
+        while (maxlen-- > 0) {
+            byte b = in.get();
+            if (b == 0) {
+                break;
+            }
+            buf[len++] = b;
+        }
+        return new String(buf, 0, len);
+    }
+
 }
