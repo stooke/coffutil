@@ -50,7 +50,7 @@ class PESymbol {
             // there is more data to skip
             // 18 bytes is the size of a symbol table entry
             int newpos = in.position() + numaux * SYM_SIZE;
-
+            String info = "";
             switch (storageclass) {
                 case IMAGE_SYM_CLASS_EXTERNAL: // might be a function def
                     if (complexType == IMAGE_SYM_DTYPE_FUNCTION && section > 9) {
@@ -60,6 +60,9 @@ class PESymbol {
                         int lineNumberPtr = in.getInt();
                         int nextFuncPtr = in.getInt();
                         //int padding = in.getShort();
+                        info = "IMAGE_SYM_CLASS_EXTERNAL: IMAGE_SYM_DTYPE_FUNCTION bftag=" + bftag + " size=" + size + " lineptr=" + lineNumberPtr + " nxdfn=" + nextFuncPtr;
+                    } else {
+                        info = "IMAGE_SYM_CLASS_EXTERNAL ??";
                     }
                     break;
                 case IMAGE_SYM_CLASS_FUNCTION: // .bf and /ef
@@ -70,10 +73,14 @@ class PESymbol {
                         int padding3 = in.getInt();
                         int nextBfPtr = in.getInt();
                         //int padding4 = in.getShort();
+                        info = "IMAGE_SYM_CLASS_FUNCTION line=" + lineNumber + " next .bf=" + nextBfPtr;
+                    } else {
+                        info = "IMAGE_SYM_CLASS_FUNCTION ??";
                     }
                     break;
                 case IMAGE_SYM_CLASS_FILE:  // is this a filedef?
                     String fn = PEStringTable.resolve(in, hdr, 18);
+                    info = "IMAGE_SYM_CLASS_FILE fn=" + fn;
                     break;
                 case IMAGE_SYM_CLASS_SECTION:
                     int length = in.getInt();
@@ -84,20 +91,25 @@ class PESymbol {
                     byte[] b4 = new byte[4];
                     in.get(b4);
                     int selection = b4[0];
+                    info = "IMAGE_SYM_CLASS_SECTION len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber;
                     break;
+                case IMAGE_SYM_CLASS_STATIC:
+                    info = "IMAGE_SYM_CLASS_STATIC";
+                    break;
+                default:
+                    info = "sym storageClass=" + storageclass;
             }
-
+            //System.out.printf("read sym %s\n", info);
             // skip to end of auc
             in.position(newpos);
         }
     }
 
     void dump(PrintStream out) {
-        out.print("  symbol " + name + " val=" + value);
+        String sectionStr = "";
         if ( section > 0 ) {
-            out.print(" section=" + section);
+            sectionStr = "section=" + section;
         } else {
-            String sectionStr = "";
             if (section == 0) {
                 sectionStr = "(extern)";
             } else if (section == -1) {
@@ -105,9 +117,8 @@ class PESymbol {
             } else if (section == -2) {
                 sectionStr = "(debug)";
             }
-            out.print(" " + sectionStr);
         }
-        out.println(" ctype=" + complexType + " btype=" + baseType + " class=" + storageclass + " numaux=" + numaux);
+        out.printf("  symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d\n", name, sectionStr, value, complexType, baseType, storageclass, numaux);
     }
 
     /**

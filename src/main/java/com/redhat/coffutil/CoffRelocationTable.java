@@ -17,8 +17,13 @@ class CoffRelocationTable {
         }
 
         void dump(PrintStream out, PECoffObjectFile ofile) {
-            String sym = ofile.getSymbols().get(symbolIndex).getName();
-            out.printf("reloc addr=0x%x type=%d sym=%s\n", virtualAddr, type, sym);
+            PESymbol symbol = ofile.getSymbols().get(symbolIndex);
+            if (symbol != null) {
+                String sym = symbol.getName();
+                out.printf("  reloc addr=0x%x type=%d sym=%s\n", virtualAddr, type, sym);
+            } else {
+                out.printf("  reloc addr=0x%x type=%d *** unknown index=%d\n", virtualAddr, type, symbolIndex);
+            }
         }
     }
 

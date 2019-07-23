@@ -34,11 +34,11 @@ class PEStringTable {
             int oldposition = in.position();
             in.position(oldposition - length + 4);
             int offset = in.getInt();
-            int stringTableOffset = hdr.symPtr + hdr.numSymbols * PESymbol.SYM_SIZE;
+            int stringTableOffset = hdr.getSymPtr() + hdr.getNumSymbols() * PESymbol.SYM_SIZE;
             in.position(stringTableOffset + offset);
             String longname = readNullTerminatedUTF8(in);
             in.position(oldposition);
-            return longname;
+            return longname.trim();
         }
     }
 

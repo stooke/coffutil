@@ -3,31 +3,35 @@ package com.redhat.coffutil;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 class PESymbolTable {
 
-    private PESymbol[] symbols;
+    private final PESymbol[] symbols;
 
-    PESymbolTable(ByteBuffer in, PEHeader hdr) {
-        in.position(hdr.symPtr);
-        PESymbol[] syms = new PESymbol[hdr.numSymbols];
-        int synnum = 0;
-        for (int i=0; i<hdr.numSymbols; i++) {
-            syms[synnum] = new PESymbol(in, hdr);
-            i += syms[synnum].numaux;
-            synnum++;
+    PESymbolTable(PESymbol[] symbols) {
+        this.symbols = symbols;
+    }
+
+    static PESymbolTable build(ByteBuffer in, PEHeader hdr) {
+        in.position(hdr.getSymPtr());
+        PESymbol[] symbols = new PESymbol[hdr.getNumSymbols()];
+        for (int i = 0; i< hdr.getNumSymbols(); i++) {
+            symbols[i] = new PESymbol(in, hdr);
+            // don't save the aux symbol headers separately
+            i += symbols[i].numaux;
         }
-        symbols = Arrays.copyOf(syms, synnum);
+        return new PESymbolTable(symbols);
     }
 
     PESymbol get(int idx) {
-        return symbols[idx];
+        return (idx >= symbols.length) ? null : symbols[idx];
     }
 
     void dump(PrintStream out) {
         for (PESymbol symbol : symbols) {
-            symbol.dump(out);
+            if (symbol != null) {
+                symbol.dump(out);
+            }
         }
     }
 }

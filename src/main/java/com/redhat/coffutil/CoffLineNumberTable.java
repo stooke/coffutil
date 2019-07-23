@@ -1,5 +1,6 @@
 package com.redhat.coffutil;
 
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
 public class CoffLineNumberTable {
@@ -32,11 +33,11 @@ public class CoffLineNumberTable {
             this.symbolIndex = 0;
         }
 
-        void dump() {
+        void dump(PrintStream out) {
             if (symbolIndex != 0) {
-                System.out.println("line number symol idx = " + symbolIndex);
+                out.println("line number symol idx = " + symbolIndex);
             } else {
-                System.out.println("line number " + lineNumber + " addr " + physicalAddress);
+                out.println("line number " + lineNumber + " addr " + physicalAddress);
             }
         }
     }
@@ -64,10 +65,10 @@ public class CoffLineNumberTable {
         return ln;
     }
 
-    void dump() {
+    void dump(PrintStream out) {
         if (lineNumbers != null) {
             for (Entry e : lineNumbers) {
-                e.dump();
+                e.dump(out);
             }
         }
     }

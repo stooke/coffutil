@@ -1,101 +1,43 @@
 package com.redhat.coffutil;
 
 import java.io.PrintStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Vector;
 
 class PECoffObjectFile {
 
-    private PEHeader hdr;
-    private PESectionHeader[] sections;
-    private PESymbolTable symbols;
+    private final PEHeader hdr;
+    private final PESectionHeader[] sections;
+    private final PESymbolTable symbols;
+    private final CVSymbolSection cvSymbols;
+    private final String directive;
 
-    PECoffObjectFile() {
+    // hdr, sections, symbols, cvSymbols, directive);
+    PECoffObjectFile(PEHeader hdr, PESectionHeader[] sections, PESymbolTable symbols, CVSymbolSection cvSymbols, String directive) {
+        this.hdr = hdr;
+        this.sections = sections;
+        this.symbols = symbols;
+        this.cvSymbols = cvSymbols;
+        this.directive = directive;
     }
 
-    void parse(ByteBuffer in) {
-        in = in.order(ByteOrder.LITTLE_ENDIAN);
-        in.rewind();
-        // test if this is an executable of an object file
-        final short mzmaybe = in.getShort();
-        if (mzmaybe == 0x5a4d) {
-            log("'MZ' detected; nust be an executable");
-            parseExecutable(in);
-        } else {
-            // should be a COFF object file
-            in.rewind();
-            parseCoff(in, false);
-        }
-    }
-
-    private void parseExecutable(ByteBuffer in) {
-        final int e_lfanew = in.getInt(0x3c);
-        //final long e_lfanew = in.getLong(0x3c);
-        in.position((int) e_lfanew);
-        parseCoff(in, true);
-    }
-
-    private void parseCoff(ByteBuffer in, boolean isPE) {
-
-        PrintStream out = System.out;
-
-        // parse header
-        hdr = new PEHeader(in);
-        hdr.validate();
+    public void dump(PrintStream out) {
         hdr.dump(out);
-
-        // parse optional header
-        if (hdr.optionalHeaderSize > 0) {
-            int oldposition = in.position();
-            PEOptionalHeader32 ohdr = new PEOptionalHeader32(in);
-            ohdr.validate();
-            ohdr.dump(out);
-            // seek to start of section headers, in case optionalheader is padded
-            in.position(oldposition + hdr.optionalHeaderSize);
+        for (final PESectionHeader shdr : sections) {
+            shdr.dump(out, this);
         }
+        symbols.dump(out);
+        cvSymbols.dump(out);
+        if (directive != null) {
+            out.printf("Link directive: %s\n", directive);
+        }
+    }
 
-        // parse sections
-        sections = new PESectionHeader[hdr.numsections];
-        for (int n = 0; n < hdr.numsections; n++) {
-            PESectionHeader shdr = new PESectionHeader(in, hdr);
-            sections[n] = shdr;
+    public void validate(PrintStream out) {
+        hdr.validate();
+        for (final PESectionHeader shdr : sections) {
             shdr.validate();
         }
-
-        // parse symbols
-        if (hdr.numSymbols > 0) {
-            symbols = new PESymbolTable(in, hdr);
-   //         symbols.dump(out);
-        }
-
-        // look inside sections
-        for (PESectionHeader shdr : sections) {
-            final String sectionName = shdr.getName();
-            shdr.dump(out);
-            switch (sectionName) {
-                case ".debug$S":
-                    PEDebugTable dt = new PEDebugTable();
-                    dt.parse(in, hdr, shdr);
-                    break;
-                case ".drectve":
-                    in.position(shdr.getRawDataPtr());
-                    String directive = PEStringTable.getString0(in, shdr.getRawDataSize());
-                    if (directive.length() > 100) {
-                        directive = directive.substring(0, 100) + "...";
-                    }
-                    out.println("  link directive: " + directive);
-            }
-        }
-    }
-
-    private void log(final String msg) {
-        System.err.println("coffutil: " + msg);
-    }
-
-    private void fatal(final String msg) {
-        System.err.println("coffutil: fatal:" + msg);
-        System.exit(99);
+        //symbols.validate();
+        //cvSymbols.validate();
     }
 
     public PEHeader getHdr() {
@@ -109,6 +51,10 @@ class PECoffObjectFile {
     public PESymbolTable getSymbols() {
         return symbols;
     }
+
+    public CVSymbolSection getCvSymbols() { return cvSymbols; }
+
+    public String getDirective() { return directive; }
 }
 
 /*

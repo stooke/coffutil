@@ -45,8 +45,21 @@ class PESectionHeader {
     private ByteBuffer rawHeaderData;
     private ByteBuffer rawData;
 
-    PESectionHeader(ByteBuffer in, PEHeader hdr) {
-        int offset = in.position();
+    private PESectionHeader() {
+    }
+
+    static PESectionHeader build(ByteBuffer in, PEHeader hdr) {
+        PESectionHeader sectionHeader = new PESectionHeader();
+        sectionHeader._build(in, hdr);
+        int oldPos = in.position();
+        sectionHeader.loadLineNumbersAndRelocations(in, hdr);
+        in.position(oldPos);
+        return sectionHeader;
+    }
+
+    private void _build(ByteBuffer in, PEHeader hdr) {
+
+        //int offset = in.position();
         if (in.hasArray()) {
             rawHeaderData = ByteBuffer.wrap(in.array(), in.position(), COFF_SECTION_HEADER_SIZE);
         } else {
@@ -62,18 +75,21 @@ class PESectionHeader {
         relocationCount = in.getShort();
         lineNumberCount = in.getShort();
         characteristics = in.getInt();
-        if (in.hasArray()) {
+        if (in.hasArray() && in.array().length > 0) {
             rawData = ByteBuffer.wrap(in.array(), rawDataPtr, rawDataSize);
         }
+    }
+
+    private void loadLineNumbersAndRelocations(ByteBuffer in, PEHeader hdr) {
         lineNumberTable = new CoffLineNumberTable(in, this, hdr);
-        //relocations = new CoffRelocationTable(in, this, hdr);
+        relocations = new CoffRelocationTable(in, this, hdr);
     }
 
     String validate() {
         return null;
     }
 
-    void dump(PrintStream out) {
+    void dump(PrintStream out, PECoffObjectFile objectifle) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.print("section: " + bName + " flags=[" + translateCharacteristics(getCharacteristics()) + "]");
         if (getVirtualSize() != 0) {
@@ -84,9 +100,11 @@ class PESectionHeader {
         }
         if (getLineNumberCount() != 0) {
             out.printf(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
+            lineNumberTable.dump(out);
         }
         if (getRelocationCount() != 0) {
             out.printf(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
+            relocations.dump(out, objectifle);
         }
         out.println();
     }
