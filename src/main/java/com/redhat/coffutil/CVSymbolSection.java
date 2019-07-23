@@ -30,7 +30,7 @@ class CVSymbolSection {
             for (byte b : checksum) {
                 out.printf("%02x", ((int) (b) & 0xff));
             }
-            out.println("]");
+            out.println("] " + filename);
         }
     }
 

@@ -13,14 +13,18 @@ import static com.redhat.coffutil.CVConstants.DEBUG_S_STRINGTABLE;
 import static com.redhat.coffutil.CVConstants.DEBUG_S_SYMBOLS;
 import static com.redhat.coffutil.CVConstants.S_COMPILE;
 import static com.redhat.coffutil.CVConstants.S_COMPILE3;
+import static com.redhat.coffutil.CVConstants.S_CONSTANT;
 import static com.redhat.coffutil.CVConstants.S_END;
 import static com.redhat.coffutil.CVConstants.S_ENVBLOCK;
 import static com.redhat.coffutil.CVConstants.S_FRAMEPROC;
+import static com.redhat.coffutil.CVConstants.S_GDATA32;
 import static com.redhat.coffutil.CVConstants.S_GPROC32;
+import static com.redhat.coffutil.CVConstants.S_LDATA32;
 import static com.redhat.coffutil.CVConstants.S_LDATA32_ST;
 import static com.redhat.coffutil.CVConstants.S_OBJNAME;
 import static com.redhat.coffutil.CVConstants.S_REGREL32;
 import static com.redhat.coffutil.CVConstants.S_SSEARCH;
+import static com.redhat.coffutil.CVConstants.S_UDT;
 
 class CVSymbolSectionBuilder {
 
@@ -32,6 +36,7 @@ class CVSymbolSectionBuilder {
     Vector<CVSymbolSection.LineInfo> lines = new Vector<>(100);
     HashMap<String, String> env = new HashMap<>(10);
     String objname = null;
+    int cvStringTableOffset = 0;
 
     CVSymbolSection build(ByteBuffer in, PESectionHeader shdr) {
 
@@ -41,7 +46,7 @@ class CVSymbolSectionBuilder {
 
         int symSig = in.getInt();
         if (symSig != CV_SIGNATURE_C13) {
-            out.println("**** unexpected debug signature " + symSig + "; expected " + CV_SIGNATURE_C13);
+            out.println("**** unexpected debug$S signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
 
         if (debug) {
@@ -66,7 +71,7 @@ class CVSymbolSectionBuilder {
             }
 
             if (debug) {
-                out.printf("debug: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", startPosition,
+                out.printf("debug$S: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", startPosition,
                         (startPosition - sectionBegin), debugLen, (nextPosition - sectionBegin), (sectionEnd - in.position()), debugCmd);
             }
 
@@ -98,47 +103,53 @@ class CVSymbolSectionBuilder {
                     }
                     break;
                 case DEBUG_S_STRINGTABLE:
+                    cvStringTableOffset = in.position();
                     int stringNum = 0;
                     out.println("DEBUG_S_STRINGTABLE");
                     while (in.position() < nextPosition) {
+                        int pos = in.position() - cvStringTableOffset;
                         String s = PEStringTable.getString0(in, nextPosition - in.position());
-                        out.println("  string " + stringNum + ": \"" + s + "\"");
+                        out.printf("  string %d 0x%x \"%s\"\n", stringNum, pos, s);
                         stringTable.add(s);
                         stringNum++;
                     }
                     break;
                 case DEBUG_S_FILECHKSMS:
                     // checksum
-                    int fileid = in.getInt();
-                    int cb = in.get();
-                    int checksumType = in.get();
-                    byte[] checksum = new byte[16];
-                    in.get(checksum);
+                    while (in.position() < nextPosition) {
+                        int fileid = in.getInt();
+                        int cb = in.get();
+                        int checksumType = in.get();
+                        byte[] checksum = new byte[16];
+                        in.get(checksum);
 
-                    out.print("DEBUG_S_FILECHKSMS checksum fileid=" + fileid + " cb=" + cb + " type=" + checksumType + " chk=[");
-                    for (byte b : checksum) {
-                        out.printf("%02x", ((int) (b) & 0xff));
-                    }
-                    out.println("]");
+                        out.printf("DEBUG_S_FILECHKSMS checksum fileid=0x%04x cb=%d type=%d chk=[", fileid, cb, checksumType);
+                        for (byte b : checksum) {
+                            out.printf("%02x", ((int) (b) & 0xff));
+                        }
+                        out.println("]");
 
-                    sourceFiles.add(new CVSymbolSection.FileInfo(fileid, cb, checksumType, checksum));
-                    // align on 4 bytes
-                    while (((in.position() - sectionBegin) & 3) != 0) {
-                        in.get();
+                        sourceFiles.add(new CVSymbolSection.FileInfo(fileid, cb, checksumType, checksum));
+                        // align on 4 bytes
+                        while (((in.position() - sectionBegin) & 3) != 0) {
+                            in.get();
+                        }
                     }
                     break;
 
             }
             if (nextPosition != in.position()) {
-                out.printf("*** debug did not consume exact bytes: want=0x%x current=0x%x\n", nextPosition - sectionBegin, in.position() - sectionBegin);
+                out.printf("*** debug$S did not consume exact bytes: want=0x%x current=0x%x\n", nextPosition - sectionBegin, in.position() - sectionBegin);
             }
             in.position(nextPosition);
         }
 
-        // (this is a guess)
-        // fix up file names
-        for (CVSymbolSection.FileInfo fi : sourceFiles) {
-            fi.filename = stringTable.get(fi.fileid);
+        // fix up file names if we saw a string table
+        if (cvStringTableOffset != 0) {
+            for (CVSymbolSection.FileInfo fi : sourceFiles) {
+                in.position(cvStringTableOffset + fi.fileid);
+                fi.filename = PEStringTable.getString0(in, sectionEnd - fi.fileid);
+            }
         }
 
         return new CVSymbolSection(sourceFiles, stringTable, lines, env);
@@ -157,43 +168,15 @@ class CVSymbolSectionBuilder {
             }
             String info = null;
             switch (cmd) {
-                case S_GPROC32: {
-                    int pparent = in.getInt();
-                    int pend = in.getInt();
-                    int pnext = in.getInt();
-                    int proclen = in.getInt();
-                    int debugStart = in.getInt();
-                    int debugEnd = in.getInt();
-                    int type = in.getInt();
-                    int offset = in.getInt();
-                    int segment = in.getShort();
-                    int flags = in.get();
-                    String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_GPROC32 name=%s parent=%d startaddr=0x%x end=0x%x len=0x%x offset=0x%x type=0x%x flags=0x%x\n", name, pparent, debugStart, debugEnd, proclen, offset, type, flags);
+                case S_COMPILE: {
+                    int cmachine = in.get();
+                    int f1 = in.get();
+                    int f2 = in.get();
+                    int f3 = in.get();
+                    String version = PEStringTable.getString0(in, next - in.position());
+                    info = "  S_COMPILE m=" + cmachine + " v=" + version + " f1=" + f1 + " f2=" + f2 + " f3=" + f3;
                     break;
                 }
-                case S_FRAMEPROC: {
-                    int framelen = in.getInt();
-                    int padLen = in.getInt();
-                    int padOffset = in.getInt();
-                    int saveRegsCount = in.getInt();
-                    int ehOffset = in.getInt();
-                    int ehSection = in.getShort();
-                    int flags = in.getInt();
-                    out.printf("  S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x\n", framelen, padLen, padOffset, saveRegsCount, flags);
-                    break;
-                }
-                case S_REGREL32: {
-                    int offset = in.getInt();
-                    int type = in.getInt();
-                    int reg = in.getShort();
-                    String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_REGREL32 name=%s offset=0x%x type=0x%x reg=0x%x\n", name, offset, type, reg);
-                    break;
-                }
-                case S_END:
-                    info = "S_END";
-                    break;
                 case S_COMPILE3: {
                     int language = in.get();
                     int cf1 = in.get();
@@ -211,21 +194,23 @@ class CVSymbolSectionBuilder {
                     int beQFE = in.getShort();
                     String compiler = PEStringTable.getString0(in, next - in.position());
                     StringBuilder sb = new StringBuilder(60);
-                    sb.append("S_COMPILE3 machine=").append(machine)
+                    sb.append("  S_COMPILE3 machine=").append(machine)
                             .append(" language=").append(language)
                             .append(" debug=").append(hasDebug)
                             .append(" compiler=").append(compiler);
                     info = sb.toString();
                     break;
                 }
-                case S_LDATA32_ST: {
-                    int type = in.getInt();
-                    int offset = in.getInt();
-                    int segment = in.getShort();
+                case S_CONSTANT: {
+                    int typeindex = in.getInt();
+                    int leaf = in.getShort();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    info = "S_LDATA32_ST name=" + name + " offset=" + offset + " type=" + type + " segment=" + segment;
+                    out.printf("  S_CONSTANT name=%s typeindex=0x%x leaf=0x%x\n", name, typeindex, leaf);
                     break;
                 }
+                case S_END:
+                    info = "S_END";
+                    break;
                 case S_ENVBLOCK: {
                     Vector<String> strs = new Vector<>(20);
                     int flags = in.get(); // should be 0
@@ -238,29 +223,88 @@ class CVSymbolSectionBuilder {
                     }
                     for (int i = 0; i < strs.size(); i += 2) {
                         env.put(strs.get(i), strs.get(i+1));
+                        //out.printf("S_ENV  %s = %s\n", strs.get(i), strs.get(i+1));
                     }
-                    info = "S_ENVBLOCK flags=" + flags + " count=" + strs.size();
+                    info = "  S_ENVBLOCK flags=" + flags + " count=" + strs.size();
                     break;
                 }
-                case S_COMPILE:
-                    int cmachine = in.get();
-                    int f1 = in.get();
-                    int f2 = in.get();
-                    int f3 = in.get();
-                    String version = PEStringTable.getString0(in, next - in.position());
-                    info = "S_COMPILE m=" + cmachine + " v=" + version + " f1=" + f1 + " f2=" + f2 + " f3=" + f3;
+                case S_FRAMEPROC: {
+                    int framelen = in.getInt();
+                    int padLen = in.getInt();
+                    int padOffset = in.getInt();
+                    int saveRegsCount = in.getInt();
+                    int ehOffset = in.getInt();
+                    int ehSection = in.getShort();
+                    int flags = in.getInt();
+                    out.printf("  S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x\n", framelen, padLen, padOffset, saveRegsCount, flags);
                     break;
+                }
+                case S_GDATA32: {
+                    int typeIndex = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    out.printf("  S_GDATA32 name=%s offset=0x%x segment=0x%x type=0x%x\n", name, offset, segment, typeIndex);
+                    break;
+                }
+                case S_GPROC32: {
+                    int pparent = in.getInt();
+                    int pend = in.getInt();
+                    int pnext = in.getInt();
+                    int proclen = in.getInt();
+                    int debugStart = in.getInt();
+                    int debugEnd = in.getInt();
+                    int typeIndex = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    int flags = in.get();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    out.printf("  S_GPROC32 name=%s parent=%d startaddr=0x%x end=0x%x len=0x%x offset=0x%x type=0x%x flags=0x%x\n", name, pparent, debugStart, debugEnd, proclen, offset, typeIndex, flags);
+                    break;
+                }
+                case S_LDATA32: {
+                    int typeIndex = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    out.printf("  S_LDATA32 name=%s offset=0x%x segment=0x%x type=0x%x\n", name, offset, segment, typeIndex);
+                    break;
+                }
+                case S_LDATA32_ST: {
+                    int typeIndex = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    info = "  S_LDATA32_ST name=" + name + " offset=" + offset + " type=" + typeIndex + " segment=" + segment;
+                    break;
+                }
                 case S_OBJNAME:
                     int signature = in.getInt();
                     objname = PEStringTable.getString0(in, next - in.position());
-                    info = "S_OBJNAME objectname=" + objname + " signature=" + signature;
+                    info = "  S_OBJNAME objectname=" + objname + " signature=" + signature;
                     break;
-                case S_SSEARCH:
+                case S_REGREL32: {
+                    int offset = in.getInt();
+                    int typeIndex = in.getInt();
+                    int reg = in.getShort();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    out.printf("  S_REGREL32 name=%s offset=0x%x type=0x%x reg=0x%x\n", name, offset, typeIndex, reg);
+                    break;
+                }
+                case S_SSEARCH: {
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    info = "S_OBJNAME offset=" + offset + " seg=" + segment;
+                    info = "  S_OBJNAME offset=" + offset + " seg=" + segment;
                     break;
+                }
+                case S_UDT: {
+                    int typeIndex = in.getInt();
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    out.printf("  S_UDT name=%s typeindex=0x%x\n", name, typeIndex);
+                    break;
+                }
                 default:
+                    out.printf("  (UNKNOWN cmd=0x%04x)\n", cmd);
                     info = "(UNKNOWN) cmd=" + cmd;
                     break;
             }
@@ -268,7 +312,7 @@ class CVSymbolSectionBuilder {
                 out.println("  " + info);
             }
             if (next != in.position()) {
-                out.printf("*** subsection debug did not consume exact bytes: want=0x%x current=0x%x\n", next - sectionBegin, in.position() - sectionBegin);
+                out.printf("*** subsection debug$S did not consume exact bytes: want=0x%x current=0x%x\n", next - sectionBegin, in.position() - sectionBegin);
             }
             in.position(next);
         }

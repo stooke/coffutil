@@ -1,21 +1,24 @@
 package com.redhat.coffutil;
 
 import java.io.PrintStream;
+import java.util.Vector;
 
 class PECoffObjectFile {
 
     private final PEHeader hdr;
     private final PESectionHeader[] sections;
     private final PESymbolTable symbols;
-    private final CVSymbolSection cvSymbols;
+    private final Vector<CVSymbolSection> cvSymbols;
+    private final Vector<CVTypeSection> cvTypes;
     private final String directive;
 
     // hdr, sections, symbols, cvSymbols, directive);
-    PECoffObjectFile(PEHeader hdr, PESectionHeader[] sections, PESymbolTable symbols, CVSymbolSection cvSymbols, String directive) {
+    PECoffObjectFile(PEHeader hdr, PESectionHeader[] sections, PESymbolTable symbols, Vector<CVSymbolSection> cvSymbols, Vector<CVTypeSection> cvTypes, String directive) {
         this.hdr = hdr;
         this.sections = sections;
         this.symbols = symbols;
         this.cvSymbols = cvSymbols;
+        this.cvTypes = cvTypes;
         this.directive = directive;
     }
 
@@ -25,7 +28,12 @@ class PECoffObjectFile {
             shdr.dump(out, this);
         }
         symbols.dump(out);
-        cvSymbols.dump(out);
+        for (final CVSymbolSection section : cvSymbols) {
+            section.dump(out);
+        }
+        for (final CVTypeSection section : cvTypes) {
+            section.dump(out);
+        }
         if (directive != null) {
             out.printf("Link directive: %s\n", directive);
         }
@@ -52,7 +60,7 @@ class PECoffObjectFile {
         return symbols;
     }
 
-    public CVSymbolSection getCvSymbols() { return cvSymbols; }
+    public Vector<CVSymbolSection> getCvSymbols() { return cvSymbols; }
 
     public String getDirective() { return directive; }
 }

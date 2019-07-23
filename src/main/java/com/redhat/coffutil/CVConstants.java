@@ -9,6 +9,10 @@ public interface CVConstants {
     int S_OBJNAME   = 0x1101;
     int S_LDATA32_ST = 0x1007;
     int S_FRAMEPROC = 0x1012;
+    int S_CONSTANT  = 0x1107;
+    int S_UDT       = 0x1108;
+    int S_LDATA32   = 0x110c;
+    int S_GDATA32   = 0x110d;
     int S_GPROC32   = 0x1110;
     int S_REGREL32  = 0x1111;
     int S_COMPILE3  = 0x113c;

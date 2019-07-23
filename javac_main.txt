@@ -1,0 +1,322 @@
+C:\Users\stooke\dev\home\coffutil>C:\tmp\cvdump.exe C:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.obj
+Microsoft (R) Debugging Information Dumper  Version 14.00.23611
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+***** SECTION #2
+
+*** SYMBOLS
+
+(00000C) S_OBJNAME: Signature: 00000000, c:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.obj
+
+(000083) S_COMPILE3:
+         Language: C
+         Target processor: x64
+         Compiled for edit and continue: no
+         Compiled without debugging info: no
+         Compiled with LTCG: no
+         Compiled with /bzalign: no
+         Managed code present: no
+         Compiled with /GS: yes
+         Compiled with /hotpatch: yes
+         Converted by CVTCIL: no
+         MSIL module: no
+         Compiled with /sdl: no
+         Compiled with pgo: no
+         .EXP module: no
+         Pad bits = 0x0000
+         Frontend Version: Major = 16, Minor = 0, Build = 40219, QFE = 1
+         Backend Version: Major = 16, Minor = 0, Build = 40219, QFE = 1
+         Version string: Microsoft (R) Optimizing Compiler
+
+(0000BF) S_ENVBLOCK:
+         Compiled for edit and continue: no
+         Command block:
+          cwd = 'C:\tmp\graal-8\openjdk-8u-212_01-src\jdk\make'
+          cl = 'c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\VC\Bin\x86_amd64\cl.exe'
+          cmd = '-nologo -Zi -MD -Zc:wchar_t- -W3 -wd4800 -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DWIN32 -DIAL -D_AMD64_ -D_STATIC_CPPLIB -D_DISABLE_DEPRECATE_STATIC_CPPLIB -D_LITTLE_ENDIAN -DWINDOWS -DARCH=\"amd64\" -Damd64 -DDEBUG -DRELEASE=\"1.8.0_212-ea-fastdebug\" -Ic:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\include -Ic:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\include\windows -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\javavm\export -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\javavm\export -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\native\common -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\native\common -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\bin -Ic:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\bin -DFULL_VERSION=\"1.8.0_212-ea-fastdebug-b01\" -DJDK_MAJOR_VERSION=\"1\" -DJDK_MINOR_VERSION=\"8\" -DLIBARCHNAME=\"amd64\" -DLAUNCHER_NAME=\"openjdk\" -DPROGNAME=\"javac\" -DEXPAND_CLASSPATH_WILDCARDS -DNEVER_ACT_AS_SERVER_CLASS_MACHINE -D"JAVA_ARGS={ \"-J-ms8m\", \"com.sun.tools.javac.Main\", }" -O1 -DTHIS_FILE=\"main.c\" -c -showIncludes -Fdc:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.pdb -Fmc:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.map -Foc:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.obj -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\VC\INCLUDE -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\INCLUDE -IC:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\INCLUDE\gl -TC -X'
+          src = 'c:/tmp/graal-8/openjdk-8u-212_01-src/jdk/src/share/bin/main.c'
+          pdb = 'c:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.pdb'
+
+
+*** SYMBOLS
+
+
+(000914) S_CONSTANT: Type:             0x1048, Value: 1, TP_CALLBACK_PRIORITY_NORMAL
+(00093A) S_CONSTANT: Type:             0x10CE, Value: 2, COR_VERSION_MAJOR_V2
+(000959) S_CONSTANT: Type:             0x10D0, Value: 1, NEVER_SERVER_CLASS
+(000976) S_GDATA32: [0000:00000000], Type:       T_INT4(0074), __imp___argc
+(000991) S_GDATA32: [0000:00000000], Type:             0x1002, __imp___argv
+(0009AC) S_LDATA32: [0000:00000000], Type:             0x10CC, launchModeNames
+(0009CA) S_LDATA32: [0000:00000000], Type:             0x100F, const_progname
+(0009E7) S_LDATA32: [0000:00000000], Type:             0x10C7, const_jargs
+(000A01) S_LDATA32: [0000:00000000], Type:             0x10C7, const_appclasspath
+(000A22) S_LDATA32: [0000:00000000], Type:             0x100F, const_launcher
+(000A3F) S_LDATA32: [0000:00000000], Type:             0x1095, const_cpwildcard
+(000A5E) S_LDATA32: [0000:00000000], Type:             0x1026, const_ergo_class
+(000A7D) S_CONSTANT: Type:             0x10CB, Value: 64, SA_Method
+(000A91) S_CONSTANT: Type:             0x10CB, Value: 2048, SA_Parameter
+(000AA8) S_UDT:       T_QUAD(0013), LONG_PTR
+(000AB9) S_UDT:      T_UCHAR(0020), jboolean
+(000ACA) S_UDT:             0x100D, localeinfo_struct
+(000AE4) S_UDT:      T_UQUAD(0023), SIZE_T
+(000AF3) S_UDT:      T_UCHAR(0020), BOOLEAN
+(000B03) S_UDT:             0x106A, LPUWSTR
+(000B13) S_UDT:       T_INT4(0074), errno_t
+(000B23) S_UDT:   T_64PRCHAR(0670), LPSTR
+(000B31) S_UDT:       T_LONG(0012), _off_t
+(000B40) S_UDT:             0x100B, pthreadmbcinfo
+(000B57) S_UDT:             0x1001, LPCWSTR
+(000B67) S_UDT:      T_UQUAD(0023), rsize_t
+(000B77) S_UDT:             0x10D0, ergo_policy
+(000B8B) S_UDT:     T_USHORT(0021), wchar_t
+(000B9B) S_UDT:       T_QUAD(0013), time_t
+(000BAA) S_UDT:             0x103C, PTP_CALLBACK_INSTANCE
+(000BC8) S_UDT:             0x10CE, ReplacesCorHdrNumericDefines
+(000BED) S_UDT:  T_64PUSHORT(0621), PWSTR
+(000BFB) S_UDT:             0x10C9, LC_ID
+(000C09) S_UDT:             0x1072, PCUWSTR
+(000C19) S_UDT:      T_ULONG(0022), TP_VERSION
+(000C2C) S_UDT:             0x10C6, threadlocaleinfostruct
+(000C4B) S_UDT:             0x10AD, StdArg
+(000C5A) S_UDT:    T_64PVOID(0603), PVOID
+(000C68) S_UDT:             0x104A, TP_CALLBACK_ENVIRON_V3
+(000C87) S_UDT:             0x1048, TP_CALLBACK_PRIORITY
+(000CA4) S_UDT:             0x1004, _locale_t
+(000CB6) S_UDT:             0x101E, stat
+(000CC3) S_UDT:       T_LONG(0012), jint
+(000CD0) S_UDT:       T_QUAD(0013), INT_PTR
+(000CE0) S_UDT:      T_ULONG(0022), DWORD
+(000CEE) S_UDT:   T_64PRCHAR(0670), va_list
+(000CFE) S_UDT:             0x10CB, SA_AttrTarget
+(000D14) S_UDT:      T_UCHAR(0020), BYTE
+(000D21) S_UDT:             0x1033, PTP_POOL
+(000D32) S_UDT:      T_UQUAD(0023), DWORD64
+(000D42) S_UDT:      T_WCHAR(0071), WCHAR
+(000D50) S_UDT:      T_UQUAD(0023), UINT_PTR
+(000D61) S_UDT:   T_64PUCHAR(0620), PBYTE
+(000D6F) S_UDT:       T_QUAD(0013), __time64_t
+(000D82) S_UDT:       T_LONG(0012), LONG
+(000D8F) S_UDT:             0x1048, _TP_CALLBACK_PRIORITY
+(000DAD) S_UDT:             0x106A, PUWSTR
+(000DBC) S_UDT:     T_USHORT(0021), _ino_t
+(000DCB) S_UDT:       T_QUAD(0013), LONG64
+(000DDA) S_UDT:  T_64PUSHORT(0621), LPWSTR
+(000DE9) S_UDT:      T_UQUAD(0023), size_t
+(000DF8) S_UDT:             0x10C9, tagLC_ID
+(000E09) S_UDT:             0x104A, _TP_CALLBACK_ENVIRON_V3
+(000E29) S_UDT:             0x10AD, StdArg
+(000E38) S_UDT:             0x1072, LPCUWSTR
+(000E49) S_UDT:      T_UINT4(0075), _dev_t
+(000E58) S_UDT:             0x103F, PTP_SIMPLE_CALLBACK
+(000E74) S_UDT:             0x1038, PTP_CLEANUP_GROUP_CANCEL_CALLBACK
+(000E9E) S_UDT:             0x1031, PTP_CALLBACK_ENVIRON
+(000EBB) S_UDT:             0x1035, PTP_CLEANUP_GROUP
+(000ED5) S_UDT:      T_RCHAR(0070), CHAR
+(000EE2) S_UDT:      T_UQUAD(0023), ULONG_PTR
+(000EF4) S_UDT:             0x106A, PUWSTR_C
+(000F05) S_UDT:       T_LONG(0012), HRESULT
+(000F15) S_UDT:             0x101F, _stat64i32
+(000F28) S_UDT:             0x1001, PCWSTR
+(000F37) S_UDT:             0x1009, pthreadlocinfo
+
+
+*** FILECHKSUMS
+
+FileId  St.Offset  Cb  Type  ChksumBytes
+     0  00000001   10  MD5   981E5E2D8E4A3041376DADC3F4AE49F6
+    18  00000047   10  MD5   C567418F318D55F3886992E2798B438E
+    30  0000008C   10  MD5   75BD229BE17035AE3C0D3429960BE993
+    48  000000D3   10  MD5   AC1BF007A61938D916DB0CFF9B8D150A
+    60  0000011A   10  MD5   11EAC0034E5AA89B8508D01088B07113
+    78  00000163   10  MD5   76A12DB2EC8F63D2E619D0B60FC5733F
+    90  000001AB   10  MD5   9A3856A7898E8D69FF48ABB089D4356D
+    A8  000001F2   10  MD5   E73D4BD8B92BE7BA91916E63EA4D4E69
+    C0  00000234   10  MD5   E7C717361084292299B9BCED7BED580E
+    D8  00000276   10  MD5   173A2C59913E553748AF5BF15EA64B2D
+    F0  000002B8   10  MD5   5A8AE96A1923475C4A1C517FD8AC2F36
+   108  000002F7   10  MD5   6B76EA5D74878BB13A110D80C0149B53
+   120  0000033C   10  MD5   7756575AF5344F8CAA05083993B01FBD
+   138  00000383   10  MD5   B18FED7AD8D527D7814CDCCADD155A6C
+   150  000003C3   10  MD5   5E1C498913E62AC21FCEF374149AAC39
+   168  0000040F   10  MD5   AFCE190DE65E1F6B0A25C1102F299980
+   180  00000454   10  MD5   23E9A5BB2794A40521DF34C9C060A116
+   198  00000494   10  MD5   5D53D1D295639AA42CB61C72AB559207
+   1B0  000004D9   10  MD5   343539B513E0DD9A29B6861CE4C8DD6A
+   1C8  0000051C   10  MD5   20D19E6F6844965EF9760AF0C3DF6499
+   1E0  0000055F   10  MD5   66DC093A252709CE2B0DB6A8D343BB32
+   1F8  000005A1   10  MD5   7AD1DC38114B07DE7E6CC2C2F22633DD
+   210  000005E2   10  MD5   6EA725982B43DD0DDCD9B1EF482B2435
+   228  00000622   10  MD5   A5A3B7C74089B642E92727C84A7B1D75
+   240  0000065F   10  MD5   3739C5C40BADDA767A83C650EB3E0FAA
+   258  0000069F   10  MD5   D91F1A6414D16DDC6075685A488C1FDA
+   270  000006DF   10  MD5   819C2CDD0A6C8BA9D815CB4EFD28AC3D
+   288  00000724   10  MD5   8AE8732C7350093BDCCF886666F48515
+   2A0  00000766   10  MD5   E439171634C1038CB1717CD6D3ACD3DD
+   2B8  000007AA   10  MD5   52373C62905334DB6ED828734B22D235
+   2D0  000007EE   10  MD5   B9E26DA5266475AFD24E8815251E0C16
+   2E8  0000082F   10  MD5   E6E6B54FC590A6A1DC57163723ED31E1
+   300  00000874   10  MD5   41BFAA1DFFCC4039AD39CF84B24329AE
+   318  000008B2   10  MD5   EB9673F3A2A0F1B979321483ED9C7BFC
+   330  000008F4   10  MD5   071989B9E0204543A00612BAFCFE767C
+   348  00000935   10  MD5   917899F97A343E77C8C00E0244792A89
+   360  00000976   10  MD5   7756575AF5344F8CAA05083993B01FBD
+   378  000009DA   10  MD5   5172C110EE653F9A5D52D06176BCBA70
+   390  00000A19   10  MD5   39704D770FBE6DC79816E945EC56E66A
+   3A8  00000A5E   10  MD5   9EECDA1BB750611D060B740A1138AC80
+   3C0  00000AA2   10  MD5   1EA1808175BA5B9740CB94CDE3A9F925
+   3D8  00000AEE   10  MD5   13C786B4E27E395A1B20FEE565FB0675
+   3F0  00000B32   10  MD5   94A667332994B300E29840FBC0966D49
+   408  00000B73   10  MD5   413AA9CDA4CA680E4F435613893A995D
+   420  00000BB4   10  MD5   883B1BBE6AB6874F649A57FBA8568C26
+   438  00000BF1   10  MD5   F2FB9235732CE4F17D3F846FB1C718DE
+   450  00000C32   10  MD5   65DD082E7913675521BBF0F3A930564D
+   468  00000C78   10  MD5   821452B7284FBAE5846A9B3598F98BA9
+   480  00000CB6   10  MD5   CC3485CA666E44B28576BA9AAA7CC57C
+   498  00000CFA   10  MD5   B7F818287D48ECC7A163F1ABCE664BE5
+   4B0  00000D40   10  MD5   69ADCFD4A6CFCD5A709CF0BDDB3C8855
+   4C8  00000D82   10  MD5   7574B4485FF23858613CB7A9EFF9C96A
+   4E0  00000DDF   10  MD5   835267382804B72FFBF8C98C93C01416
+   4F8  00000E21   10  MD5   2EAE9B8D7A1FDEC1A436E52F625A5413
+   510  00000E6A   10  MD5   184ACCA4876D476EA89906834313A4DB
+   528  00000EAE   10  MD5   949474FAF6FA6273DFC1A044FBC65305
+   540  00000EEE   10  MD5   83ACBDD14F06B82D882384A0A7C92764
+   558  00000F33   10  MD5   F78A2D6E8FE867315F262371DB150F1D
+   570  00000F75   10  MD5   B33552C5608201FCCCF0C64AAB756F5D
+   588  00000FBF   10  MD5   58139216E10119CF51BD02C3D373249F
+   5A0  0000100B   10  MD5   F1CEEB3E16C6A8D88B10253AA9811C00
+   5B8  00001056   10  MD5   364F973C0573A376B149BAC8ABBAAAF5
+   5D0  0000109B   10  MD5   F4B6D57C93F628BA45ECDE4D0551D1BA
+   5E8  000010E4   10  MD5   3864E6029167E87A8B369D57A9DD410C
+   600  00001129   10  MD5   3C402E692B2E1A2691AE14403891B52F
+   618  00001180   10  MD5   3BD0CB99288177B9CC9A28ACCAC4A1E8
+   630  000011C1   10  MD5   73C50A1D9EBF428DEF340FFDB65513B2
+   648  00001207   10  MD5   DF505451FFE0086336A69B1565942394
+   660  00001249   10  MD5   332B54BAD9498E497F0877FFD9F38908
+   678  00001287   10  MD5   09F67818E3E6C80671F1D02F68D99FC8
+   690  000012C7   10  MD5   90BEFA082251BA05E16E86912CBF0412
+   6A8  00001309   10  MD5   E1E9BE1DB4EB9C099621BAF849273D41
+   6C0  0000134C   10  MD5   E3DC62862A949E95BC2F1B867FB3BDE5
+   6D8  0000138C   10  MD5   A9F89BC3AC5BB2E2E1291A5CA1928CF6
+   6F0  000013CD   10  MD5   B796BF617483F35BC1ABE08F67D74134
+
+*** STRINGTABLE
+
+00000000
+00000001 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\splashscreen.h
+00000047 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\string.h
+0000008c c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\javavm\export\jvm.h
+000000d3 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\sys\stat.h
+0000011a c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\sys\stat.inl
+00000163 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\sys\types.h
+000001ab c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\manifest_info.h
+000001f2 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\pshpack4.h
+00000234 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\stralign.h
+00000276 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\ktmtypes.h
+000002b8 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\tvout.h
+000002f7 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\stddef.h
+0000033c c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\javavm\export\jni.h
+00000383 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winsvc.h
+000003c3 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\javavm\export\jvm_md.h
+0000040f c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\stdlib.h
+00000454 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\windef.h
+00000494 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\limits.h
+000004d9 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\emessages.h
+0000051c c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\bin\java_md.h
+0000055f c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winerror.h
+000005a1 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\windows.h
+000005e2 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\wingdi.h
+00000622 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\mcx.h
+0000065f c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\reason.h
+0000069f c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winreg.h
+000006df c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\vadefs.h
+00000724 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\pshpack8.h
+00000766 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\fcntl.h
+000007aa c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\errno.h
+000007ee c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\poppack.h
+0000082f c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\signal.h
+00000874 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\main.c
+000008b2 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\jli_util.h
+000008f4 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winbase.h
+00000935 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winuser.h
+00000976 c:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\include\jni.h
+000009da c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winnt.h
+00000a19 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\stdarg.h
+00000a5e c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\ctype.h
+00000aa2 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\windows\javavm\export\jni_md.h
+00000aee c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\ime_cmodes.h
+00000b32 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\io.h
+00000b73 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\guiddef.h
+00000bb4 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\imm.h
+00000bf1 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\defines.h
+00000c32 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\process.h
+00000c78 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\java.h
+00000cb6 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\stdio.h
+00000cfa c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\crtdefs.h
+00000d40 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\sal.h
+00000d82 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\codeanalysis\sourceannotations.h
+00000ddf c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\pshpack1.h
+00000e21 c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\swprintf.inl
+00000e6a c:\tmp\graal-8\ojdkbuild\tools\toolchain\vs2010e\vc\include\excpt.h
+00000eae c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winnls.h
+00000eee c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\specstrings.h
+00000f33 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\sal_supp.h
+00000f75 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\specstrings_supp.h
+00000fbf c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\specstrings_strict.h
+0000100b c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\specstrings_undef.h
+00001056 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\driverspecs.h
+0000109b c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\sdv_driverspecs.h
+000010e4 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\kernelspecs.h
+00001129 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\javavm\export\classfile_constants.h
+00001180 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\basetsd.h
+000011c1 c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\version_comp.h
+00001207 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winnetwk.h
+00001249 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\wnnc.h
+00001287 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\wincon.h
+000012c7 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\pshpack2.h
+00001309 c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\sdkddkver.h
+0000134c c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\winver.h
+0000138c c:\tmp\graal-8\ojdkbuild\tools\toolchain\sdk71\include\verrsrc.h
+000013cd c:\tmp\graal-8\openjdk-8u-212_01-src\jdk\src\share\bin\wildcard.h
+
+
+***** SECTION #F
+
+*** SYMBOLS
+
+
+(00000C) S_GPROC32: [0000:00000000], Cb: 00000147, Type:             0x10B7, main
+         Parent: 00000000, End: 00000000, Next: 00000000
+         Debug start: 0000000A, Debug end: 00000139
+
+(000038)  S_FRAMEPROC:
+          Frame size = 0x00000070 bytes
+          Pad size = 0x00000000 bytes
+          Offset of pad in frame = 0x00000000
+          Size of callee save registers = 0x00000000
+          Address of exception handler = 0000:00000000
+          Function info: asynceh invalid_pgo_counts Local=rsp Param=rsp (0x00014200)
+(000056)  S_REGREL32: rsp+00000080, Type:       T_INT4(0074), argc
+(000069)  S_REGREL32: rsp+00000088, Type:             0x1002, argv
+
+(00007C) S_END
+
+
+*** LINES
+
+  0000:00000000-00000147, flags = 0000, fileid = 00000300
+
+     94 00000000    102 0000000A    103 0000001C    104 00000029
+    103 00000036    105 00000038    109 00000066    110 00000074
+    112 0000007C    115 0000008E    116 00000093    109 0000009C
+    117 0000009F    133 000000B2    134 00000139
+
+***** SECTION #17
+
+*** TYPES
+
+0x1000 : Length = 134, Leaf = 0x1515 LF_TYPESERVER2
+                GUID={1064C06B-786D-4653-AAF3-7F84E883F6A5}, age = 0x00000001, PDB name = 'c:\tmp\graal-8\openjdk-8u-212_01-src\build\windows-x86_64-normal-server-fastdebug\jdk\objs\javac_objs\main.pdb
+
+
+C:\Users\stooke\dev\home\coffutil>

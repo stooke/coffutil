@@ -6,6 +6,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.Vector;
 
 class PECoffObjectFileBuilder {
 
@@ -45,7 +46,8 @@ class PECoffObjectFileBuilder {
         final PEHeader hdr;
         final PESectionHeader[] sections;
         PESymbolTable symbols = null;
-        CVSymbolSection cvSymbols = null;
+        Vector<CVSymbolSection> cvSymbols = new Vector<>(10);
+        Vector<CVTypeSection> cvTypes = new Vector<>(10);
         String directive = null;
 
         // parse header
@@ -77,7 +79,10 @@ class PECoffObjectFileBuilder {
             // load line numbers and relocations
             switch (sectionName) {
                 case ".debug$S":
-                    cvSymbols = new CVSymbolSectionBuilder().build(in, shdr);
+                    cvSymbols.add(new CVSymbolSectionBuilder().build(in, shdr));
+                    break;
+                case ".debug$T":
+                    cvTypes.add(new CVTypeSectionBuilder().build(in, shdr));
                     break;
                 case ".drectve":
                     in.position(shdr.getRawDataPtr());
@@ -85,7 +90,7 @@ class PECoffObjectFileBuilder {
             }
         }
 
-        return new PECoffObjectFile(hdr, sections, symbols, cvSymbols, directive);
+        return new PECoffObjectFile(hdr, sections, symbols, cvSymbols, cvTypes, directive);
     }
 
     private static ByteBuffer readFile(final String fn) {
