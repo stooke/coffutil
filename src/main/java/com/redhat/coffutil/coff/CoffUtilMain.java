@@ -1,11 +1,11 @@
-package com.redhat.coffutil;
+package com.redhat.coffutil.coff;
 
-class CoffUtilMain {
+public class CoffUtilMain {
 
-    CoffUtilMain() {
+    public CoffUtilMain() {
     }
 
-    void run (String[] args) {
+    public void run (String[] args) {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
         for (final String fn : args) {
             ctx.currentInputFilename = fn;

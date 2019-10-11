@@ -1,4 +1,4 @@
-package com.redhat.coffutil;
+package com.redhat.coffutil.coff;
 
 public interface CVConstants {
 

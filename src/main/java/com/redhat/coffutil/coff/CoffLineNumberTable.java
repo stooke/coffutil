@@ -1,4 +1,4 @@
-package com.redhat.coffutil;
+package com.redhat.coffutil.coff;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;

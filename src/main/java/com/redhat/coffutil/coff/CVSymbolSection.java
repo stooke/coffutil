@@ -1,6 +1,12 @@
-package com.redhat.coffutil;
+package com.redhat.coffutil.coff;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -31,6 +37,22 @@ class CVSymbolSection {
                 out.printf("%02x", ((int) (b) & 0xff));
             }
             out.println("] " + filename);
+            /**
+            try {
+                String md5 = calculateMD5Sum(filename);
+                out.println("calculated=" + md5);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }**/
+        }
+
+        public String calculateMD5Sum(String fn) throws NoSuchAlgorithmException, IOException
+        {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(Files.readAllBytes(Paths.get(fn)));
+            byte[] digest = md.digest();
+            String md5sum = DatatypeConverter.printHexBinary(digest).toUpperCase();
+            return md5sum;
         }
     }
 

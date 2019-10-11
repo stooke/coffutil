@@ -1,9 +1,9 @@
-package com.redhat.coffutil;
+package com.redhat.coffutil.coff;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-import static com.redhat.coffutil.CVConstants.CV_SIGNATURE_C13;
+import static com.redhat.coffutil.coff.CVConstants.CV_SIGNATURE_C13;
 
 class CVTypeSectionBuilder {
 
