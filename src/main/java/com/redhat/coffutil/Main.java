@@ -12,7 +12,7 @@ public class Main {
         //fn = "c:/tmp/vsjunk/ConsoleApplication1/x64/Debug/ConsoleApplication1.exe";
         //fn = "C:\\tmp\\graal-8\\tmpfilesFromHello_after\\hello.obj";
         //fn = "c:/tmp/graal-8/hellotest/newdebugformat/hello.obj";
-        args = args.length > 0 ? args : new String[]{ fn };
+        args = args.length > 0 ? args : new String[]{ "-dump", fn };
         new CoffUtilMain().run(args);
     }
 }

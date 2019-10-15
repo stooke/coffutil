@@ -93,7 +93,7 @@ class PECoffObjectFileBuilder {
         return new PECoffObjectFile(hdr, sections, symbols, cvSymbols, cvTypes, directive);
     }
 
-    private static ByteBuffer readFile(final String fn) {
+    static ByteBuffer readFile(final String fn) {
         ByteBuffer buffer = null;
         try {
             RandomAccessFile coffFile = new RandomAccessFile(fn,"r");
