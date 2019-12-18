@@ -16,6 +16,9 @@ public class CoffUtilMain {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
         for (final String fn : ctx.inputFiles) {
             ctx.currentInputFilename = fn;
+            if (ctx.debug) {
+                ctx.log.println("processing " + fn);
+            }
             PECoffObjectFile cf = new PECoffObjectFileBuilder().build(fn);
             if (ctx.dump) {
                 cf.dump(ctx.out);
@@ -27,7 +30,7 @@ public class CoffUtilMain {
                     // TODO : write header, string table, reloc tables, symbol tables
                     for (PESectionHeader shdr : cf.getSections()) {
                         String sfn = ctx.split + "-" + snum + "-" + shdr.getName();
-                        System.out.println("dumping " + shdr.getName() + " to " + sfn);
+                        ctx.log.println("dumping " + shdr.getName() + " to " + sfn);
                         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(sfn));
                         out.write(in.array(), shdr.getRawDataPtr(), shdr.getRawDataSize());
                         out.close();

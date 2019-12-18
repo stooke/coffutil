@@ -27,7 +27,7 @@ class PECoffObjectFile {
         for (final PESectionHeader shdr : sections) {
             shdr.dump(out, this);
         }
-        symbols.dump(out);
+        //symbols.dump(out);
         for (final CVSymbolSection section : cvSymbols) {
             section.dump(out);
         }

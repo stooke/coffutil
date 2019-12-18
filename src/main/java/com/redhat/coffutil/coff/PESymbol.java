@@ -118,7 +118,7 @@ class PESymbol {
                 sectionStr = "(debug)";
             }
         }
-        out.printf("  symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d\n", name, sectionStr, value, complexType, baseType, storageclass, numaux);
+        //out.printf("  symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d\n", name, sectionStr, value, complexType, baseType, storageclass, numaux);
     }
 
     /**

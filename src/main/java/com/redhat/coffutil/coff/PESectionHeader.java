@@ -104,7 +104,7 @@ class PESectionHeader {
         }
         if (getRelocationCount() != 0) {
             out.printf(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
-            relocations.dump(out, objectifle);
+            //relocations.dump(out, objectifle);
         }
         out.println();
     }

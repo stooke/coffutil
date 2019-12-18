@@ -68,7 +68,7 @@ class CoffUtilContext {
         }
         if (!(dump || split != null)) {
             err.println("nothing to do!");
-            System.exit(1);
+            //System.exit(1);
         }
     }
 
