@@ -5,28 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Vector;
 
-import static com.redhat.coffutil.coff.CVConstants.CV_SIGNATURE_C13;
-import static com.redhat.coffutil.coff.CVConstants.DEBUG_S_FILECHKSMS;
-import static com.redhat.coffutil.coff.CVConstants.DEBUG_S_IGNORE;
-import static com.redhat.coffutil.coff.CVConstants.DEBUG_S_LINES;
-import static com.redhat.coffutil.coff.CVConstants.DEBUG_S_STRINGTABLE;
-import static com.redhat.coffutil.coff.CVConstants.DEBUG_S_SYMBOLS;
-import static com.redhat.coffutil.coff.CVConstants.S_COMPILE;
-import static com.redhat.coffutil.coff.CVConstants.S_COMPILE3;
-import static com.redhat.coffutil.coff.CVConstants.S_CONSTANT;
-import static com.redhat.coffutil.coff.CVConstants.S_END;
-import static com.redhat.coffutil.coff.CVConstants.S_ENVBLOCK;
-import static com.redhat.coffutil.coff.CVConstants.S_FRAMEPROC;
-import static com.redhat.coffutil.coff.CVConstants.S_GDATA32;
-import static com.redhat.coffutil.coff.CVConstants.S_GPROC32;
-import static com.redhat.coffutil.coff.CVConstants.S_LDATA32;
-import static com.redhat.coffutil.coff.CVConstants.S_LDATA32_ST;
-import static com.redhat.coffutil.coff.CVConstants.S_OBJNAME;
-import static com.redhat.coffutil.coff.CVConstants.S_REGREL32;
-import static com.redhat.coffutil.coff.CVConstants.S_SSEARCH;
-import static com.redhat.coffutil.coff.CVConstants.S_UDT;
-
-class CVSymbolSectionBuilder {
+class CVSymbolSectionBuilder implements CVConstants {
 
     private PrintStream out = System.out;
     private boolean debug = true;
@@ -301,7 +280,7 @@ class CVSymbolSectionBuilder {
                 case S_SSEARCH: {
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    info = "  S_OBJNAME offset=" + offset + " seg=" + segment;
+                    info = "  S_SSEARCH offset=" + offset + " seg=" + segment;
                     break;
                 }
                 case S_UDT: {
