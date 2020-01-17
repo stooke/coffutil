@@ -28,7 +28,7 @@ public class CoffUtilMain {
                 try {
                     int snum = 0;
                     // TODO : write header, string table, reloc tables, symbol tables
-                    for (PESectionHeader shdr : cf.getSections()) {
+                    for (PESection shdr : cf.getSections()) {
                         String sfn = ctx.split + "-" + snum + "-" + shdr.getName();
                         ctx.log.println("dumping " + shdr.getName() + " to " + sfn);
                         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(sfn));

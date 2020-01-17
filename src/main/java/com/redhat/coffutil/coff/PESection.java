@@ -2,8 +2,9 @@ package com.redhat.coffutil.coff;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-class PESectionHeader {
+class PESection {
 
     private static final int COFF_SECTION_HEADER_SIZE = 40;
 
@@ -28,56 +29,71 @@ class PESectionHeader {
     private static final int PE_PERM_READ        = 0x40000000; // IMAGE_SCN_MEM_READ
     private static final int PE_PERM_WRITE       = 0x80000000; // IMAGE_SCN_MEM_WRITE
 
-    private String name;
-    private int virtualSize;
-    private int virtualAddress;
-    private int rawDataSize;
-    private int rawDataPtr;
-    private int relocationPtr;
-    private int lineNumberPtr;
-    private int relocationCount;
-    private int lineNumberCount;
-    private int characteristics;
+    public static class PESectionHeader {
+
+        private String name;
+        private int virtualSize;
+        private int virtualAddress;
+        private int rawDataSize;
+        private int rawDataPtr;
+        private int relocationPtr;
+        private int lineNumberPtr;
+        private int relocationCount;
+        private int lineNumberCount;
+        private int characteristics;
+
+        private ByteBuffer rawHeaderData;
+
+        private void buildHeader(ByteBuffer in, PEHeader fileHeader) {
+
+            //int offset = in.position();
+            if (in.hasArray()) {
+                rawHeaderData = in.slice().asReadOnlyBuffer();
+                rawHeaderData.order(ByteOrder.LITTLE_ENDIAN);
+            } else {
+                System.err.println("**** no backing array ****");
+            }
+            name = PEStringTable.resolve(in, fileHeader);
+            virtualSize = in.getInt();
+            virtualAddress = in.getInt();
+            rawDataSize = in.getInt();
+            rawDataPtr = in.getInt();
+            relocationPtr = in.getInt();
+            lineNumberPtr = in.getInt();
+            relocationCount = in.getShort();
+            lineNumberCount = in.getShort();
+            characteristics = in.getInt();
+        }
+
+        static PESectionHeader build(ByteBuffer in, PEHeader fileHeader) {
+            PESectionHeader hdr = new PESectionHeader();
+            hdr.buildHeader(in, fileHeader);
+            return hdr;
+        }
+    }
 
     private CoffLineNumberTable lineNumberTable;
     private CoffRelocationTable relocations;
 
-    private ByteBuffer rawHeaderData;
+    private PESectionHeader sectionHeader;
     private ByteBuffer rawData;
 
-    private PESectionHeader() {
+    private PESection() {
     }
 
-    static PESectionHeader build(ByteBuffer in, PEHeader hdr) {
-        PESectionHeader sectionHeader = new PESectionHeader();
-        sectionHeader._build(in, hdr);
+    static PESection build(ByteBuffer in, PEHeader hdr) {
+        PESection section = new PESection();
+        PESectionHeader sectionHeader = PESectionHeader.build(in, hdr);
+        section.sectionHeader = sectionHeader;
         int oldPos = in.position();
-        sectionHeader.loadLineNumbersAndRelocations(in, hdr);
-        in.position(oldPos);
-        return sectionHeader;
-    }
-
-    private void _build(ByteBuffer in, PEHeader hdr) {
-
-        //int offset = in.position();
-        if (in.hasArray()) {
-            rawHeaderData = ByteBuffer.wrap(in.array(), in.position(), COFF_SECTION_HEADER_SIZE);
-        } else {
-            System.err.println("**** no backing array ****");
-        }
-        name = PEStringTable.resolve(in, hdr);
-        virtualSize = in.getInt();
-        virtualAddress = in.getInt();
-        rawDataSize = in.getInt();
-        rawDataPtr = in.getInt();
-        relocationPtr = in.getInt();
-        lineNumberPtr = in.getInt();
-        relocationCount = in.getShort();
-        lineNumberCount = in.getShort();
-        characteristics = in.getInt();
         if (in.hasArray() && in.array().length > 0) {
-            rawData = ByteBuffer.wrap(in.array(), rawDataPtr, rawDataSize);
+            in.position(sectionHeader.rawDataPtr);
+            section.rawData = in.slice().asReadOnlyBuffer();
+            section.rawData.order(ByteOrder.LITTLE_ENDIAN);
         }
+        section.loadLineNumbersAndRelocations(in, hdr);
+        in.position(oldPos);
+        return section;
     }
 
     private void loadLineNumbersAndRelocations(ByteBuffer in, PEHeader hdr) {
@@ -89,7 +105,7 @@ class PESectionHeader {
         return null;
     }
 
-    void dump(PrintStream out, PECoffObjectFile objectifle) {
+    void dump(PrintStream out, PECoffObjectFile objectFile) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.print("section: " + bName + " flags=[" + translateCharacteristics(getCharacteristics()) + "]");
         if (getVirtualSize() != 0) {
@@ -100,13 +116,17 @@ class PESectionHeader {
         }
         if (getLineNumberCount() != 0) {
             out.printf(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
-            lineNumberTable.dump(out);
         }
         if (getRelocationCount() != 0) {
             out.printf(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
-            //relocations.dump(out, objectifle);
         }
         out.println();
+        if (getLineNumberCount() != 0) {
+            lineNumberTable.dump(out);
+        }
+        if (getRelocationCount() != 0) {
+            relocations.dump(out, objectFile);
+        }
     }
 
     /**
@@ -125,43 +145,43 @@ class PESectionHeader {
      };
      ***/
     String getName() {
-        return name;
+        return sectionHeader.name;
     }
 
     int getVirtualSize() {
-        return virtualSize;
+        return sectionHeader.virtualSize;
     }
 
     int getVirtualAddress() {
-        return virtualAddress;
+        return sectionHeader.virtualAddress;
     }
 
     int getRawDataSize() {
-        return rawDataSize;
+        return sectionHeader.rawDataSize;
     }
 
     int getRawDataPtr() {
-        return rawDataPtr;
+        return sectionHeader.rawDataPtr;
     }
 
     int getRelocationPtr() {
-        return relocationPtr;
+        return sectionHeader.relocationPtr;
     }
 
     int getLineNumberPtr() {
-        return lineNumberPtr;
+        return sectionHeader.lineNumberPtr;
     }
 
     int getRelocationCount() {
-        return relocationCount;
+        return sectionHeader.relocationCount;
     }
 
     int getLineNumberCount() {
-        return lineNumberCount;
+        return sectionHeader.lineNumberCount;
     }
 
     int getCharacteristics() {
-        return characteristics;
+        return sectionHeader.characteristics;
     }
 
     CoffLineNumberTable getLineNumberTable() {

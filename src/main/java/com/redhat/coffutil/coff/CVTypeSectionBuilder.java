@@ -23,7 +23,7 @@ class CVTypeSectionBuilder implements CVConstants {
         System.out.println();
     }
 
-    CVTypeSection build(ByteBuffer in, PESectionHeader shdr) {
+    CVTypeSection build(ByteBuffer in, PESection shdr) {
 
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();

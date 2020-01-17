@@ -18,18 +18,31 @@ class CoffRelocationTable {
 
         void dump(PrintStream out, PECoffObjectFile ofile) {
             PESymbol symbol = ofile.getSymbols().get(symbolIndex);
+            final String descr;
+            // assume x64
+            switch (type) {
+                case 0x00: descr = "Ignore(0)"; break;
+                case 0x01: descr = "IMAGE_REL_AMD64_ADDR64(1)"; break;
+                case 0x03: descr = "IMAGE_REL_AMD64_ADDR32NB(3)"; break;
+                case 0x04: descr = "IMAGE_REL_AMD64_REL32(4)"; break;
+                case 0x06: descr = "IMAGE_REL_AMD64_REL32_2(6)"; break;
+                case 0x0a: descr = "IMAGE_REL_AMD64_SECTION(0x0a)"; break;
+                case 0x0b: descr = "IMAGE_REL_AMD64_SECREL(0x0b)"; break;
+                case 0x14: descr = "IMAGE_REL_I386_REL32(0x0b)"; break;
+                default: descr = "Unknown(" + type + ")"; break;
+            }
             if (symbol != null) {
                 String sym = symbol.getName();
-                out.printf("  reloc addr=0x%x type=%d sym=%s\n", virtualAddr, type, sym);
+                out.format("  reloc addr=0x%06x type=%-2d sym=%-10s %s\n", virtualAddr, type, sym, descr);
             } else {
-                out.printf("  reloc addr=0x%x type=%d *** unknown index=%d\n", virtualAddr, type, symbolIndex);
+                out.format("  reloc addr=0x%06x type=%-2d *** unknown index=%d\n", virtualAddr, type, symbolIndex);
             }
         }
     }
 
     CoffRelocationTable.Entry[] relocs;
 
-    CoffRelocationTable(ByteBuffer in, PESectionHeader section, PEHeader hdr) {
+    CoffRelocationTable(ByteBuffer in, PESection section, PEHeader hdr) {
         int offset = section.getRelocationPtr();
         int nLines = section.getRelocationCount();
         relocs = read(in, offset, nLines);

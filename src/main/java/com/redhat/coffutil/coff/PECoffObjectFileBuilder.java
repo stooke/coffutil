@@ -44,7 +44,7 @@ class PECoffObjectFileBuilder {
     private PECoffObjectFile parseCoff(ByteBuffer in, boolean isPE) {
 
         final PEHeader hdr;
-        final PESectionHeader[] sections;
+        final PESection[] sections;
         PESymbolTable symbols = null;
         Vector<CVSymbolSection> cvSymbols = new Vector<>(10);
         Vector<CVTypeSection> cvTypes = new Vector<>(10);
@@ -62,9 +62,9 @@ class PECoffObjectFileBuilder {
         }
 
         // parse sections
-        sections = new PESectionHeader[hdr.getNumsections()];
+        sections = new PESection[hdr.getNumsections()];
         for (int n = 0; n < hdr.getNumsections(); n++) {
-            PESectionHeader shdr = PESectionHeader.build(in, hdr);
+            PESection shdr = PESection.build(in, hdr);
             sections[n] = shdr;
         }
 
@@ -74,7 +74,7 @@ class PECoffObjectFileBuilder {
         }
 
         // look inside sections
-        for (PESectionHeader shdr : sections) {
+        for (PESection shdr : sections) {
             final String sectionName = shdr.getName();
             // load line numbers and relocations
             switch (sectionName) {

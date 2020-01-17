@@ -16,7 +16,7 @@ class CVSymbolSectionBuilder implements CVConstants {
     private HashMap<String, String> env = new HashMap<>(10);
     private String objname = null;
 
-    CVSymbolSection build(ByteBuffer in, PESectionHeader shdr) {
+    CVSymbolSection build(ByteBuffer in, PESection shdr) {
 
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();

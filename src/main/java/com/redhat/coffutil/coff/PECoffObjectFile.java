@@ -6,14 +6,14 @@ import java.util.Vector;
 class PECoffObjectFile {
 
     private final PEHeader hdr;
-    private final PESectionHeader[] sections;
+    private final PESection[] sections;
     private final PESymbolTable symbols;
     private final Vector<CVSymbolSection> cvSymbols;
     private final Vector<CVTypeSection> cvTypes;
     private final String directive;
 
     // hdr, sections, symbols, cvSymbols, directive);
-    PECoffObjectFile(PEHeader hdr, PESectionHeader[] sections, PESymbolTable symbols, Vector<CVSymbolSection> cvSymbols, Vector<CVTypeSection> cvTypes, String directive) {
+    PECoffObjectFile(PEHeader hdr, PESection[] sections, PESymbolTable symbols, Vector<CVSymbolSection> cvSymbols, Vector<CVTypeSection> cvTypes, String directive) {
         this.hdr = hdr;
         this.sections = sections;
         this.symbols = symbols;
@@ -24,10 +24,9 @@ class PECoffObjectFile {
 
     public void dump(PrintStream out) {
         hdr.dump(out);
-        for (final PESectionHeader shdr : sections) {
+        for (final PESection shdr : sections) {
             shdr.dump(out, this);
         }
-        //symbols.dump(out);
         for (final CVSymbolSection section : cvSymbols) {
             section.dump(out);
         }
@@ -37,11 +36,12 @@ class PECoffObjectFile {
         if (directive != null) {
             out.printf("Link directive: %s\n", directive);
         }
+        symbols.dump(out);
     }
 
     public void validate(PrintStream out) {
         hdr.validate();
-        for (final PESectionHeader shdr : sections) {
+        for (final PESection shdr : sections) {
             shdr.validate();
         }
         //symbols.validate();
@@ -52,7 +52,7 @@ class PECoffObjectFile {
         return hdr;
     }
 
-    public PESectionHeader[] getSections() {
+    public PESection[] getSections() {
         return sections;
     }
 

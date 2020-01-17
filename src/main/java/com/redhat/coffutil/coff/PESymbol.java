@@ -3,6 +3,7 @@ package com.redhat.coffutil.coff;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 class PESymbol {
 
@@ -13,6 +14,7 @@ class PESymbol {
     private int         type;           /* Symbol Type */
     private int         storageclass;   /* Storage Class */
     int         numaux;         /* Auxiliary Count */
+    private int         index;          // Symbol index
     private int complexType;
     private int baseType;
 
@@ -30,11 +32,13 @@ class PESymbol {
     private static final int IMAGE_SYM_CLASS_FILE = 103;
     private static final int IMAGE_SYM_CLASS_SECTION = 104;
 
+    private ByteBuffer auxData;
+    private PEHeader fileHeader;
 
-    PESymbol[] aux;
-
-    PESymbol(ByteBuffer in, PEHeader hdr) {
+    PESymbol(ByteBuffer in, PEHeader hdr, int index) {
         name = PEStringTable.resolve(in, hdr);
+        this.fileHeader = hdr;
+        this.index = index;
         value = in.getInt();
         section = in.getShort();
         type = in.getShort();
@@ -44,65 +48,82 @@ class PESymbol {
         in.get(nn);
         storageclass = nn[0];
         numaux = nn[1];
+        int newpos = in.position() + numaux * SYM_SIZE;
         if (numaux > 0) {
-            aux = new PESymbol[numaux];
+            auxData = in.slice().asReadOnlyBuffer();
+            auxData.order(ByteOrder.LITTLE_ENDIAN);
 
             // there is more data to skip
             // 18 bytes is the size of a symbol table entry
-            int newpos = in.position() + numaux * SYM_SIZE;
-            String info = "";
-            switch (storageclass) {
-                case IMAGE_SYM_CLASS_EXTERNAL: // might be a function def
-                    if (complexType == IMAGE_SYM_DTYPE_FUNCTION && section > 9) {
-                        // is a function def
-                        int bftag = in.getInt();
-                        int size = in.getInt();
-                        int lineNumberPtr = in.getInt();
-                        int nextFuncPtr = in.getInt();
-                        //int padding = in.getShort();
-                        info = "IMAGE_SYM_CLASS_EXTERNAL: IMAGE_SYM_DTYPE_FUNCTION bftag=" + bftag + " size=" + size + " lineptr=" + lineNumberPtr + " nxdfn=" + nextFuncPtr;
-                    } else {
-                        info = "IMAGE_SYM_CLASS_EXTERNAL ??";
-                    }
-                    break;
-                case IMAGE_SYM_CLASS_FUNCTION: // .bf and /ef
-                    if (name.equals(".bf")) {
-                        int padding1 = in.getInt();
-                        int lineNumber = in.getShort();
-                        int padding2 = in.getShort();
-                        int padding3 = in.getInt();
-                        int nextBfPtr = in.getInt();
-                        //int padding4 = in.getShort();
-                        info = "IMAGE_SYM_CLASS_FUNCTION line=" + lineNumber + " next .bf=" + nextBfPtr;
-                    } else {
-                        info = "IMAGE_SYM_CLASS_FUNCTION ??";
-                    }
-                    break;
-                case IMAGE_SYM_CLASS_FILE:  // is this a filedef?
-                    String fn = PEStringTable.resolve(in, hdr, 18);
-                    info = "IMAGE_SYM_CLASS_FILE fn=" + fn;
-                    break;
-                case IMAGE_SYM_CLASS_SECTION:
-                    int length = in.getInt();
-                    int numReloc = in.getShort();
-                    int numLine = in.getShort();
-                    int checkSum = in.getInt();
-                    int sectionNumber = in.getShort();
-                    byte[] b4 = new byte[4];
-                    in.get(b4);
-                    int selection = b4[0];
-                    info = "IMAGE_SYM_CLASS_SECTION len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber;
-                    break;
-                case IMAGE_SYM_CLASS_STATIC:
-                    info = "IMAGE_SYM_CLASS_STATIC";
-                    break;
-                default:
-                    info = "sym storageClass=" + storageclass;
-            }
-            //System.out.printf("read sym %s\n", info);
-            // skip to end of auc
-            in.position(newpos);
         }
+        // skip to end of aux
+        in.position(newpos);
+    }
+
+    String parseAux() {
+        if (numaux == 0 || auxData == null) {
+            return "";
+        }
+        auxData.position(0);
+        final String info;
+        switch (storageclass) {
+            case IMAGE_SYM_CLASS_EXTERNAL: // might be a function def
+                if (complexType == IMAGE_SYM_DTYPE_FUNCTION && section > 9) {
+                    // is a function def
+                    int bftag = auxData.getInt();
+                    int size = auxData.getInt();
+                    int lineNumberPtr = auxData.getInt();
+                    int nextFuncPtr = auxData.getInt();
+                    //int padding = in.getShort();
+                    info = "IMAGE_SYM_CLASS_EXTERNAL: IMAGE_SYM_DTYPE_FUNCTION bftag=" + bftag + " size=" + size + " lineptr=" + lineNumberPtr + " nxdfn=" + nextFuncPtr;
+                } else {
+                    info = "IMAGE_SYM_CLASS_EXTERNAL ??";
+                }
+                break;
+            case IMAGE_SYM_CLASS_FUNCTION: // .bf and /ef
+                if (name.equals(".bf")) {
+                    int padding1 = auxData.getInt();
+                    int lineNumber = auxData.getShort();
+                    int padding2 = auxData.getShort();
+                    int padding3 = auxData.getInt();
+                    int nextBfPtr = auxData.getInt();
+                    //int padding4 = in.getShort();
+                    info = "IMAGE_SYM_CLASS_FUNCTION line=" + lineNumber + " next .bf=" + nextBfPtr;
+                } else {
+                    info = "IMAGE_SYM_CLASS_FUNCTION ??";
+                }
+                break;
+            case IMAGE_SYM_CLASS_FILE:  // is this a filedef?
+                String fn = PEStringTable.resolve(auxData, fileHeader, 18);
+                info = "IMAGE_SYM_CLASS_FILE fn=" + fn;
+                break;
+            case IMAGE_SYM_CLASS_SECTION: {
+                int length = auxData.getInt();
+                int numReloc = auxData.getShort();
+                int numLine = auxData.getShort();
+                int checkSum = auxData.getInt();
+                int sectionNumber = auxData.getShort();
+                byte[] b4 = new byte[4];
+                auxData.get(b4);
+                int selection = b4[0];
+                info = "IMAGE_SYM_CLASS_SECTION len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber;
+                break;
+            }
+            case IMAGE_SYM_CLASS_STATIC: {
+                int length = auxData.getInt();
+                int numReloc = auxData.getShort();
+                int numLine = auxData.getShort();
+                int checkSum = auxData.getInt();
+                int sectionNumber = auxData.getShort();
+                int selection = auxData.get();
+                info = "IMAGE_SYM_CLASS_STATIC len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber + " check=" + checkSum;
+                break;
+            }
+            default:
+                info = "sym storageClass=" + storageclass;
+        }
+        //System.out.printf("read sym %s\n", info);
+        return info;
     }
 
     void dump(PrintStream out) {
@@ -118,7 +139,13 @@ class PESymbol {
                 sectionStr = "(debug)";
             }
         }
-        //out.printf("  symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d\n", name, sectionStr, value, complexType, baseType, storageclass, numaux);
+        String auxInfo = parseAux();
+        out.format("  0x%04x symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d %s\n", index, name, sectionStr, value, complexType, baseType, storageclass, numaux, auxInfo);
+        /**if (auxData != null) {
+            out.format("   aux=");
+            Util.dumpHex(out, auxData, 0, numaux * SYM_SIZE);
+            out.println();
+        }**/
     }
 
     /**

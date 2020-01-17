@@ -16,7 +16,7 @@ class PESymbolTable {
         in.position(hdr.getSymPtr());
         PESymbol[] symbols = new PESymbol[hdr.getNumSymbols()];
         for (int i = 0; i< hdr.getNumSymbols(); i++) {
-            symbols[i] = new PESymbol(in, hdr);
+            symbols[i] = new PESymbol(in, hdr, i);
             // don't save the aux symbol headers separately
             i += symbols[i].numaux;
         }
