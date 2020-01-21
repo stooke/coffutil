@@ -13,7 +13,7 @@ class PECoffObjectFileBuilder {
     PrintStream out = System.out;
 
     PECoffObjectFile build(String fn) {
-        ByteBuffer in = readFile(fn);
+        ByteBuffer in = Util.readFile(fn);
         return build(in);
     }
 
@@ -71,7 +71,7 @@ class PECoffObjectFileBuilder {
         // parse symbols
         if (hdr.getNumSymbols() > 0) {
             symbols = PESymbolTable.build(in, hdr);
-        }
+        } // if there's no symbol table at all, keep symbols null, instead of array[0]
 
         // look inside sections
         for (PESection shdr : sections) {
@@ -91,24 +91,6 @@ class PECoffObjectFileBuilder {
         }
 
         return new PECoffObjectFile(hdr, sections, symbols, cvSymbols, cvTypes, directive);
-    }
-
-    static ByteBuffer readFile(final String fn) {
-        ByteBuffer buffer = null;
-        try {
-            RandomAccessFile coffFile = new RandomAccessFile(fn,"r");
-            FileChannel channel = coffFile.getChannel();
-            long fsize = channel.size();
-            buffer = ByteBuffer.allocate((int) fsize);
-            channel.read(buffer);
-            channel.close();
-            coffFile.close();
-        }
-        catch (IOException e)
-        {
-            fatal(e.getLocalizedMessage());
-        }
-        return buffer;
     }
 
     private static void log(final String msg) {

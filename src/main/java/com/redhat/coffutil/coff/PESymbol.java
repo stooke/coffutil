@@ -11,17 +11,17 @@ class PESymbol {
     private String      name;           /* Symbol Name */
     private long        value;          /* Value of Symbol */
     private int         section;        /* Section Number */
-    private int         type;           /* Symbol Type */
+    //private int         type;           /* Symbol Type */
     private int         storageclass;   /* Storage Class */
     int         numaux;         /* Auxiliary Count */
-    private int         index;          // Symbol index
     private int complexType;
     private int baseType;
+    private int index;          // Symbol index (calculated)
 
-    private static final int IMAGE_SYM_DTYPE_NULL = 0;
-    private static final int IMAGE_SYM_DTYPE_POINTER = 1;
+   // private static final int IMAGE_SYM_DTYPE_NULL = 0;
+   // private static final int IMAGE_SYM_DTYPE_POINTER = 1;
     private static final int IMAGE_SYM_DTYPE_FUNCTION = 2;
-    private static final int IMAGE_SYM_DTYPE_ARRAY = 3;
+  //  private static final int IMAGE_SYM_DTYPE_ARRAY = 3;
 
     private static final int IMAGE_SYM_CLASS_NULL = 0;
     private static final int IMAGE_SYM_CLASS_AUTOMATIC = 1;
@@ -36,12 +36,16 @@ class PESymbol {
     private PEHeader fileHeader;
 
     PESymbol(ByteBuffer in, PEHeader hdr, int index) {
+        build(in, hdr, index);
+    }
+
+    private void build(ByteBuffer in, PEHeader hdr, int index) {
         name = PEStringTable.resolve(in, hdr);
         this.fileHeader = hdr;
         this.index = index;
         value = in.getInt();
         section = in.getShort();
-        type = in.getShort();
+        int type = in.getShort();
         complexType = type >> 8;
         baseType = type & 0xff;
         byte[] nn = new byte[2];
@@ -60,7 +64,23 @@ class PESymbol {
         in.position(newpos);
     }
 
-    String parseAux() {
+    private String storageClassToString(int sclass) {
+        final String str;
+        switch (sclass) {
+            case IMAGE_SYM_CLASS_NULL:          str = "NULL"; break;
+            case IMAGE_SYM_CLASS_AUTOMATIC:     str = "auto"; break;
+            case IMAGE_SYM_CLASS_EXTERNAL:      str = "external"; break;
+            case IMAGE_SYM_CLASS_STATIC:        str = "static"; break;
+            case IMAGE_SYM_CLASS_EXTERNAL_DEF:  str = "extdef"; break;
+            case IMAGE_SYM_CLASS_FUNCTION:      str = "function"; break;
+            case IMAGE_SYM_CLASS_FILE:          str = "file"; break;
+            case IMAGE_SYM_CLASS_SECTION:       str = "section"; break;
+            default: str = "";
+        }
+        return str + "(" + sclass + ")";
+    }
+
+    private String parseAux() {
         if (numaux == 0 || auxData == null) {
             return "";
         }
@@ -77,36 +97,36 @@ class PESymbol {
                     //int padding = in.getShort();
                     info = "IMAGE_SYM_CLASS_EXTERNAL: IMAGE_SYM_DTYPE_FUNCTION bftag=" + bftag + " size=" + size + " lineptr=" + lineNumberPtr + " nxdfn=" + nextFuncPtr;
                 } else {
-                    info = "IMAGE_SYM_CLASS_EXTERNAL ??";
+                    info = "??";
                 }
                 break;
             case IMAGE_SYM_CLASS_FUNCTION: // .bf and /ef
                 if (name.equals(".bf")) {
-                    int padding1 = auxData.getInt();
+                    /*int padding1 =*/ auxData.getInt();
                     int lineNumber = auxData.getShort();
-                    int padding2 = auxData.getShort();
-                    int padding3 = auxData.getInt();
+                    /*int padding2 =*/ auxData.getShort();
+                    /*int padding3 =*/ auxData.getInt();
                     int nextBfPtr = auxData.getInt();
                     //int padding4 = in.getShort();
-                    info = "IMAGE_SYM_CLASS_FUNCTION line=" + lineNumber + " next .bf=" + nextBfPtr;
+                    info = "line=" + lineNumber + " next .bf=" + nextBfPtr;
                 } else {
-                    info = "IMAGE_SYM_CLASS_FUNCTION ??";
+                    info = "??";
                 }
                 break;
             case IMAGE_SYM_CLASS_FILE:  // is this a filedef?
                 String fn = PEStringTable.resolve(auxData, fileHeader, 18);
-                info = "IMAGE_SYM_CLASS_FILE fn=" + fn;
+                info = "fn=" + fn;
                 break;
             case IMAGE_SYM_CLASS_SECTION: {
                 int length = auxData.getInt();
                 int numReloc = auxData.getShort();
                 int numLine = auxData.getShort();
-                int checkSum = auxData.getInt();
+                /*int checkSum =*/ auxData.getInt();
                 int sectionNumber = auxData.getShort();
                 byte[] b4 = new byte[4];
                 auxData.get(b4);
-                int selection = b4[0];
-                info = "IMAGE_SYM_CLASS_SECTION len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber;
+                /*int selection = b4[0];*/
+                info = "len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber;
                 break;
             }
             case IMAGE_SYM_CLASS_STATIC: {
@@ -115,12 +135,12 @@ class PESymbol {
                 int numLine = auxData.getShort();
                 int checkSum = auxData.getInt();
                 int sectionNumber = auxData.getShort();
-                int selection = auxData.get();
-                info = "IMAGE_SYM_CLASS_STATIC len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber + " check=" + checkSum;
+                /*int selection =*/ auxData.get();
+                info = "len=" + length + " numReloc=" + numReloc + " numLine=" + numLine + " sectionNumber=" + sectionNumber + " check=" + checkSum;
                 break;
             }
             default:
-                info = "sym storageClass=" + storageclass;
+                info = "";
         }
         //System.out.printf("read sym %s\n", info);
         return info;
@@ -140,12 +160,12 @@ class PESymbol {
             }
         }
         String auxInfo = parseAux();
-        out.format("  0x%04x symbol %15s %10s val=0x%08x ctype=%d btype=%d class=%d numaux=%d %s\n", index, name, sectionStr, value, complexType, baseType, storageclass, numaux, auxInfo);
-        /**if (auxData != null) {
+        out.format("  0x%04x symbol %15s %10s val=0x%08x ctype=%d btype=%d sclass=%s numaux=%d %s\n", index, name, sectionStr, value, complexType, baseType, storageClassToString(storageclass), numaux, auxInfo);
+        /*if (auxData != null) {
             out.format("   aux=");
             Util.dumpHex(out, auxData, 0, numaux * SYM_SIZE);
             out.println();
-        }**/
+        }*/
     }
 
     /**
@@ -156,10 +176,10 @@ class PESymbol {
      char		n_sclass;	// Storage Class
      char		n_numaux;	// Auxiliary Count
      **/
-    public String getName() {
+    String getName() {
         return name;
     }
-
+/*
     public long getValue() {
         return value;
     }
@@ -183,4 +203,5 @@ class PESymbol {
     public int getBaseType() {
         return baseType;
     }
+    */
 }

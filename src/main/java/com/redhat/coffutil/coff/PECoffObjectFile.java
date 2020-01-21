@@ -36,7 +36,9 @@ class PECoffObjectFile {
         if (directive != null) {
             out.printf("Link directive: %s\n", directive);
         }
-        symbols.dump(out);
+        if (symbols != null) {
+            symbols.dump(out);
+        }
     }
 
     public void validate(PrintStream out) {
