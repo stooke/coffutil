@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+
 }
 
 group 'com.redhat'
@@ -9,6 +11,28 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = 'com.redhat.coffutil.Main'
+
+    // arguments to pass to the application
+    //args = ['./tmp/stuff/listdir.obj']
+    //args = ['./helloworld.obj']
+    //args = ['-dump', 'c:/tmp/graal-8/graalvm-demos/native-list-dir/listdir.exe']
+    args = ['-dump', 'helloworld.pdb']
+    workingDir = 'c:/tmp/graal-8'
+}
+
+application {
+    mainClassName = 'com.redhat.coffutil.Main'
+    //applicationDefaultJvmArgs = ['-Dgreeting.language=en']
+    //args = ['./tmp/stuff/listdir.obj']
+    //args = ['./helloworld.obj']
+    //args = ['./graalvm-demos/native-list-dir/listdir.exe']
+    executableDir = '/tmp/graal-8'
 }
 
 dependencies {
