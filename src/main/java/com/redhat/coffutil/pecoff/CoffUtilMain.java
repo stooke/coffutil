@@ -1,4 +1,4 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.pecoff;
 
 import com.redhat.coffutil.cv.PECoffObjectFile;
 import com.redhat.coffutil.cv.PECoffObjectFileBuilder;

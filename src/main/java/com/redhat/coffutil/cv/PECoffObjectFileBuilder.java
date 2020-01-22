@@ -1,11 +1,11 @@
 package com.redhat.coffutil.cv;
 
-import com.redhat.coffutil.coff.CoffObjectFileBuilder;
-import com.redhat.coffutil.coff.PEHeader;
-import com.redhat.coffutil.coff.PESection;
-import com.redhat.coffutil.coff.PEStringTable;
-import com.redhat.coffutil.coff.PESymbolTable;
-import com.redhat.coffutil.coff.Util;
+import com.redhat.coffutil.pecoff.CoffObjectFileBuilder;
+import com.redhat.coffutil.pecoff.PEHeader;
+import com.redhat.coffutil.pecoff.PESection;
+import com.redhat.coffutil.pecoff.PEStringTable;
+import com.redhat.coffutil.pecoff.PESymbolTable;
+import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;

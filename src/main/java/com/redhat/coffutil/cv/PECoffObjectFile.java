@@ -1,9 +1,9 @@
 package com.redhat.coffutil.cv;
 
-import com.redhat.coffutil.coff.CoffObjectFile;
-import com.redhat.coffutil.coff.PEHeader;
-import com.redhat.coffutil.coff.PESection;
-import com.redhat.coffutil.coff.PESymbolTable;
+import com.redhat.coffutil.pecoff.CoffObjectFile;
+import com.redhat.coffutil.pecoff.PEHeader;
+import com.redhat.coffutil.pecoff.PESection;
+import com.redhat.coffutil.pecoff.PESymbolTable;
 
 import java.io.PrintStream;
 import java.util.Vector;

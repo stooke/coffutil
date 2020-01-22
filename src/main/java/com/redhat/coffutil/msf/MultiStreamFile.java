@@ -1,6 +1,6 @@
 package com.redhat.coffutil.msf;
 
-import com.redhat.coffutil.coff.Util;
+import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;

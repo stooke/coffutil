@@ -1,6 +1,6 @@
 package com.redhat.coffutil;
 
-import com.redhat.coffutil.coff.CoffUtilMain;
+import com.redhat.coffutil.pecoff.CoffUtilMain;
 
 public class Main {
     public static void main(String[] args) {

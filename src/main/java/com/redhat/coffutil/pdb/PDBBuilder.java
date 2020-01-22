@@ -1,6 +1,6 @@
 package com.redhat.coffutil.pdb;
 
-import com.redhat.coffutil.coff.Util;
+import com.redhat.coffutil.pecoff.Util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
