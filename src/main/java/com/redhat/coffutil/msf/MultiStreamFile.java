@@ -1,16 +1,20 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.msf;
+
+import com.redhat.coffutil.coff.Util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-class MultiStreamFile {
+public class MultiStreamFile {
 
     private MSFSuperBlock superblock;
     private RootStream rootStream;
-    StreamDef[] streams;
+    private StreamDef[] streams;
+    private ByteBuffer fileBuffer;
 
-    void build(ByteBuffer in) {
+    public void build(ByteBuffer in) {
+        this.fileBuffer = in;
         superblock = new MSFSuperBlock();
         superblock.build(in, 0);
         FreeBlockMap fbm1 = new FreeBlockMap();
@@ -21,9 +25,18 @@ class MultiStreamFile {
         rootStream.build(in);
     }
 
-    void dump(PrintStream out) {
+    public void dump(PrintStream out) {
         System.out.println("superblock: " + superblock);
         rootStream.dump(System.out);
+        for (int i=0; i<Math.min(20, streams.length); i++) {
+            out.format("stream %d: ", i);
+            StreamDef stream = streams[i];
+            stream.dumpData(out);
+        }
+    }
+
+    public ByteBuffer getStream(int i) {
+        return streams[i].get(fileBuffer);
     }
 
     static class MSFSuperBlock {
@@ -94,7 +107,7 @@ class MultiStreamFile {
 
         // read pagelist
 
-        ByteBuffer get(ByteBuffer in) {
+        protected ByteBuffer get(ByteBuffer in) {
             if (bytes == null) {
                 int bs = superblock.blockSize;
                 byte[] inbytes = in.array(); // this fails for a readonly buffer
@@ -115,14 +128,13 @@ class MultiStreamFile {
             return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
         }
 
-        ByteBuffer get() {
-            assert bytes != null;
-            return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+        public ByteBuffer get() {
+            return get(fileBuffer);
         }
 
         @Override
         public String toString() {
-            return String.format("msfstream(streamsize=%d npages=%d)", streamsize, pageList.length);
+            return String.format("msfstream(streamsize=%d npages=%d start=0x%x)", streamsize, pageList.length, pageList.length > 0 ? pageList[0] * superblock.blockSize : 0);
         }
 
         void dump(PrintStream out) {

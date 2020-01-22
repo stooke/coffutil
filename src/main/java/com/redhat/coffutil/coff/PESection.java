@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-class PESection {
+public class PESection {
 
     private static final int COFF_SECTION_HEADER_SIZE = 40;
 
@@ -81,7 +81,7 @@ class PESection {
     private PESection() {
     }
 
-    static PESection build(ByteBuffer in, PEHeader hdr) {
+    public static PESection build(ByteBuffer in, PEHeader hdr) {
         PESection section = new PESection();
         PESectionHeader sectionHeader = PESectionHeader.build(in, hdr);
         section.sectionHeader = sectionHeader;
@@ -105,7 +105,7 @@ class PESection {
         return null;
     }
 
-    void dump(PrintStream out, PECoffObjectFile objectFile) {
+    void dump(PrintStream out, CoffObjectFile objectFile) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.print("section: " + bName + " flags=[" + translateCharacteristics(getCharacteristics()) + "]");
         if (getVirtualSize() != 0) {
@@ -144,7 +144,7 @@ class PESection {
      uint32_t characteristics;
      };
      ***/
-    String getName() {
+    public String getName() {
         return sectionHeader.name;
     }
 
@@ -156,11 +156,11 @@ class PESection {
         return sectionHeader.virtualAddress;
     }
 
-    int getRawDataSize() {
+    public int getRawDataSize() {
         return sectionHeader.rawDataSize;
     }
 
-    int getRawDataPtr() {
+    public int getRawDataPtr() {
         return sectionHeader.rawDataPtr;
     }
 

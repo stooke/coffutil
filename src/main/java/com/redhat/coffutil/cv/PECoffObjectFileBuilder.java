@@ -1,18 +1,22 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.cv;
 
-import java.io.IOException;
+import com.redhat.coffutil.coff.CoffObjectFileBuilder;
+import com.redhat.coffutil.coff.PEHeader;
+import com.redhat.coffutil.coff.PESection;
+import com.redhat.coffutil.coff.PEStringTable;
+import com.redhat.coffutil.coff.PESymbolTable;
+import com.redhat.coffutil.coff.Util;
+
 import java.io.PrintStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
 import java.util.Vector;
 
-class PECoffObjectFileBuilder {
+public class PECoffObjectFileBuilder extends CoffObjectFileBuilder {
 
     PrintStream out = System.out;
 
-    PECoffObjectFile build(String fn) {
+    public PECoffObjectFile build(String fn) {
         ByteBuffer in = Util.readFile(fn);
         return build(in);
     }

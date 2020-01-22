@@ -1,4 +1,4 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.cv;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;

@@ -1,11 +1,13 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.pdb;
+
+import com.redhat.coffutil.coff.Util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-class PDBBuilder {
+public class PDBBuilder {
 
-    PDBFile build(String fn) {
+    public PDBFile build(String fn) {
         ByteBuffer in = Util.readFile(fn);
         in.order(ByteOrder.LITTLE_ENDIAN);
         PDBFile pdbfile = new PDBFile();

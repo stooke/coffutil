@@ -1,10 +1,13 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.cv;
+
+import com.redhat.coffutil.coff.PESection;
+import com.redhat.coffutil.coff.PEStringTable;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 
-class CVTypeSectionBuilder implements CVConstants {
+public class CVTypeSectionBuilder implements CVConstants {
 
     private PrintStream out = System.out;
     private static final boolean debug = true;

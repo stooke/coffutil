@@ -1,5 +1,10 @@
 package com.redhat.coffutil.coff;
 
+import com.redhat.coffutil.cv.PECoffObjectFile;
+import com.redhat.coffutil.cv.PECoffObjectFileBuilder;
+import com.redhat.coffutil.pdb.PDBBuilder;
+import com.redhat.coffutil.pdb.PDBFile;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1,4 +1,7 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.cv;
+
+import com.redhat.coffutil.coff.PESection;
+import com.redhat.coffutil.coff.PEStringTable;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;

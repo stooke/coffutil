@@ -6,21 +6,21 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-abstract class Util {
+public abstract class Util {
 
-    static void dumpHex(PrintStream out, ByteBuffer in, int pos, int len) {
+    public static void dumpHex(PrintStream out, ByteBuffer in, int pos, int len) {
         for (; len > 0; len--) {
             out.format("%02x ", in.get(pos++));
         }
     }
 
-    static void dumpHex(PrintStream out, byte[] in) {
+    public static void dumpHex(PrintStream out, byte[] in) {
         for (int i = 0; i < in.length; i++) {
             out.format("%02x ", in[i]);
         }
     }
 
-    static ByteBuffer readFile(final String fn) {
+    public static ByteBuffer readFile(final String fn) {
         ByteBuffer buffer = null;
         try {
             RandomAccessFile coffFile = new RandomAccessFile(fn,"r");

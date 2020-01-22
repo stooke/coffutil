@@ -2,7 +2,7 @@ package com.redhat.coffutil.coff;
 
 import java.nio.ByteBuffer;
 
-class PEStringTable {
+public class PEStringTable {
 
     static final int SHORT_LENGTH = 8;
 
@@ -42,7 +42,7 @@ class PEStringTable {
         }
     }
 
-    static String getString0(ByteBuffer in, int maxlen) {
+    public static String getString0(ByteBuffer in, int maxlen) {
         byte[] buf = new byte[maxlen];
         int len = 0;
         while (maxlen-- > 0) {

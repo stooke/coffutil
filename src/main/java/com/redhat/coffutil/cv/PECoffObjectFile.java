@@ -1,32 +1,29 @@
-package com.redhat.coffutil.coff;
+package com.redhat.coffutil.cv;
+
+import com.redhat.coffutil.coff.CoffObjectFile;
+import com.redhat.coffutil.coff.PEHeader;
+import com.redhat.coffutil.coff.PESection;
+import com.redhat.coffutil.coff.PESymbolTable;
 
 import java.io.PrintStream;
 import java.util.Vector;
 
-class PECoffObjectFile {
+public class PECoffObjectFile extends CoffObjectFile {
 
-    private final PEHeader hdr;
-    private final PESection[] sections;
-    private final PESymbolTable symbols;
     private final Vector<CVSymbolSection> cvSymbols;
     private final Vector<CVTypeSection> cvTypes;
     private final String directive;
 
     // hdr, sections, symbols, cvSymbols, directive);
     PECoffObjectFile(PEHeader hdr, PESection[] sections, PESymbolTable symbols, Vector<CVSymbolSection> cvSymbols, Vector<CVTypeSection> cvTypes, String directive) {
-        this.hdr = hdr;
-        this.sections = sections;
-        this.symbols = symbols;
+        super(hdr, sections, symbols);
         this.cvSymbols = cvSymbols;
         this.cvTypes = cvTypes;
         this.directive = directive;
     }
 
     public void dump(PrintStream out) {
-        hdr.dump(out);
-        for (final PESection shdr : sections) {
-            shdr.dump(out, this);
-        }
+        super.dump(out);
         for (final CVSymbolSection section : cvSymbols) {
             section.dump(out);
         }
@@ -36,30 +33,11 @@ class PECoffObjectFile {
         if (directive != null) {
             out.printf("Link directive: %s\n", directive);
         }
-        if (symbols != null) {
-            symbols.dump(out);
-        }
     }
 
     public void validate(PrintStream out) {
-        hdr.validate();
-        for (final PESection shdr : sections) {
-            shdr.validate();
-        }
-        //symbols.validate();
+        super.validate(out);
         //cvSymbols.validate();
-    }
-
-    public PEHeader getHdr() {
-        return hdr;
-    }
-
-    public PESection[] getSections() {
-        return sections;
-    }
-
-    public PESymbolTable getSymbols() {
-        return symbols;
     }
 
     public Vector<CVSymbolSection> getCvSymbols() { return cvSymbols; }

@@ -16,7 +16,7 @@ class CoffRelocationTable {
             this.type = type;
         }
 
-        void dump(PrintStream out, PECoffObjectFile ofile) {
+        void dump(PrintStream out, CoffObjectFile ofile) {
             PESymbol symbol = ofile.getSymbols().get(symbolIndex);
             final String descr;
             // assume x64
@@ -64,7 +64,7 @@ class CoffRelocationTable {
         return ln;
     }
 
-    void dump(PrintStream out, PECoffObjectFile ofile) {
+    void dump(PrintStream out, CoffObjectFile ofile) {
         if (relocs != null) {
             for (CoffRelocationTable.Entry e : relocs) {
                 e.dump(out, ofile);

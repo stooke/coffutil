@@ -4,7 +4,7 @@ package com.redhat.coffutil.coff;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-class PESymbolTable {
+public class PESymbolTable {
 
     private final PESymbol[] symbols;
 
@@ -12,7 +12,7 @@ class PESymbolTable {
         this.symbols = symbols;
     }
 
-    static PESymbolTable build(ByteBuffer in, PEHeader hdr) {
+    public static PESymbolTable build(ByteBuffer in, PEHeader hdr) {
         in.position(hdr.getSymPtr());
         PESymbol[] symbols = new PESymbol[hdr.getNumSymbols()];
         for (int i = 0; i< hdr.getNumSymbols(); i++) {

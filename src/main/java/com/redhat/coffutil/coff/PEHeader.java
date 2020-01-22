@@ -3,7 +3,7 @@ package com.redhat.coffutil.coff;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-class PEHeader {
+public class PEHeader {
 
     private int pemagic;
     private int pemachine;
@@ -17,7 +17,7 @@ class PEHeader {
     private PEHeader() {
     }
 
-    static PEHeader build(ByteBuffer in) {
+    public static PEHeader build(ByteBuffer in) {
         PEHeader hdr = new PEHeader();
         hdr._build(in);
         return hdr;
