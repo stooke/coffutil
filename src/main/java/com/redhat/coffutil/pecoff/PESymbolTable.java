@@ -1,6 +1,5 @@
 package com.redhat.coffutil.pecoff;
 
-
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
@@ -28,9 +27,11 @@ public class PESymbolTable {
     }
 
     void dump(PrintStream out) {
+        int limit = 100;
         for (PESymbol symbol : symbols) {
             if (symbol != null) {
                 symbol.dump(out);
+                if (limit-- < 0) break;
             }
         }
     }

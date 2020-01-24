@@ -66,8 +66,10 @@ class CoffRelocationTable {
 
     void dump(PrintStream out, CoffObjectFile ofile) {
         if (relocs != null) {
+            int limit = 50;
             for (CoffRelocationTable.Entry e : relocs) {
                 e.dump(out, ofile);
+                if (limit-- < 0) break;
             }
         }
     }

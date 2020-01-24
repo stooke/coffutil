@@ -20,20 +20,15 @@ public abstract class Util {
         }
     }
 
-    public static ByteBuffer readFile(final String fn) {
+    public static ByteBuffer readFile(final String fn) throws IOException {
         ByteBuffer buffer = null;
-        try {
-            RandomAccessFile coffFile = new RandomAccessFile(fn,"r");
-            FileChannel channel = coffFile.getChannel();
-            long fsize = channel.size();
-            buffer = ByteBuffer.allocate((int) fsize);
-            channel.read(buffer);
-            channel.close();
-            coffFile.close();
-        }
-        catch (IOException e) {
-            System.err.println(e.getLocalizedMessage());
-        }
+        RandomAccessFile coffFile = new RandomAccessFile(fn,"r");
+        FileChannel channel = coffFile.getChannel();
+        long fsize = channel.size();
+        buffer = ByteBuffer.allocate((int) fsize);
+        channel.read(buffer);
+        channel.close();
+        coffFile.close();
         return buffer;
     }
 }

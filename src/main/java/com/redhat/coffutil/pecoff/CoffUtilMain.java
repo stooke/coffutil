@@ -15,7 +15,7 @@ public class CoffUtilMain {
     public CoffUtilMain() {
     }
 
-    public void run (String[] args) {
+    public void run (String[] args) throws IOException {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
         for (final String fn : ctx.inputFiles) {
             ctx.currentInputFilename = fn;

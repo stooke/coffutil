@@ -51,13 +51,13 @@ class CVSymbolSection {
                 out.printf("%02x", ((int) (b) & 0xff));
             }
             out.println("] " + fileName);
-            /**
+            /*
             try {
                 String md5 = calculateMD5Sum(filename);
                 out.println("calculated=" + md5);
             } catch (Exception e) {
                 e.printStackTrace();
-            }**/
+            }*/
         }
 
         public String calculateMD5Sum(String fn) throws NoSuchAlgorithmException, IOException
@@ -65,8 +65,7 @@ class CVSymbolSection {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(Files.readAllBytes(Paths.get(fn)));
             byte[] digest = md.digest();
-            String md5sum = DatatypeConverter.printHexBinary(digest).toUpperCase();
-            return md5sum;
+            return DatatypeConverter.printHexBinary(digest).toUpperCase();
         }
     }
 
@@ -115,7 +114,7 @@ class CVSymbolSection {
             this.string = string;
         }
 
-        public long getOffset() {
+        long getOffset() {
             return offset;
         }
 

@@ -1,5 +1,6 @@
 package com.redhat.coffutil.pecoff;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -8,7 +9,7 @@ public class CoffObjectFileBuilder {
 
     PrintStream out = System.out;
 
-    CoffObjectFile build(String fn) {
+    CoffObjectFile build(String fn) throws IOException {
         ByteBuffer in = Util.readFile(fn);
         return build(in);
     }

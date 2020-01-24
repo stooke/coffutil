@@ -4,9 +4,7 @@ import com.redhat.coffutil.msf.MultiStreamFile;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.nio.ByteBuffer;
-import java.text.DateFormat;
 import java.time.Instant;
-import java.util.Date;
 
 public class PDBFile extends MultiStreamFile {
 

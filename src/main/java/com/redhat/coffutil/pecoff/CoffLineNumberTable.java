@@ -3,18 +3,7 @@ package com.redhat.coffutil.pecoff;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-public class CoffLineNumberTable {
-
-    /**
-    {
-        union
-        {
-            long		l_symndx;	/* Symbol Index *
-            long		l_paddr;	/* Physical Address *
-        } l_addr;
-        unsigned short		l_lnno;		/* Line Number *
-    }
-    ***/
+class CoffLineNumberTable {
 
     static class Entry {
         private int lineNumber;
@@ -42,7 +31,7 @@ public class CoffLineNumberTable {
         }
     }
 
-    Entry[] lineNumbers;
+    private Entry[] lineNumbers;
 
     CoffLineNumberTable(ByteBuffer in, PESection section, PEHeader hdr) {
         int offset = section.getLineNumberPtr();
@@ -67,8 +56,10 @@ public class CoffLineNumberTable {
 
     void dump(PrintStream out) {
         if (lineNumbers != null) {
+            int limit = 50;
             for (Entry e : lineNumbers) {
                 e.dump(out);
+                if (limit-- < 0) break;
             }
         }
     }

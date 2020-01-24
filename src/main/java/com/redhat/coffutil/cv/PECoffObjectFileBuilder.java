@@ -7,16 +7,14 @@ import com.redhat.coffutil.pecoff.PEStringTable;
 import com.redhat.coffutil.pecoff.PESymbolTable;
 import com.redhat.coffutil.pecoff.Util;
 
-import java.io.PrintStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Vector;
 
 public class PECoffObjectFileBuilder extends CoffObjectFileBuilder {
 
-    PrintStream out = System.out;
-
-    public PECoffObjectFile build(String fn) {
+    public PECoffObjectFile build(String fn) throws IOException {
         ByteBuffer in = Util.readFile(fn);
         return build(in);
     }

@@ -2,6 +2,9 @@ package com.redhat.coffutil;
 
 import com.redhat.coffutil.pecoff.CoffUtilMain;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class Main {
     public static void main(String[] args) {
         String fn;
@@ -9,8 +12,14 @@ public class Main {
         fn = "./graalvm-demos/native-list-dir/listdir.exe";
         fn = "c:/tmp/graal-8/helloworld.pdb";
         fn = "c:/tmp/graal-8/vc100.pdb";
-        //fn = "c:/tmp/graal-8/helloworld.obj";
+        fn = "c:/tmp/graal-8/helloworld.obj";
         args = args.length > 0 ? args : new String[]{ "-dump", fn };
-        new CoffUtilMain().run(args);
+        try {
+            new CoffUtilMain().run(args);
+        } catch (FileNotFoundException e) {
+            System.err.println("coffutil: error: " + e.getLocalizedMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
