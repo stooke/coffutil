@@ -12,6 +12,7 @@ class CVSymbolSectionBuilder implements CVConstants {
 
     private PrintStream out = System.out;
     private boolean debug = true;
+    private PESection peSection;
 
     private HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
     private HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
@@ -20,6 +21,7 @@ class CVSymbolSectionBuilder implements CVConstants {
 
     CVSymbolSection build(ByteBuffer in, PESection shdr) {
 
+        this.peSection = shdr;
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
         in.position(sectionBegin);
@@ -30,7 +32,7 @@ class CVSymbolSectionBuilder implements CVConstants {
         }
 
         if (debug) {
-            out.printf("debug$S section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
+            out.printf("debug$S section %s %s begin=0x%x end=0x%x\n", peSection.getName(), peSection.translateCharacteristics(peSection.getCharacteristics()), sectionBegin, sectionEnd);
         }
 
         // parse symbol debug info
@@ -153,15 +155,21 @@ class CVSymbolSectionBuilder implements CVConstants {
                 out.printf("  debugsubsection: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", start,
                         (start - sectionBegin), len, (next - sectionBegin), (endOfSubsection - in.position()), cmd);
             }
-            StringBuilder info = null;
+            String info;
             switch (cmd) {
+                case S_BUILDINFO: {
+                    int cvTypeIndex = in.getInt();
+                    // cvTypeIndex is a typeIndex that will be found in the current file
+                    info = String.format("S_BUILDINFO local typeIndex=0x%x", cvTypeIndex);
+                    break;
+                }
                 case S_COMPILE: {
                     int cmachine = in.get();
                     int f1 = in.get();
                     int f2 = in.get();
                     int f3 = in.get();
                     String version = PEStringTable.getString0(in, next - in.position());
-                    info = new StringBuilder("  S_COMPILE m=" + cmachine + " v=" + version + " f1=" + f1 + " f2=" + f2 + " f3=" + f3);
+                    info = String.format("S_COMPILE machine=%d version=%s f1=%d f2=%d f3=%d", cmachine, version, f1, f2, f3);
                     break;
                 }
                 case S_COMPILE3: {
@@ -180,24 +188,23 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int beBuild = ((int)in.getShort()) & 0xffff;
                     int beQFE = in.getShort();
                     String compiler = PEStringTable.getString0(in, next - in.position());
-                    String sb = "  S_COMPILE3 machine=" + machine +
-                            " language=" + language +
-                            " debug=" + hasDebug +
-                            " compiler=" + compiler +
-                            " fe=" + feMajor + "." + feMinor + "." + feBuild + "-" + feQFE +
-                            " be=" + beMajor + "." + beMinor + "." + beBuild + "-" + beQFE;
-                    info = new StringBuilder(sb);
+                    info = String.format("S_COMPILE3 machine=%d lang=%d debug=%s fe=%d.%d.%d-%d be=%d.%d.%d-%d compiler=%s",
+                            machine, language, hasDebug ? "true" : "false", feMajor, feMinor, feBuild, feQFE, beMajor, beMinor, beBuild, beQFE, compiler);
                     break;
                 }
                 case S_CONSTANT: {
                     int typeindex = in.getInt();
                     int leaf = in.getShort();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_CONSTANT name=%s typeindex=0x%x leaf=0x%x\n", name, typeindex, leaf);
+                    info = String.format("S_CONSTANT name=%s typeindex=0x%x leaf=0x%x", name, typeindex, leaf);
                     break;
                 }
                 case S_END: {
-                    info = new StringBuilder("S_END");
+                    info = "S_END";
+                    break;
+                }
+                case S_PROC_ID_END: {
+                    info = "S_PROC_ID_END";
                     break;
                 }
                 case S_ENVBLOCK: {
@@ -210,13 +217,14 @@ class CVSymbolSectionBuilder implements CVConstants {
                         }
                         strs.add(s);
                     }
-                    info = new StringBuilder("  S_ENVBLOCK flags=" + flags + " count=" + strs.size());
+                    StringBuilder infoBuilder = new StringBuilder(String.format("S_ENVBLOCK flags=0x%x count=%d\n", flags, strs.size()));
                     for (int i = 0; i < strs.size(); i += 2) {
                         env.put(strs.get(i), strs.get(i+1));
                         if (debug) {
-                            info.append("\n      ").append(strs.get(i)).append(" = ").append(strs.get(i + 1));
+                            infoBuilder.append(String.format("\n      %s = %s", strs.get(i), strs.get(i + 1)));
                         }
                     }
+                    info = infoBuilder.toString();
                     break;
                 }
                 case S_FRAMEPROC: {
@@ -227,7 +235,7 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int ehOffset = in.getInt();
                     int ehSection = in.getShort();
                     int flags = in.getInt();
-                    out.printf("  S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x eh=0x%x:%x\n", frameLength, padLen, padOffset, saveRegsCount, flags, ehSection, ehOffset);
+                    info = String.format("S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x eh=0x%x:%x", frameLength, padLen, padOffset, saveRegsCount, flags, ehSection, ehOffset);
                     break;
                 }
                 case S_GDATA32: {
@@ -235,9 +243,12 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_GDATA32 name=%s offset=0x%x segment=0x%x type=0x%x\n", name, offset, segment, typeIndex);
+                    info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
+                case S_LPROC32_ID:
+                case S_LPROC32:
+                case S_GPROC32_ID:
                 case S_GPROC32: {
                     int pparent = in.getInt();
                     int pend = in.getInt();
@@ -250,8 +261,15 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int segment = in.getShort();
                     int flags = in.get();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_GPROC32 name=%s parent=%d pend=%d pnext=%d debugStart=0x%x debugEnd=0x%x offset=0x%x:%x let=%d typeindex=0x%x flags=0x%x\n",
-                                            name, pparent, pend, pnext, debugStart, debugEnd, segment, offset, proclen, typeIndex, flags);
+                    String cmdStr = "(unknown)";
+                    switch (cmd) {
+                        case S_LPROC32_ID:  cmdStr = "S_LPROC32_ID";    break;
+                        case S_LPROC32:     cmdStr = "S_LPROC32";       break;
+                        case S_GPROC32_ID:  cmdStr = "S_GPROC32_ID";    break;
+                        case S_GPROC32:     cmdStr = "S_GPROC32";       break;
+                    }
+                    info = String.format("%s name=%s parent=%d pend=%d pnext=%d debugStart=0x%x debugEnd=0x%x offset=0x%x:%x procLen=%d typeIndex=0x%x flags=0x%x",
+                                            cmdStr, name, pparent, pend, pnext, debugStart, debugEnd, segment, offset, proclen, typeIndex, flags);
                     break;
                 }
                 case S_LDATA32: {
@@ -259,7 +277,7 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_LDATA32 name=%s offset=0x%x segment=0x%x type=0x%x\n", name, offset, segment, typeIndex);
+                    info = String.format("S_LDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
                 case S_LDATA32_ST: {
@@ -267,13 +285,13 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    info = new StringBuilder("  S_LDATA32_ST name=" + name + " offset=" + offset + " type=" + typeIndex + " segment=" + segment);
+                    info = String.format("S_LDATA32_ST name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
                 case S_OBJNAME: {
                     int signature = in.getInt();
                     String objname = PEStringTable.getString0(in, next - in.position());
-                    info = new StringBuilder("  S_OBJNAME objectname=" + objname + " signature=" + signature);
+                    info = String.format("S_OBJNAME objectname=%s signature=0x%x", objname, signature);
                     break;
                 }
                 case S_REGREL32: {
@@ -281,29 +299,55 @@ class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();    // type index
                     int reg = in.getShort();        // register
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=0x%x\n", name, offset, typeIndex, reg);
+                    info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=0x%x", name, offset, typeIndex, reg);
+                    break;
+                }
+                case S_LOCAL: {
+                    int typeIndex = in.getInt();
+                    int localVarFlags = in.getShort();
+                    boolean isParam = (localVarFlags & 0x0001) == 0x0001;
+                    String name = PEStringTable.getString0(in, next - in.position());
+                    info = String.format("S_LOCAL name=%s isParam=%s typeindex=0x%x flags=0x%x", name, isParam, typeIndex, localVarFlags);
+                    break;
+                }
+                case S_DEFRANGE_FRAMEPOINTER_REL: {
+                    int offsetToFramPointer = in.getInt();
+                    int offsetStart = in.getInt();
+                    short isectStart = in.getShort();
+                    short cbRange = in.getShort();  // length
+                    info = String.format("S_DEFRANGE_FRAMEPOINTER_REL o1=0x%x os=0x%x is=0x%x cbr=0x%x", offsetToFramPointer, offsetStart, isectStart, cbRange);
+                    // some number of gaps:
+                    //    short gapStartOffset = in.getShort();
+                    //    short gapcbRange = in.getShort();
                     break;
                 }
                 case S_SSEARCH: {
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    info = new StringBuilder("  S_SSEARCH offset=" + offset + " seg=" + segment);
+                    info = String.format("S_SSEARCH offset=0x%x:%x", segment, offset);
                     break;
                 }
                 case S_UDT: {
                     int typeIndex = in.getInt();
                     String name = PEStringTable.getString0(in, next - in.position());
-                    out.printf("  S_UDT name=%s typeindex=0x%x\n", name, typeIndex);
+                    info = String.format("S_UDT name=%s typeindex=0x%x", name, typeIndex);
                     break;
                 }
                 default:
-                    out.printf("  (UNKNOWN cmd=0x%04x)\n", cmd);
-                    info = new StringBuilder("(UNKNOWN) cmd=" + cmd);
+                    info = String.format("(UNKNOWN) cmd=0x%x", cmd);
                     break;
             }
             if (info != null) {
-                out.println("  " + info);
+                out.format("  0x%05x %s\n", (start - sectionBegin), info);
             }
+
+            if (peSection.alignment() > 1) {
+                int mask = peSection.alignment() - 1;
+                while (((in.position() - sectionBegin) & mask) != 0) {
+                    in.get();
+                }
+            }
+
             if (next != in.position()) {
                 out.printf("*** debug$S subsectionn did not consume exact bytes: want=0x%x current=0x%x\n", next - sectionBegin, in.position() - sectionBegin);
             }

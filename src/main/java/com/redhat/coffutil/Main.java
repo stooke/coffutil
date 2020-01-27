@@ -13,6 +13,7 @@ public class Main {
         fn = "c:/tmp/graal-8/helloworld.pdb";
         fn = "c:/tmp/graal-8/vc100.pdb";
         fn = "c:/tmp/graal-8/helloworld.obj";
+        fn = "C:\\tmp\\graal-8\\llvm\\helloworld.o";
         args = args.length > 0 ? args : new String[]{ "-dump", fn };
         try {
             new CoffUtilMain().run(args);

@@ -105,6 +105,11 @@ public class PESection {
         return null;
     }
 
+    public int alignment() {
+        int align = (getCharacteristics() & PE_ALINGMENT_MASK) >> PE_ALINGMENT_SHIFT;
+        return 1 << (align-1);
+    }
+
     void dump(PrintStream out, CoffObjectFile objectFile) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.print("section: " + bName + " flags=[" + translateCharacteristics(getCharacteristics()) + "]");
@@ -180,7 +185,7 @@ public class PESection {
         return sectionHeader.lineNumberCount;
     }
 
-    int getCharacteristics() {
+    public int getCharacteristics() {
         return sectionHeader.characteristics;
     }
 
@@ -188,7 +193,7 @@ public class PESection {
         return lineNumberTable;
     }
 
-    private String translateCharacteristics(int c) {
+    public String translateCharacteristics(int c) {
         StringBuffer sb = new StringBuffer(200);
 
         c = testCharacteristic(c, sb, COFF_TEXT_SECTION, "text");
