@@ -72,6 +72,9 @@ public class CVSymbolSection {
     }
 
     static class LineInfo {
+        // this record requires a backpointer to the function start address
+        // i.e. 'addr' is an offset from function start
+
         int addr;
         int fileId;
         int lineNo;
@@ -148,15 +151,16 @@ public class CVSymbolSection {
             if (si != null) {
                 fi.setFileName(si.getString());
             } else {
-                CoffUtilContext.getInstance().error("****** invalid fileid on file" + fi.toString());
+                CoffUtilContext.getInstance().error("****** invalid fileid on file %s", fi.toString());
             }
             fi.dump(out);
         }
-        /**
-        out.println("CV Strings");
-        for (final StringInfo si : stringTable.values()) {
-            out.format("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
-        }**/
+        if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
+            out.println("CV Strings");
+            for (final StringInfo si : stringTable.values()) {
+                out.format("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
+            }
+        }
         if (!env.isEmpty()) {
             out.println("CV env strings:");
             for (Map.Entry<String, String> entry : env.entrySet()) {
@@ -170,7 +174,7 @@ public class CVSymbolSection {
                 if (fi != null) {
                     line.setFileName(fi.getFileName());
                 } else {
-                    CoffUtilContext.getInstance().error("****** invalid fileid on line" + line.toString());
+                    CoffUtilContext.getInstance().error("****** invalid fileid on line %s", line.toString());
                 }
                 line.dump(out);
             }

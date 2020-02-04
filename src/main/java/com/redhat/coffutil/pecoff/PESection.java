@@ -129,8 +129,10 @@ public class PESection {
         if (getLineNumberCount() != 0) {
             lineNumberTable.dump(out);
         }
-        if (getRelocationCount() != 0) {
-            relocations.dump(out, objectFile);
+        if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
+            if (getRelocationCount() != 0) {
+                relocations.dump(out, objectFile);
+            }
         }
     }
 

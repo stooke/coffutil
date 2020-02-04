@@ -19,7 +19,7 @@ public class CoffObjectFileBuilder {
         // test if this is an executable of an object file
         final short mzmaybe = in.getShort();
         if (mzmaybe == 0x5a4d) {
-            CoffUtilContext.getInstance().debug("'MZ' detected; nust be an executable");
+            CoffUtilContext.getInstance().debug("'MZ' detected; nust be an executable\n");
             coffFile = parseExecutable(in);
         } else {
             // should be a COFF object file

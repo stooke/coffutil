@@ -38,7 +38,7 @@ public class CoffUtilContext {
                             debugStream = new PrintStream(arg);
                             reportStream = debugStream;
                         } catch (IOException e) {
-                            fatal("error creating %s: %s\n", arg, e.getLocalizedMessage());
+                            fatal("error creating %s: %s", arg, e.getLocalizedMessage());
                             System.exit(2);
                         }
                     }
@@ -106,10 +106,9 @@ public class CoffUtilContext {
         return debugLevel;
     }
 
-    public void report(String format, Object ... args)
-    {
+    public void report(String format, Object ... args) {
         if (reportStream != null) {
-            reportStream.format(format + "\n", args);
+            reportStream.format(format, args);
         }
     }
 
@@ -120,26 +119,26 @@ public class CoffUtilContext {
     public void debug(String format, Object ... args)
     {
         if (debugLevel >= 2) {
-            debugStream.format(format + "\n", args);
+            debugStream.format(format, args);
         }
     }
 
     public void info(String format, Object ... args) {
         if (debugLevel >= 1) {
-            debugStream.format(format + "\n", args);
+            debugStream.format(format, args);
         }
     }
 
-    public void error(String format, Object ... args)
-    {
-        debugStream.format(format + "\n", args);
-        System.err.format(format + "\n", args);
+    public void error(String format, Object ... args) {
+        String nformat = "error: " + format + "\n";
+        debugStream.format(nformat, args);
+        System.err.format(nformat, args);
     }
 
-    public void fatal(String format, Object ... args)
-    {
-        debugStream.format(format + "\n", args);
-        System.err.format(format + "\n", args);
+    public void fatal(String format, Object ... args) {
+        String nformat = "fatal: " + format + "\n";
+        debugStream.format(nformat, args);
+        System.err.format(nformat, args);
         System.exit(99);
     }
 

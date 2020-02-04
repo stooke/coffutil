@@ -17,7 +17,7 @@ public class CoffUtilMain {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
         for (final String fn : ctx.inputFiles) {
             ctx.currentInputFilename = fn;
-            ctx.info("processing " + fn);
+            ctx.info("processing " + fn + "\n");
             if (fn.endsWith(".pdb")) {
                 PDBFile pdbFile = new PDBBuilder().build(fn);
                 pdbFile.dump(ctx.getReportStream());

@@ -48,7 +48,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 break;
             }
 
-            CoffUtilContext.getInstance().debug("debug$S: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", startPosition,
+            ctx.debug("debug$S: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", startPosition,
                         (startPosition - sectionBegin), debugLen, (nextPosition - sectionBegin), (sectionEnd - in.position()), debugCmd);
 
             String info = null;
@@ -59,9 +59,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
                 }
                 case DEBUG_S_SYMBOLS: {
-                    if (ctx.getDebugLevel() > 1) {
+                    if (ctx.getDebugLevel() > 0) {
                         info = String.format("DEBUG_S_SYMBOLS off=0x%x len=0x%x next=0x%x", (in.position() - sectionBegin), debugLen, (nextPosition - sectionBegin));
-                        ctx.debug("  0x%04x %s\n", (startPosition - sectionBegin), info);
+                        ctx.info("  0x%04x %s\n", (startPosition - sectionBegin), info);
                         info = null;
                     }
                     this.parseSubsection(in, sectionBegin, debugLen);
@@ -73,6 +73,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     short flags = in.getShort();
                     int cbCon = in.getInt();
                     boolean hasColumns = (flags & 1) == 1;
+                    // unfortunatly, startOffset (the function address) is 0 here but added in by a relocation entry later
                     StringBuilder infoBuilder = new StringBuilder(String.format("DEBUG_S_LINES(0xf2) startOffset=0x%x:%x flags=0x%x cbCon=0x%x", segment, startOffset, flags, cbCon));
                     while (in.position() < nextPosition) {
                         int fileId = in.getInt();
@@ -81,7 +82,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         infoBuilder.append(String.format("\n    File 0x%04x nLines=%d lineBlockSize=0x%x", fileId, nLines, fileBlock));
                         // line number entries
                         if (hasColumns) {
-                            CoffUtilContext.getInstance().error("\n**** can't yet handle columns\n");
+                            ctx.error("**** can't yet handle columns");
                         }
                         for (int i = 0; i < nLines; i++) {
                             int addr = in.getInt();
@@ -117,6 +118,8 @@ public class CVSymbolSectionBuilder implements CVConstants {
                             infoBuilder.append(String.format("\n    0x%04x %s", pos, s));
                         }
                         info = infoBuilder.toString();
+                    } else {
+                        info = String.format("DEBUG_S_STRINGTABLE nstrings=%d", stringTable.size());
                     }
                     break;
                 }
@@ -157,6 +160,8 @@ public class CVSymbolSectionBuilder implements CVConstants {
                             }
                         }
                         info = infoBuilder.toString();
+                    } else {
+                        info = String.format("DEBUG_S_FILECHKSMS numFiles=%d", sourceFiles.size());
                     }
                     break;
                 }
@@ -164,10 +169,10 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = String.format("(unknown cmd=0x%04x)", debugCmd);
             }
             if (ctx.getDebugLevel() > 0 && info != null) {
-                ctx.debug("  0x%04x %s\n", (startPosition - sectionBegin), info);
+                ctx.info("  0x%04x %s\n", (startPosition - sectionBegin), info);
             }
             if (nextPosition != in.position()) {
-                ctx.error("*** debug$S did not consume exact bytes: want=0x%x current=0x%x\n", nextPosition - sectionBegin, in.position() - sectionBegin);
+                ctx.error("*** debug$S did not consume exact bytes: want=0x%x current=0x%x", nextPosition - sectionBegin, in.position() - sectionBegin);
             }
             in.position(nextPosition);
         }
@@ -373,7 +378,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
             }
             if (info != null) {
-                ctx.debug("    0x%05x %s\n", (start - sectionBegin), info);
+                ctx.info("    0x%05x %s\n", (start - sectionBegin), info);
             }
 
             if (peSection.alignment() > 1) {
@@ -384,7 +389,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             }
 
             if (next != in.position()) {
-                ctx.error("*** debug$S subsectionn did not consume exact bytes: want=0x%x current=0x%x\n", next - sectionBegin, in.position() - sectionBegin);
+                ctx.error("*** debug$S subsectionn did not consume exact bytes: want=0x%x current=0x%x", next - sectionBegin, in.position() - sectionBegin);
             }
             in.position(next);
         }
