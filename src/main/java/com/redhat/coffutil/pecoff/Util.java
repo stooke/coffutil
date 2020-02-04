@@ -8,16 +8,20 @@ import java.nio.channels.FileChannel;
 
 public abstract class Util {
 
-    public static void dumpHex(PrintStream out, ByteBuffer in, int pos, int len) {
+    public static String dumpHex(ByteBuffer in, int pos, int len) {
+        StringBuilder sb = new StringBuilder(len);
         for (; len > 0; len--) {
-            out.format("%02x ", in.get(pos++));
+            sb.append(String.format("%02x ", in.get(pos++)));
         }
+        return sb.toString();
     }
 
-    public static void dumpHex(PrintStream out, byte[] in) {
-        for (int i = 0; i < in.length; i++) {
-            out.format("%02x ", in[i]);
+    public static String dumpHex(byte[] in) {
+        StringBuilder sb = new StringBuilder(in.length);
+        for (byte b : in) {
+            sb.append(String.format("%02x ", b));
         }
+        return sb.toString();
     }
 
     public static ByteBuffer readFile(final String fn) throws IOException {

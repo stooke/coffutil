@@ -3,7 +3,7 @@ package com.redhat.coffutil.pecoff;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-public class PEHeader {
+public class PEFileHeader {
 
     private int pemagic;
     private int pemachine;
@@ -14,11 +14,11 @@ public class PEHeader {
     private int optionalHeaderSize;
     private int characteristics;
 
-    private PEHeader() {
+    private PEFileHeader() {
     }
 
-    public static PEHeader build(ByteBuffer in) {
-        PEHeader hdr = new PEHeader();
+    public static PEFileHeader build(ByteBuffer in) {
+        PEFileHeader hdr = new PEFileHeader();
         hdr._build(in);
         return hdr;
     }
@@ -51,7 +51,7 @@ public class PEHeader {
     }
 
     void dump(PrintStream out) {
-        System.err.println("magic = " + pemagic + " machine = " + pemachine + " nsections = " + numsections + " nsymbols = " + numSymbols);
+        out.print("magic = " + pemagic + " machine = " + pemachine + " nsections = " + numsections + " nsymbols = " + numSymbols);
         if ((characteristics & 0x2) == 0x2) {
             out.println("   executable image");
         }
@@ -60,20 +60,6 @@ public class PEHeader {
         }
     }
 
-    /**
-     // from https://wiki.osdev.org/PE
-     // 1 byte aligned
-     struct PeHeader {
-     uint32_t mMagic; // PE\0\0 or 0x00004550
-     uint16_t mMachine;
-     uint16_t mNumberOfSections;
-     uint32_t mTimeDateStamp;
-     uint32_t mPointerToSymbolTable;
-     uint32_t mNumberOfSymbols;
-     uint16_t mSizeOfOptionalHeader;
-     uint16_t mCharacteristics;
-     };
-     **/
     public int getPemagic() {
         return pemagic;
     }

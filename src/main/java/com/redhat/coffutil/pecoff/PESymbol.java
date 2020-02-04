@@ -32,13 +32,13 @@ class PESymbol {
     private static final int IMAGE_SYM_CLASS_SECTION = 104;
 
     private ByteBuffer auxData;
-    private PEHeader fileHeader;
+    private PEFileHeader fileHeader;
 
-    PESymbol(ByteBuffer in, PEHeader hdr, int index) {
+    PESymbol(ByteBuffer in, PEFileHeader hdr, int index) {
         build(in, hdr, index);
     }
 
-    private void build(ByteBuffer in, PEHeader hdr, int index) {
+    private void build(ByteBuffer in, PEFileHeader hdr, int index) {
         name = PEStringTable.resolve(in, hdr);
         this.fileHeader = hdr;
         this.index = index;
@@ -141,7 +141,7 @@ class PESymbol {
             default:
                 info = "";
         }
-        //System.out.printf("read sym %s\n", info);
+        //CoffUtilContext.getInstance().debug("read sym %s\n", info);
         return info;
     }
 

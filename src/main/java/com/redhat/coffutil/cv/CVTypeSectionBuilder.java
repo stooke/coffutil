@@ -1,5 +1,6 @@
 package com.redhat.coffutil.cv;
 
+import com.redhat.coffutil.pecoff.CoffUtilContext;
 import com.redhat.coffutil.pecoff.PESection;
 import com.redhat.coffutil.pecoff.PEStringTable;
 
@@ -9,24 +10,23 @@ import java.util.Vector;
 
 public class CVTypeSectionBuilder implements CVConstants {
 
-    private PrintStream out = System.out;
-    private static final boolean debug = false;
+    private CoffUtilContext ctx = CoffUtilContext.getInstance();
 
     //private Vector<CVTypeRecord> typeRecords = new Vector<>(200);
 
-    public static void dump(String msg, ByteBuffer buffer, int pos, int len) {
+    public static void dump(PrintStream out, String msg, ByteBuffer buffer, int pos, int len) {
         if (buffer == null) return;
-        System.out.format("%s0x%06x:", msg, pos);
+        out.format("%s0x%06x:", msg, pos);
         for (int i=0; i<len; i++) {
             if ((i & 3) == 0) {
-                System.out.print(" ");
+                out.print(" ");
             }
-            System.out.format("%02x", buffer.get(pos+i));
+            out.format("%02x", buffer.get(pos+i));
         }
-        System.out.println();
+        out.println();
     }
 
-    CVTypeSection build(ByteBuffer in, PESection shdr) {
+    public CVTypeSection build(ByteBuffer in, PESection shdr) {
 
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
@@ -38,11 +38,11 @@ public class CVTypeSectionBuilder implements CVConstants {
 
         int symSig = in.getInt();
         if (symSig != CV_SIGNATURE_C13) {
-            out.println("**** unexpected debug signature " + symSig + "; expected " + CV_SIGNATURE_C13);
+            ctx.error("**** unexpected debug signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
 
-        if (debug) {
-            out.printf("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
+        if (ctx.getDebugLevel() > 0) {
+            ctx.info("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
         }
 
         // parse symbol debug info
@@ -61,8 +61,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                 break;
             }
 
-            if (debug) {
-                out.printf("debug: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d\n", startPosition,
+            if (ctx.getDebugLevel() > 1) {
+                ctx.debug("debug: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d\n", startPosition,
                         (startPosition - sectionBegin), len, (nextPosition - sectionBegin), (sectionEnd - in.position()));
             }
 
@@ -87,7 +87,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int modifiers = (attributes & 0x001f00) >> 8;
                     int size      = (attributes & 0x07e000) >> 13;
                     int flags     = (attributes & 0x380000) >> 19;
-                    info = String.format("LF_POINTER len=%d leaf=0x%04x refType=0x%06x attrib=0x%06x\n     kind=%d mode=%d modifiers=%d size=%d flags=%d",
+                    info = String.format("LF_POINTER len=%d leaf=0x%04x refType=0x%06x attrib=0x%06x kind=%d mode=%d modifiers=%d size=%d flags=%d",
                             len, leaf, referentType, attributes, kind, mode, modifiers, size, flags);
                     break;
                 }
@@ -116,22 +116,23 @@ public class CVTypeSectionBuilder implements CVConstants {
                     StringBuilder infoBuilder = new StringBuilder();
                     infoBuilder.append(String.format("LF_ARGLIST len=%d leaf=0x%04x count=%d [", len, leaf, argCount));
                     for (int i=0; i< argCount; i++) {
-                        infoBuilder.append(String.format("0x%4x", argTypes.get(i)));
+                        infoBuilder.append(String.format(" 0x%04x", argTypes.get(i)));
                     }
+                    infoBuilder.append("]");
                     info = infoBuilder.toString();
                     break;
                 }
                 case LF_FIELDLIST: {
                     // skip padding
-                    // TODO: this is buggy because in.get() is signed
+                    // this code would be buggy because in.get() is signed
                     // while (in.get(in.position()) >= LF_PAD0) {
                     //    in.get();
                     //}
-                    info = String.format("LF_FIELDLIST");
+                    info = "LF_FIELDLIST";
                     break;
                 }
                 case LF_BITFIELD: {
-                    info = String.format("LF_BITFIELD");
+                    info = "LF_BITFIELD";
                     break;
                 }
                 //case LF_INTERFACE:
@@ -222,7 +223,9 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
             }
 
-            out.format(" 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, info);
+            if (ctx.getDebugLevel() > 1) {
+                ctx.debug("  0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, info);
+            }
             currentTypeIndex++;
             in.position(nextPosition);
         }
@@ -235,5 +238,4 @@ public class CVTypeSectionBuilder implements CVConstants {
         b[idx1] = b[idx2];
         b[idx2] = tmp;
     }
-
 }

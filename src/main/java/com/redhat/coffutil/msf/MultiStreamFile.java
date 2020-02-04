@@ -1,5 +1,6 @@
 package com.redhat.coffutil.msf;
 
+import com.redhat.coffutil.pecoff.CoffUtilContext;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
@@ -26,8 +27,8 @@ public class MultiStreamFile {
     }
 
     public void dump(PrintStream out) {
-        System.out.println("superblock: " + superblock);
-        rootStream.dump(System.out);
+        out.println("superblock: " + superblock);
+        rootStream.dump(out);
         for (int i=0; i<Math.min(20, streams.length); i++) {
             out.format("stream %d: ", i);
             StreamDef stream = streams[i];
@@ -50,10 +51,7 @@ public class MultiStreamFile {
         int blockMapAddr;  // root stream page number list
 
         int build(ByteBuffer in, int pos) {
-            /*
-            Util.dumpHex(System.out, in, pos, magic.length());
-            System.out.println();
-             */
+            //CoffUtilContext.instance().debug(Util.dumpHex(in, pos, magic.length()));
             in.position(pos + magic.length());
             blockSize = in.getInt();
             freeBlockMapBlock = in.getInt();
@@ -151,9 +149,7 @@ public class MultiStreamFile {
         }
 
         void dumpData(PrintStream out) {
-            out.print(" " + this + " [");
-            Util.dumpHex(out, get(), 0, Math.min(16, bytes.length));
-            out.println("]");
+            out.format(" %s [%s]\n", this, Util.dumpHex(get(), 0, Math.min(16, bytes.length)));
         }
     }
 
@@ -167,7 +163,7 @@ public class MultiStreamFile {
             ByteBuffer buffer = get(in);
             buffer.position(0);
             int n = buffer.getInt();
-            System.out.println("Numsteams = " + n);
+            CoffUtilContext.getInstance().debug("Numsteams = %s\n");
             streams = new StreamDef[n + 1]; // + 1 to leave room for this stream, the root stream
             streams[0] = this;
             int sizePos = buffer.position();

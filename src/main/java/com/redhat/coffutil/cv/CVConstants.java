@@ -25,6 +25,16 @@ public interface CVConstants {
     int S_PROC_ID_END = 0x114f;
     int S_BUILDINFO  = 0x114c;
 
+    // S_FRAMEPROC flags
+    int SFP_HAS_ALLOCA = 0x01;
+    int SFP_HAS_SETJMP = 0x02;
+    int SFP_HAS_LONGJMP = 0x04;
+    int SFP_HAS_INLINEASM = 0x08;
+    int SFP_HAS_EH = 0x10;
+    int SFP_SPEC_INLINE = 0x20;
+    int SFP_HASHSEH = 0x04;
+    int SFP_SPEC_NAKED = 0x80;
+
     int DEBUG_S_IGNORE      = 0x00;
     int DEBUG_S_SYMBOLS     = 0xf1;
     int DEBUG_S_LINES       = 0xf2;

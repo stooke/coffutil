@@ -2,14 +2,14 @@ package com.redhat.coffutil.pecoff;
 
 import java.io.PrintStream;
 
-public class CoffObjectFile {
+public class CoffFile {
 
-    private final PEHeader hdr;
+    private final PEFileHeader hdr;
     private final PESection[] sections;
     private final PESymbolTable symbols;
 
     // hdr, sections, symbols, cvSymbols, directive);
-    public CoffObjectFile(PEHeader hdr, PESection[] sections, PESymbolTable symbols) {
+    public CoffFile(PEFileHeader hdr, PESection[] sections, PESymbolTable symbols) {
         this.hdr = hdr;
         this.sections = sections;
         this.symbols = symbols;
@@ -33,7 +33,7 @@ public class CoffObjectFile {
         //symbols.validate();
     }
 
-    public PEHeader getHdr() {
+    public PEFileHeader getHdr() {
         return hdr;
     }
 

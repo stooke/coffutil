@@ -16,7 +16,7 @@ class CoffRelocationTable {
             this.type = type;
         }
 
-        void dump(PrintStream out, CoffObjectFile ofile) {
+        void dump(PrintStream out, CoffFile ofile) {
             PESymbol symbol = ofile.getSymbols().get(symbolIndex);
             final String descr;
             // assume x64
@@ -42,7 +42,7 @@ class CoffRelocationTable {
 
     CoffRelocationTable.Entry[] relocs;
 
-    CoffRelocationTable(ByteBuffer in, PESection section, PEHeader hdr) {
+    CoffRelocationTable(ByteBuffer in, PESection section, PEFileHeader hdr) {
         int offset = section.getRelocationPtr();
         int nLines = section.getRelocationCount();
         relocs = read(in, offset, nLines);
@@ -64,7 +64,7 @@ class CoffRelocationTable {
         return ln;
     }
 
-    void dump(PrintStream out, CoffObjectFile ofile) {
+    void dump(PrintStream out, CoffFile ofile) {
         if (relocs != null) {
             int limit = 50;
             for (CoffRelocationTable.Entry e : relocs) {

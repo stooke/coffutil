@@ -1,7 +1,5 @@
 package com.redhat.coffutil.pecoff;
 
-import com.redhat.coffutil.cv.PECoffObjectFile;
-import com.redhat.coffutil.cv.PECoffObjectFileBuilder;
 import com.redhat.coffutil.pdb.PDBBuilder;
 import com.redhat.coffutil.pdb.PDBFile;
 
@@ -19,16 +17,14 @@ public class CoffUtilMain {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
         for (final String fn : ctx.inputFiles) {
             ctx.currentInputFilename = fn;
-            if (ctx.debug) {
-                ctx.log.println("processing " + fn);
-            }
+            ctx.info("processing " + fn);
             if (fn.endsWith(".pdb")) {
                 PDBFile pdbFile = new PDBBuilder().build(fn);
-                pdbFile.dump(ctx.out);
+                pdbFile.dump(ctx.getReportStream());
             } else {
-                PECoffObjectFile cf = new PECoffObjectFileBuilder().build(fn);
+                PECoffFile cf = new PECoffFileBuilder().build(fn);
                 if (ctx.dump) {
-                    cf.dump(ctx.out);
+                    cf.dump(ctx.getReportStream());
                 }
                 if (ctx.split != null) {
                     ByteBuffer in = Util.readFile(fn);
@@ -37,7 +33,7 @@ public class CoffUtilMain {
                         // TODO : write header, string table, reloc tables, symbol tables
                         for (PESection shdr : cf.getSections()) {
                             String sfn = ctx.split + "-" + snum + "-" + shdr.getName();
-                            ctx.log.println("dumping " + shdr.getName() + " to " + sfn);
+                            ctx.debug("dumping " + shdr.getName() + " to " + sfn + "\n");
                             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(sfn));
                             out.write(in.array(), shdr.getRawDataPtr(), shdr.getRawDataSize());
                             out.close();
@@ -49,5 +45,6 @@ public class CoffUtilMain {
                 }
             }
         }
+        ctx.cleanup();
     }
 }

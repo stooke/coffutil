@@ -20,20 +20,32 @@ public class PEStringTable {
         return new String(sb);
     }
 
-    static String resolve(ByteBuffer in, PEHeader hdr) {
+    static String resolve(ByteBuffer in, PEFileHeader hdr) {
         return resolve(in, hdr, SHORT_LENGTH);
     }
 
-    static String resolve(ByteBuffer in, PEHeader hdr, int length) {
+    private static int parseInt(byte[] str, int start) {
+        int idx = start;
+        int i = 0;
+        while (idx < str.length) {
+            if (str[idx] == 0) {
+                break;
+            }
+            i = i * 10 + str[idx++] - '0';
+        }
+        return i;
+    }
+
+    static String resolve(ByteBuffer in, PEFileHeader hdr, int length) {
         byte[] rawName = new byte[length];
         in.get(rawName);
-        if (rawName[0] != 0){
+        if (rawName[0] != 0 && rawName[0]!= '/'){
             return new String(rawName).trim();
         } else {
             // it's a long name; must get from the symbol table
             int oldposition = in.position();
             in.position(oldposition - length + 4);
-            int offset = in.getInt();
+            int offset = rawName[0] != '/' ? in.getInt() : parseInt(rawName, 1);
             int stringTableOffset = hdr.getSymPtr() + hdr.getNumSymbols() * PESymbol.SYM_SIZE;
             in.position(stringTableOffset + offset);
             String longname = readNullTerminatedUTF8(in);

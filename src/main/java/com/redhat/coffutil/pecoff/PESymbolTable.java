@@ -11,7 +11,7 @@ public class PESymbolTable {
         this.symbols = symbols;
     }
 
-    public static PESymbolTable build(ByteBuffer in, PEHeader hdr) {
+    public static PESymbolTable build(ByteBuffer in, PEFileHeader hdr) {
         in.position(hdr.getSymPtr());
         PESymbol[] symbols = new PESymbol[hdr.getNumSymbols()];
         for (int i = 0; i< hdr.getNumSymbols(); i++) {

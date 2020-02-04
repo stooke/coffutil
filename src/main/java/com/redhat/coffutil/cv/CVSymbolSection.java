@@ -1,5 +1,7 @@
 package com.redhat.coffutil.cv;
 
+import com.redhat.coffutil.pecoff.CoffUtilContext;
+
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -11,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-class CVSymbolSection {
+public class CVSymbolSection {
 
     // parsing ".debug$S" sections
 
@@ -46,15 +48,15 @@ class CVSymbolSection {
         }
 
         void dump(PrintStream out) {
-            out.printf("  fileid:0x%04x path=0x%x cb=%d chkType=%d checksum=[", filePos, fileId, cb, checksumType);
+            out.format("  fileid:0x%04x path=0x%04x cb=%d chkType=%d checksum=[", filePos, fileId, cb, checksumType);
             for (byte b : checksum) {
-                out.printf("%02x", ((int) (b) & 0xff));
+                out.format("%02x", ((int) (b) & 0xff));
             }
-            out.println("] " + fileName);
+            out.format("] %s\n", fileName);
             /*
             try {
                 String md5 = calculateMD5Sum(filename);
-                out.println("calculated=" + md5);
+                out.format("calculated=%s", md5);
             } catch (Exception e) {
                 e.printStackTrace();
             }*/
@@ -98,17 +100,17 @@ class CVSymbolSection {
         }
 
         void dump(PrintStream out) {
-            if (fileName != null) {
-                out.printf("  line: 0x%04x:%d addr=0x%08x isStatement=%-5s deltaEnd=0x%08x %s\n", fileId, lineNo, addr, isStatement, deltaEnd, fileName);
-            } else {
-                out.printf("  line: 0x%04x:%d addr=0x%08x isStatement=%-5s deltaEnd=0x%08x\n", fileId, lineNo, addr, isStatement, deltaEnd);
-            }
+            String fileNameStr = fileName != null ? fileName : "";
+            String isStatementStr = isStatement ? " isStatement" : "";
+            out.format("  line: 0x%04x deltaEnd=%d%s 0x%04x %s:%d\n", addr, deltaEnd, isStatementStr, fileId, fileNameStr, lineNo);
         }
     }
 
     static class StringInfo {
-        private long offset = 0;
+
+        private long offset;
         private String string;
+
         StringInfo(long offset, String string) {
             this.offset = offset;
             this.string = string;
@@ -139,25 +141,26 @@ class CVSymbolSection {
         this.env = env;
     }
 
-    void dump(PrintStream out) {
+    public void dump(PrintStream out) {
         out.println("CV sourcefiles:");
         for (final FileInfo fi : sourceFiles.values()) {
             StringInfo si = stringTable.get(fi.getFileId());
             if (si != null) {
                 fi.setFileName(si.getString());
             } else {
-                System.err.println("****** invalid fileid on file" + fi.toString());
+                CoffUtilContext.getInstance().error("****** invalid fileid on file" + fi.toString());
             }
             fi.dump(out);
         }
+        /**
         out.println("CV Strings");
         for (final StringInfo si : stringTable.values()) {
-            out.printf("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
-        }
+            out.format("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
+        }**/
         if (!env.isEmpty()) {
             out.println("CV env strings:");
             for (Map.Entry<String, String> entry : env.entrySet()) {
-                out.printf("  %-4s: \"%s\"\n", entry.getKey(), entry.getValue());
+                out.format("  %-4s: \"%s\"\n", entry.getKey(), entry.getValue());
             }
         }
         if (!lines.isEmpty()) {
@@ -167,11 +170,10 @@ class CVSymbolSection {
                 if (fi != null) {
                     line.setFileName(fi.getFileName());
                 } else {
-                    System.err.println("****** invalid fileid on line" + line.toString());
+                    CoffUtilContext.getInstance().error("****** invalid fileid on line" + line.toString());
                 }
                 line.dump(out);
             }
         }
     }
-
 }

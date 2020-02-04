@@ -33,7 +33,7 @@ class CoffLineNumberTable {
 
     private Entry[] lineNumbers;
 
-    CoffLineNumberTable(ByteBuffer in, PESection section, PEHeader hdr) {
+    CoffLineNumberTable(ByteBuffer in, PESection section, PEFileHeader hdr) {
         int offset = section.getLineNumberPtr();
         int nLines = section.getLineNumberCount();
         lineNumbers = read(in, offset, nLines);

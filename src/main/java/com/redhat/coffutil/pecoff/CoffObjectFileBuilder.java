@@ -7,21 +7,19 @@ import java.nio.ByteOrder;
 
 public class CoffObjectFileBuilder {
 
-    PrintStream out = System.out;
-
-    CoffObjectFile build(String fn) throws IOException {
+    CoffFile build(String fn) throws IOException {
         ByteBuffer in = Util.readFile(fn);
         return build(in);
     }
 
-    private CoffObjectFile build(ByteBuffer in) {
-        final CoffObjectFile coffFile;
+    private CoffFile build(ByteBuffer in) {
+        final CoffFile coffFile;
         in.order(ByteOrder.LITTLE_ENDIAN);
         in.rewind();
         // test if this is an executable of an object file
         final short mzmaybe = in.getShort();
         if (mzmaybe == 0x5a4d) {
-            log("'MZ' detected; nust be an executable");
+            CoffUtilContext.getInstance().debug("'MZ' detected; nust be an executable");
             coffFile = parseExecutable(in);
         } else {
             // should be a COFF object file
@@ -31,21 +29,21 @@ public class CoffObjectFileBuilder {
         return coffFile;
     }
 
-    private CoffObjectFile parseExecutable(ByteBuffer in) {
+    private CoffFile parseExecutable(ByteBuffer in) {
         final int e_lfanew = in.getInt(0x3c);
         //final long e_lfanew = in.getLong(0x3c);
         in.position(e_lfanew);
         return parseCoff(in, true);
     }
 
-    private CoffObjectFile parseCoff(ByteBuffer in, boolean isPE) {
+    private CoffFile parseCoff(ByteBuffer in, boolean isPE) {
 
-        final PEHeader hdr;
+        final PEFileHeader hdr;
         final PESection[] sections;
         PESymbolTable symbols = null;
 
         // parse header
-        hdr = PEHeader.build(in);
+        hdr = PEFileHeader.build(in);
 
         // parse optional header
         if (hdr.getOptionalHeaderSize() > 0) {
@@ -67,15 +65,6 @@ public class CoffObjectFileBuilder {
             symbols = PESymbolTable.build(in, hdr);
         } // if there's no symbol table at all, keep symbols null, instead of array[0]
 
-        return new CoffObjectFile(hdr, sections, symbols);
-    }
-
-    private static void log(final String msg) {
-        System.err.println("coffutil: " + msg);
-    }
-
-    private static void fatal(final String msg) {
-        System.err.println("coffutil: fatal:" + msg);
-        System.exit(99);
+        return new CoffFile(hdr, sections, symbols);
     }
 }

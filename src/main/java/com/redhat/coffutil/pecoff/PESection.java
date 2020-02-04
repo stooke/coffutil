@@ -44,14 +44,14 @@ public class PESection {
 
         private ByteBuffer rawHeaderData;
 
-        private void buildHeader(ByteBuffer in, PEHeader fileHeader) {
+        private void buildHeader(ByteBuffer in, PEFileHeader fileHeader) {
 
             //int offset = in.position();
             if (in.hasArray()) {
                 rawHeaderData = in.slice().asReadOnlyBuffer();
                 rawHeaderData.order(ByteOrder.LITTLE_ENDIAN);
             } else {
-                System.err.println("**** no backing array ****");
+                CoffUtilContext.getInstance().fatal("**** no backing array ****");
             }
             name = PEStringTable.resolve(in, fileHeader);
             virtualSize = in.getInt();
@@ -65,7 +65,7 @@ public class PESection {
             characteristics = in.getInt();
         }
 
-        static PESectionHeader build(ByteBuffer in, PEHeader fileHeader) {
+        static PESectionHeader build(ByteBuffer in, PEFileHeader fileHeader) {
             PESectionHeader hdr = new PESectionHeader();
             hdr.buildHeader(in, fileHeader);
             return hdr;
@@ -81,7 +81,7 @@ public class PESection {
     private PESection() {
     }
 
-    public static PESection build(ByteBuffer in, PEHeader hdr) {
+    public static PESection build(ByteBuffer in, PEFileHeader hdr) {
         PESection section = new PESection();
         PESectionHeader sectionHeader = PESectionHeader.build(in, hdr);
         section.sectionHeader = sectionHeader;
@@ -96,7 +96,7 @@ public class PESection {
         return section;
     }
 
-    private void loadLineNumbersAndRelocations(ByteBuffer in, PEHeader hdr) {
+    private void loadLineNumbersAndRelocations(ByteBuffer in, PEFileHeader hdr) {
         lineNumberTable = new CoffLineNumberTable(in, this, hdr);
         relocations = new CoffRelocationTable(in, this, hdr);
     }
@@ -110,20 +110,20 @@ public class PESection {
         return 1 << (align-1);
     }
 
-    void dump(PrintStream out, CoffObjectFile objectFile) {
+    void dump(PrintStream out, CoffFile objectFile) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
-        out.print("section: " + bName + " flags=[" + translateCharacteristics(getCharacteristics()) + "]");
+        out.format("section: %8s flags=[%s]", getName(), translateCharacteristics(getCharacteristics()));
         if (getVirtualSize() != 0) {
-            out.printf(" vaddr=0x%x,vsize=0x%x", getVirtualAddress(), getVirtualSize());
+            out.format(" vaddr=0x%x,vsize=0x%x", getVirtualAddress(), getVirtualSize());
         }
         if (getRawDataSize() != 0) {
-            out.printf(" rawPtr=0x%x,rawSize=0x%x", getRawDataPtr(), getRawDataSize());
+            out.format(" rawPtr=0x%x,rawSize=0x%x", getRawDataPtr(), getRawDataSize());
         }
         if (getLineNumberCount() != 0) {
-            out.printf(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
+            out.format(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
         }
         if (getRelocationCount() != 0) {
-            out.printf(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
+            out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
         }
         out.println();
         if (getLineNumberCount() != 0) {
@@ -134,21 +134,6 @@ public class PESection {
         }
     }
 
-    /**
-     // from https://wiki.osdev.org/PE
-     struct IMAGE_SECTION_HEADER { // size 40 bytes
-     char[8]  name;
-     uint32_t virtualSize;
-     uint32_t virtualAddress;
-     uint32_t rawDataSize;
-     uint32_t rawDataPtr;
-     uint32_t relocationPtr;
-     uint32_t lineNumberPtr;
-     uint16_t mNumberOfRealocations;
-     uint16_t lineNumberCount;
-     uint32_t characteristics;
-     };
-     ***/
     public String getName() {
         return sectionHeader.name;
     }

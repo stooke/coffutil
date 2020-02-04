@@ -1,6 +1,7 @@
 package com.redhat.coffutil.pdb;
 
 import com.redhat.coffutil.msf.MultiStreamFile;
+import com.redhat.coffutil.pecoff.CoffUtilContext;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.nio.ByteBuffer;
@@ -24,7 +25,7 @@ public class PDBFile extends MultiStreamFile {
         buildPDBInfoStram(getStream(2));
     }
 
-    void buildPDBInfoStram(ByteBuffer in) {
+    private void buildPDBInfoStram(ByteBuffer in) {
 
         // read header
         int version = in.getInt();
@@ -33,11 +34,8 @@ public class PDBFile extends MultiStreamFile {
         byte[] checksum = new byte[16];
         in.get(checksum);
         Instant sig = Instant.ofEpochSecond(signature);
-        System.out.format("pdbinfo: version=%d sig=%d(%s) age=%d checksum=[", version, signature, sig.toString(), age);
-        Util.dumpHex(System.out, checksum);
-        System.out.println("]");
+        CoffUtilContext.getInstance().info("pdbinfo: version=%d sig=%d(%s) age=%d checksum=[%s]\n", version, signature, sig.toString(), age, Util.dumpHex(checksum));
         assert version == VERSION_VC70;  // this is the only version we can handle
-
-        // read hash table
+        // TODO read hash table
     }
 }

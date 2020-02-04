@@ -1,14 +1,15 @@
 package com.redhat.coffutil.pecoff;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 
-class CoffUtilContext {
+public class CoffUtilContext {
 
-    PrintStream out = System.out;
-    PrintStream err = System.err;
-    PrintStream log = System.err;
+    private PrintStream debugStream = System.err;
+    private PrintStream reportStream = System.out;
 
     // work variables
     String currentInputFilename;
@@ -16,11 +17,11 @@ class CoffUtilContext {
 
     // command line
     Vector<String> inputFiles = new Vector<>();
-    boolean debug = false;
+    private int debugLevel = 1;
     boolean dump = false;
     String split = null;
 
-    static CoffUtilContext instance = null;
+    private static CoffUtilContext instance = null;
 
     private CoffUtilContext(String[] args) {
         String prev = null;
@@ -31,16 +32,29 @@ class CoffUtilContext {
                         split = arg;
                         break;
                     }
+                    case "-out": {
+                        try {
+                            new File(arg).delete();
+                            debugStream = new PrintStream(arg);
+                            reportStream = debugStream;
+                        } catch (IOException e) {
+                            fatal("error creating %s: %s\n", arg, e.getLocalizedMessage());
+                            System.exit(2);
+                        }
+                    }
                 }
                 prev = null;
             } else {
                 switch (arg) {
+                    case "-out":
+                        prev = arg;
+                        break;
                     case "-split":
                         prev = arg;
                         break;
                     case "-debug":
                     case "-verbose":
-                        debug = true;
+                        debugLevel += 1;
                         break;
                     case "-dump":
                         dump = true;
@@ -48,12 +62,12 @@ class CoffUtilContext {
                     case "-h":
                     case "--help":
                     case "/?":
-                        err.println("Usage:\ncoffutil [-dump] [-split prefix] [-debug] [-h] inputfiles...");
+                        error("Usage:\ncoffutil [-dump] [-split prefix] [-debug] [-h] inputfiles...");
                         System.exit(0);
                         break;
                     default:
                         if (arg.startsWith("-")) {
-                            err.println("unknown arguement '" + arg + "'\ntype '-h' for help");
+                            fatal("unknown argument '" + arg + "'\ntype '-h' for help");
                             System.exit(1);
                         } else {
                             inputFiles.add(arg);
@@ -63,12 +77,22 @@ class CoffUtilContext {
             }
         }
         if (inputFiles.isEmpty()) {
-            err.println("no input files specified");
+            fatal("no input files specified");
             System.exit(1);
         }
-        if (!(dump || split != null)) {
-            err.println("nothing to do!");
+        // spit out a message if there's no action to take
+        //if (!(dump || split != null)) {
+            //err.println("nothing to do!");
             //System.exit(1);
+        //}
+    }
+
+    public void cleanup() {
+        if (debugStream != System.err) {
+            debugStream.close();
+        }
+        if (reportStream != System.out && reportStream != debugStream) {
+            reportStream.close();
         }
     }
 
@@ -77,4 +101,50 @@ class CoffUtilContext {
         instance = new CoffUtilContext(args);
         return instance;
     }
+
+    public int getDebugLevel() {
+        return debugLevel;
+    }
+
+    public void report(String format, Object ... args)
+    {
+        if (reportStream != null) {
+            reportStream.format(format + "\n", args);
+        }
+    }
+
+    public PrintStream getReportStream() {
+        return reportStream;
+    }
+
+    public void debug(String format, Object ... args)
+    {
+        if (debugLevel >= 2) {
+            debugStream.format(format + "\n", args);
+        }
+    }
+
+    public void info(String format, Object ... args) {
+        if (debugLevel >= 1) {
+            debugStream.format(format + "\n", args);
+        }
+    }
+
+    public void error(String format, Object ... args)
+    {
+        debugStream.format(format + "\n", args);
+        System.err.format(format + "\n", args);
+    }
+
+    public void fatal(String format, Object ... args)
+    {
+        debugStream.format(format + "\n", args);
+        System.err.format(format + "\n", args);
+        System.exit(99);
+    }
+
+    public static CoffUtilContext getInstance() {
+        return instance;
+    }
+
 }
