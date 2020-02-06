@@ -6,13 +6,13 @@ import com.redhat.coffutil.pecoff.PEStringTable;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class CVTypeSectionBuilder implements CVConstants {
 
     private CoffUtilContext ctx = CoffUtilContext.getInstance();
 
-    //private Vector<CVTypeRecord> typeRecords = new Vector<>(200);
+    //private ArrayList<CVTypeRecord> typeRecords = new ArrayList<>(200);
 
     public static void dump(PrintStream out, String msg, ByteBuffer buffer, int pos, int len) {
         if (buffer == null) return;
@@ -109,7 +109,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
                 case LF_ARGLIST: {
                     int argCount = in.getInt();
-                    Vector<Integer> argTypes = new Vector<>(argCount);
+                    ArrayList<Integer> argTypes = new ArrayList<>(argCount);
                     for (int i=0; i< argCount; i++) {
                         argTypes.add(in.getInt());
                     }

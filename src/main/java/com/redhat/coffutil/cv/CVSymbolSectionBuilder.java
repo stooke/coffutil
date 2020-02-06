@@ -5,8 +5,8 @@ import com.redhat.coffutil.pecoff.PESection;
 import com.redhat.coffutil.pecoff.PEStringTable;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 public class CVSymbolSectionBuilder implements CVConstants {
 
@@ -14,7 +14,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
     private CoffUtilContext ctx = CoffUtilContext.getInstance();
     private HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
     private HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
-    private Vector<CVSymbolSection.LineInfo> lines = new Vector<>(100);
+    private ArrayList<CVSymbolSection.LineInfo> lines = new ArrayList<>(100);
     private HashMap<String, String> env = new HashMap<>(10);
 
     public CVSymbolSection build(ByteBuffer in, PESection shdr) {
@@ -24,7 +24,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
         in.position(sectionBegin);
 
-        int symSig = in.getInt();
+        final int symSig = in.getInt();
         if (symSig != CV_SIGNATURE_C13) {
             ctx.debug("**** unexpected debug$S signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
@@ -39,11 +39,11 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 in.get();
             }
 
-            int startPosition = in.position();
-            int debugCmd = in.getInt();
-            int debugLen = in.getInt();
+            final int startPosition = in.position();
+            final int debugCmd = in.getInt();
+            final int debugLen = in.getInt();
 
-            int nextPosition = startPosition + debugLen + 8;
+            final int nextPosition = startPosition + debugLen + 8;
             if (nextPosition > sectionEnd) {
                 break;
             }
@@ -64,7 +64,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         ctx.info("  0x%04x %s\n", (startPosition - sectionBegin), info);
                         info = null;
                     }
-                    this.parseSubsection(in, sectionBegin, debugLen);
+                    this.parseCVSymbolSubsection(in, sectionBegin, debugLen);
                     break;
                 }
                 case DEBUG_S_LINES: {
@@ -180,13 +180,13 @@ public class CVSymbolSectionBuilder implements CVConstants {
         return new CVSymbolSection(sourceFiles, stringTable, lines, env);
     }
 
-    private void parseSubsection(ByteBuffer in, int sectionBegin, int maxlen) {
-        int endOfSubsection = in.position() + maxlen;
+    private void parseCVSymbolSubsection(ByteBuffer in, final int sectionBegin, final int maxlen) {
+        final int endOfSubsection = in.position() + maxlen;
         while (in.position() < endOfSubsection) {
-            int start = in.position();
-            int len = in.getShort();
-            int cmd = in.getShort();
-            int next = start + len + 2;
+            final int start = in.position();
+            final int len = in.getShort();
+            final int cmd = in.getShort();
+            final int next = start + len + 2;
             if (ctx.getDebugLevel() > 1) {
                 ctx.debug("  debugsubsection: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", start,
                         (start - sectionBegin), len, (next - sectionBegin), (endOfSubsection - in.position()), cmd);
@@ -244,7 +244,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
                 }
                 case S_ENVBLOCK: {
-                    Vector<String> strs = new Vector<>(20);
+                    ArrayList<String> strs = new ArrayList<>(20);
                     int flags = in.get(); // should be 0
                     while (in.position() < next) {
                         String s = PEStringTable.getString0(in, next - in.position());
@@ -373,6 +373,12 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = String.format("S_UDT name=%s typeindex=0x%x", name, typeIndex);
                     break;
                 }
+                case S_BLOCK32: {
+                    info = String.format("S_BLOCK32", cmd);
+                    // unimplemented
+                    in.position(next);
+                    break;
+                }
                 default:
                     info = String.format("(UNKNOWN) cmd=0x%x", cmd);
                     break;
@@ -389,7 +395,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             }
 
             if (next != in.position()) {
-                ctx.error("*** debug$S subsectionn did not consume exact bytes: want=0x%x current=0x%x", next - sectionBegin, in.position() - sectionBegin);
+                ctx.error("*** debug$S DEBUG_S_SYMBOLS cmd=0x%x addr0x%05x did not consume exact bytes: want=0x%x current=0x%x align=%d", cmd, start - sectionBegin, sectionBegin, next - sectionBegin, in.position() - sectionBegin, peSection.alignment());
             }
             in.position(next);
         }

@@ -4,16 +4,16 @@ import com.redhat.coffutil.cv.CVSymbolSection;
 import com.redhat.coffutil.cv.CVTypeSection;
 
 import java.io.PrintStream;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class PECoffFile extends CoffFile {
 
-    private final Vector<CVSymbolSection> cvSymbols;
-    private final Vector<CVTypeSection> cvTypes;
+    private final ArrayList<CVSymbolSection> cvSymbols;
+    private final ArrayList<CVTypeSection> cvTypes;
     private final String directive;
 
     // hdr, sections, symbols, cvSymbols, directive);
-    PECoffFile(PEFileHeader hdr, PESection[] sections, PESymbolTable symbols, Vector<CVSymbolSection> cvSymbols, Vector<CVTypeSection> cvTypes, String directive) {
+    PECoffFile(PEFileHeader hdr, PESection[] sections, PESymbolTable symbols, ArrayList<CVSymbolSection> cvSymbols, ArrayList<CVTypeSection> cvTypes, String directive) {
         super(hdr, sections, symbols);
         this.cvSymbols = cvSymbols;
         this.cvTypes = cvTypes;
@@ -38,7 +38,7 @@ public class PECoffFile extends CoffFile {
         //cvSymbols.validate();
     }
 
-    public Vector<CVSymbolSection> getCvSymbols() { return cvSymbols; }
+    public ArrayList<CVSymbolSection> getCvSymbols() { return cvSymbols; }
 
     public String getDirective() { return directive; }
 }

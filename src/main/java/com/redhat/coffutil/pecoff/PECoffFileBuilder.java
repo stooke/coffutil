@@ -8,7 +8,7 @@ import com.redhat.coffutil.cv.CVTypeSectionBuilder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class PECoffFileBuilder extends CoffObjectFileBuilder {
 
@@ -46,8 +46,8 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder {
         final PEFileHeader hdr;
         final PESection[] sections;
         PESymbolTable symbols = null;
-        Vector<CVSymbolSection> cvSymbols = new Vector<>(10);
-        Vector<CVTypeSection> cvTypes = new Vector<>(10);
+        ArrayList<CVSymbolSection> cvSymbols = new ArrayList<>(10);
+        ArrayList<CVTypeSection> cvTypes = new ArrayList<>(10);
         String directive = null;
 
         // parse header

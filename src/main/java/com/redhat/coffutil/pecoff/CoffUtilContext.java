@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class CoffUtilContext {
 
@@ -16,7 +16,7 @@ public class CoffUtilContext {
     ByteBuffer in;
 
     // command line
-    Vector<String> inputFiles = new Vector<>();
+    ArrayList<String> inputFiles = new ArrayList<>();
     private int debugLevel = 1;
     boolean dump = false;
     String split = null;
@@ -116,8 +116,7 @@ public class CoffUtilContext {
         return reportStream;
     }
 
-    public void debug(String format, Object ... args)
-    {
+    public void debug(String format, Object ... args) {
         if (debugLevel >= 2) {
             debugStream.format(format, args);
         }

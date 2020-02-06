@@ -9,9 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 public class CVSymbolSection {
 
@@ -134,10 +134,10 @@ public class CVSymbolSection {
 
     private final HashMap<Integer, FileInfo> sourceFiles;
     private final HashMap<Integer, StringInfo> stringTable;
-    private final Vector<LineInfo> lines;
+    private final ArrayList<LineInfo> lines;
     private final HashMap<String, String> env;
 
-    CVSymbolSection(HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, Vector<LineInfo> lines, HashMap<String,String> env) {
+    CVSymbolSection(HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, ArrayList<LineInfo> lines, HashMap<String,String> env) {
         this.sourceFiles = sourceFiles;
         this.stringTable = stringTable;
         this.lines = lines;
