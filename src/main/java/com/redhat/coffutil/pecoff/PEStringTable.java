@@ -42,7 +42,7 @@ public class PEStringTable {
         if (rawName[0] != 0 && rawName[0]!= '/'){
             return new String(rawName).trim();
         } else {
-            // it's a long name; must get from the symbol table
+            /* it's a long name; must get from the symbol table */
             int oldposition = in.position();
             in.position(oldposition - length + 4);
             int offset = rawName[0] != '/' ? in.getInt() : parseInt(rawName, 1);

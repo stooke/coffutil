@@ -8,26 +8,26 @@ public class PESection {
 
     private static final int COFF_SECTION_HEADER_SIZE = 40;
 
-    private static final int COFF_TEXT_SECTION  = 0x00000020;   // .text IMAGE_SCN_CNT_CODE
-    private static final int COFF_DATA_SECTION  = 0x00000040;   // .data IMAGE_SCN_CNT_INITIALIZED_DATA
-    private static final int COFF_BSS_SECTION   = 0x00000080;   // .bss  IMAGE_SCN_CNT_UNINITIALIZED_DATA
+    private static final int COFF_TEXT_SECTION  = 0x00000020;   /* .text IMAGE_SCN_CNT_CODE */
+    private static final int COFF_DATA_SECTION  = 0x00000040;   /* .data IMAGE_SCN_CNT_INITIALIZED_DATA */
+    private static final int COFF_BSS_SECTION   = 0x00000080;   /* .bss  IMAGE_SCN_CNT_UNINITIALIZED_DATA */
 
-    private static final int PE_OTHER_SECTION = 0x00000100;     // IMAGE_SCN_LNK_OTHER
-    private static final int PE_INFO_SECTION  = 0x00000200;     // IMAGE_SCN_LNK_INFO
-    private static final int PE_REMOVE        = 0x00000800;     // IMAGE_SCN_LNK_REMOVE
-    private static final int PE_COMDAT        = 0x00001000;     // IMAGE_SCN_LNK_COMDAT
+    private static final int PE_OTHER_SECTION = 0x00000100;     /* IMAGE_SCN_LNK_OTHER */
+    private static final int PE_INFO_SECTION  = 0x00000200;     /* IMAGE_SCN_LNK_INFO */
+    private static final int PE_REMOVE        = 0x00000800;     /* IMAGE_SCN_LNK_REMOVE */
+    private static final int PE_COMDAT        = 0x00001000;     /* IMAGE_SCN_LNK_COMDAT */
 
     private static final int PE_ALINGMENT_MASK   = 0x00f00000;
     private static final int PE_ALINGMENT_SHIFT  = 20;
 
-    private static final int PE_EXTENDED_RELOCS  = 0x01000000; // IMAGE_SCN_LNK_NRELOC_OVFL
-    private static final int PE_DISARDABLE       = 0x02000000; // IMAGE_SCN_MEM_DISCARDABLE
-    private static final int PE_DONT_CACHE       = 0x04000000; // IMAGE_SCN_MEM_NOT_CACHED
-    private static final int PE_DONT_PAGE        = 0x08000000; // IMAGE_SCN_MEM_NOT_PAGED
-    private static final int PE_SHAREABLE        = 0x10000000; // IMAGE_SCN_MEM_SHARED
-    private static final int PE_PERM_EXECUTE     = 0x20000000; // IMAGE_SCN_MEM_EXECUTE
-    private static final int PE_PERM_READ        = 0x40000000; // IMAGE_SCN_MEM_READ
-    private static final int PE_PERM_WRITE       = 0x80000000; // IMAGE_SCN_MEM_WRITE
+    private static final int PE_EXTENDED_RELOCS  = 0x01000000; /* IMAGE_SCN_LNK_NRELOC_OVFL */
+    private static final int PE_DISARDABLE       = 0x02000000; /* IMAGE_SCN_MEM_DISCARDABLE */
+    private static final int PE_DONT_CACHE       = 0x04000000; /* IMAGE_SCN_MEM_NOT_CACHED */
+    private static final int PE_DONT_PAGE        = 0x08000000; /* IMAGE_SCN_MEM_NOT_PAGED */
+    private static final int PE_SHAREABLE        = 0x10000000; /* IMAGE_SCN_MEM_SHARED */
+    private static final int PE_PERM_EXECUTE     = 0x20000000; /* IMAGE_SCN_MEM_EXECUTE */
+    private static final int PE_PERM_READ        = 0x40000000; /* IMAGE_SCN_MEM_READ */
+    private static final int PE_PERM_WRITE       = 0x80000000; /* IMAGE_SCN_MEM_WRITE */
 
     public static class PESectionHeader {
 

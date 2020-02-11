@@ -11,11 +11,11 @@ public class CoffUtilContext {
     private PrintStream debugStream = System.err;
     private PrintStream reportStream = System.out;
 
-    // work variables
+    /* work variables */
     String currentInputFilename;
     ByteBuffer in;
 
-    // command line
+    /* command line */
     ArrayList<String> inputFiles = new ArrayList<>();
     private int debugLevel = 1;
     boolean dump = false;
@@ -80,7 +80,7 @@ public class CoffUtilContext {
             fatal("no input files specified");
             System.exit(1);
         }
-        // spit out a message if there's no action to take
+        /* spit out a message if there's no action to take */
         //if (!(dump || split != null)) {
             //err.println("nothing to do!");
             //System.exit(1);

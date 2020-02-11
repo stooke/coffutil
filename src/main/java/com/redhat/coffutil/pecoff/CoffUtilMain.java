@@ -20,7 +20,9 @@ public class CoffUtilMain {
             ctx.info("processing " + fn + "\n");
             if (fn.endsWith(".pdb")) {
                 PDBFile pdbFile = new PDBBuilder().build(fn);
-                pdbFile.dump(ctx.getReportStream());
+                if (ctx.dump) {
+                    pdbFile.dump(ctx.getReportStream());
+                }
             } else {
                 PECoffFile cf = new PECoffFileBuilder().build(fn);
                 if (ctx.dump) {
@@ -30,7 +32,7 @@ public class CoffUtilMain {
                     ByteBuffer in = Util.readFile(fn);
                     try {
                         int snum = 0;
-                        // TODO : write header, string table, reloc tables, symbol tables
+                        /* TODO : write header, string table, reloc tables, symbol tables */
                         for (PESection shdr : cf.getSections()) {
                             String sfn = ctx.split + "-" + snum + "-" + shdr.getName();
                             ctx.debug("dumping " + shdr.getName() + " to " + sfn + "\n");

@@ -28,7 +28,7 @@ public class PEFileHeader {
         pemagic = in.getShort();
         final boolean isPE = (pemagic == 0x4550);
         if (isPE) {
-            // magic is 4 bytes in a PE executable
+            /* magic is 4 bytes in a PE executable */
             in.getShort();
         }
         pemachine = isPE ? in.getShort() : 0; // 0x8664

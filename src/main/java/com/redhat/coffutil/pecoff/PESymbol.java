@@ -15,7 +15,7 @@ class PESymbol {
     int         numaux;         /* Auxiliary Count */
     private int complexType;
     private int baseType;
-    private int index;          // Symbol index (calculated)
+    private int index;          /* Symbol index (calculated) */
 
    // private static final int IMAGE_SYM_DTYPE_NULL = 0;
    // private static final int IMAGE_SYM_DTYPE_POINTER = 1;
@@ -56,10 +56,10 @@ class PESymbol {
             auxData = in.slice().asReadOnlyBuffer();
             auxData.order(ByteOrder.LITTLE_ENDIAN);
 
-            // there is more data to skip
-            // 18 bytes is the size of a symbol table entry
+            /* there is more data to skip */
+            /* 18 bytes is the size of a symbol table entry */
         }
-        // skip to end of aux
+        /* skip to end of aux */
         in.position(newpos);
     }
 
@@ -86,9 +86,9 @@ class PESymbol {
         auxData.position(0);
         final String info;
         switch (storageclass) {
-            case IMAGE_SYM_CLASS_EXTERNAL: // might be a function def
+            case IMAGE_SYM_CLASS_EXTERNAL: /* might be a function def */
                 if (complexType == IMAGE_SYM_DTYPE_FUNCTION && section > 9) {
-                    // is a function def
+                    /* is a function def */
                     int bftag = auxData.getInt();
                     int size = auxData.getInt();
                     int lineNumberPtr = auxData.getInt();
@@ -99,7 +99,7 @@ class PESymbol {
                     info = "??";
                 }
                 break;
-            case IMAGE_SYM_CLASS_FUNCTION: // .bf and /ef
+            case IMAGE_SYM_CLASS_FUNCTION: /* .bf and /ef */
                 if (name.equals(".bf")) {
                     /*int padding1 =*/ auxData.getInt();
                     int lineNumber = auxData.getShort();
@@ -112,7 +112,7 @@ class PESymbol {
                     info = "??";
                 }
                 break;
-            case IMAGE_SYM_CLASS_FILE:  // is this a filedef?
+            case IMAGE_SYM_CLASS_FILE:  /* is this a filedef? */
                 String fn = PEStringTable.resolve(auxData, fileHeader, 18);
                 info = "fn=" + fn;
                 break;

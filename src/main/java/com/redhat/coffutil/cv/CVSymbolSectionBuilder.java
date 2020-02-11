@@ -31,10 +31,10 @@ public class CVSymbolSectionBuilder implements CVConstants {
 
         ctx.debug("debug$S section %s %s begin=0x%x end=0x%x\n", peSection.getName(), peSection.translateCharacteristics(peSection.getCharacteristics()), sectionBegin, sectionEnd);
 
-        // parse symbol debug info
+        /* parse symbol debug info */
         while (in.position() < sectionEnd) {
 
-            // align on 4 bytes
+            /* align on 4 bytes */
             while (((in.position() - sectionBegin) & 3) != 0) {
                 in.get();
             }
@@ -73,14 +73,14 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     short flags = in.getShort();
                     int cbCon = in.getInt();
                     boolean hasColumns = (flags & 1) == 1;
-                    // unfortunatly, startOffset (the function address) is 0 here but added in by a relocation entry later
+                    /* unfortunatly, startOffset (the function address) is 0 here but added in by a relocation entry later */
                     StringBuilder infoBuilder = new StringBuilder(String.format("DEBUG_S_LINES(0xf2) startOffset=0x%x:%x flags=0x%x cbCon=0x%x", segment, startOffset, flags, cbCon));
                     while (in.position() < nextPosition) {
                         int fileId = in.getInt();
                         int nLines = in.getInt();
                         int fileBlock = in.getInt();
                         infoBuilder.append(String.format("\n    File 0x%04x nLines=%d lineBlockSize=0x%x", fileId, nLines, fileBlock));
-                        // line number entries
+                        /* line number entries */
                         if (hasColumns) {
                             ctx.error("**** can't yet handle columns");
                         }
@@ -124,7 +124,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
                 }
                 case DEBUG_S_FILECHKSMS: {
-                    // checksum
+                    /* checksum */
                     int recordStart = in.position();
                     while (in.position() < nextPosition) {
                         int fileId = in.position() - recordStart;
@@ -134,7 +134,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         byte[] checksum = new byte[16];
                         in.get(checksum);
                         sourceFiles.put(fileId, new CVSymbolSection.FileInfo(fileId, fileStringId, cb, checksumType, checksum));
-                        // align on 4 bytes
+                        /* align on 4 bytes */
                         while (((in.position() - sectionBegin) & 3) != 0) {
                             in.get();
                         }
@@ -154,7 +154,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                                 infoBuilder.append(String.format("%02x", ((int) (b) & 0xff)));
                             }
                             infoBuilder.append("]");
-                            // align on 4 bytes
+                            /* align on 4 bytes */
                             while (((in.position() - sectionBegin) & 3) != 0) {
                                 in.get();
                             }
@@ -195,7 +195,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             switch (cmd) {
                 case S_BUILDINFO: {
                     int cvTypeIndex = in.getInt();
-                    // cvTypeIndex is a typeIndex that will be found in the current file
+                    /* cvTypeIndex is a typeIndex that will be found in the current file */
                     info = String.format("S_BUILDINFO local typeIndex=0x%x", cvTypeIndex);
                     break;
                 }
@@ -335,9 +335,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
                 }
                 case S_REGREL32: {
-                    int offset = in.getInt();       // offset from the register
-                    int typeIndex = in.getInt();    // type index
-                    int reg = in.getShort();        // register
+                    int offset = in.getInt();       /* offset from the register */
+                    int typeIndex = in.getInt();    /* type index */
+                    int reg = in.getShort();        /* register */
                     String name = PEStringTable.getString0(in, next - in.position());
                     info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=0x%x", name, offset, typeIndex, reg);
                     break;
@@ -356,7 +356,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
                     info = String.format("S_DEFRANGE_FRAMEPOINTER_REL o1=0x%x os=0x%x is=0x%x cbr=0x%x", offsetToFramPointer, offsetStart, isectStart, cbRange);
-                    // some number of gaps:
+                    /* some number of gaps: */
                     //    short gapStartOffset = in.getShort();
                     //    short gapcbRange = in.getShort();
                     break;
@@ -375,7 +375,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 }
                 case S_BLOCK32: {
                     info = String.format("S_BLOCK32", cmd);
-                    // unimplemented
+                    /* unimplemented */
                     in.position(next);
                     break;
                 }

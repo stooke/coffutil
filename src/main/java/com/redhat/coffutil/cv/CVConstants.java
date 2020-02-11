@@ -26,7 +26,7 @@ public interface CVConstants {
     int S_PROC_ID_END = 0x114f;
     int S_BUILDINFO  = 0x114c;
 
-    // S_FRAMEPROC flags
+    /* S_FRAMEPROC flags */
     int SFP_HAS_ALLOCA = 0x01;
     int SFP_HAS_SETJMP = 0x02;
     int SFP_HAS_LONGJMP = 0x04;
@@ -42,22 +42,22 @@ public interface CVConstants {
     int DEBUG_S_STRINGTABLE = 0xf3;
     int DEBUG_S_FILECHKSMS  = 0xf4;
 
-    // type table
+    /* type table */
     int T_NOTYPE       = 0x0000;
     int T_VOID         = 0x0003;
-    int T_CHAR         = 0x0010; // 8 bit signed (java type)
+    int T_CHAR         = 0x0010; /* 8 bit signed (java type) */
     int T_WCHAR        = 0x0071;
-    int T_CHAR16       = 0x007a; // 16 bit unicode (Java type)
-    int T_SHORT        = 0x0011; // 16 bit signed int (Java type)
-    int T_LONG         = 0x0014; // 32 bit signed (java type? maybe T_INT4?)
-    int T_QUAD         = 0x0013; // 64 bit signed int (Java type)
-    int T_REAL32       = 0x0040; // 32 bit float (Java type)
-    int T_REAL64       = 0x0041; // 64 but double (Java type)
-    int T_RCHAR        = 0x0070; // ?? "really a char"
+    int T_CHAR16       = 0x007a; /* 16 bit unicode (Java type) */
+    int T_SHORT        = 0x0011; /* 16 bit signed int (Java type) */
+    int T_LONG         = 0x0014; /* 32 bit signed (java type? maybe T_INT4?) */
+    int T_QUAD         = 0x0013; /* 64 bit signed int (Java type) */
+    int T_REAL32       = 0x0040; /* 32 bit float (Java type) */
+    int T_REAL64       = 0x0041; /* 64 but double (Java type) */
+    int T_RCHAR        = 0x0070; /* ?? "really a char" */
 
     int T_POINTER_BITS  = 0x0700;
-    int T_POINTER32     = 0x0400; // 32 bit pointer
-    int T_POINTER64     = 0x0600; // 64 bit pointer
+    int T_POINTER32     = 0x0400; /* 32 bit pointer */
+    int T_POINTER64     = 0x0600; /* 64 bit pointer */
 
     int LF_MODIFIER    = 0x1001;
     int LF_POINTER     = 0x1002;

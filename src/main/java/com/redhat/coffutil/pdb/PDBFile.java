@@ -27,7 +27,7 @@ public class PDBFile extends MultiStreamFile {
 
     private void buildPDBInfoStram(ByteBuffer in) {
 
-        // read header
+        /* read header */
         int version = in.getInt();
         int signature = in.getInt();
         int age = in.getInt();
@@ -35,7 +35,7 @@ public class PDBFile extends MultiStreamFile {
         in.get(checksum);
         Instant sig = Instant.ofEpochSecond(signature);
         CoffUtilContext.getInstance().info("pdbinfo: version=%d sig=%d(%s) age=%d checksum=[%s]\n", version, signature, sig.toString(), age, Util.dumpHex(checksum));
-        assert version == VERSION_VC70;  // this is the only version we can handle
+        assert version == VERSION_VC70;  /* this is the only version we can handle */
         // TODO read hash table
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class CVSymbolSection {
 
-    // parsing ".debug$S" sections
+    /* parsing ".debug$S" sections */
 
    // private static final String[] languageStrings = { "C", "C++", "Fortran", "masm", "Pascal", "Basic", "COBOL", "LINK", "CVTRES", "CVTPGT", "C#", "VisualBasic", "ILASM", "Java", "JScript", "MSIL", "HSIL" };
 
@@ -72,8 +72,8 @@ public class CVSymbolSection {
     }
 
     static class LineInfo {
-        // this record requires a backpointer to the function start address
-        // i.e. 'addr' is an offset from function start
+        /* this record requires a backpointer to the function start address */
+        /* i.e. 'addr' is an offset from function start */
 
         int addr;
         int fileId;

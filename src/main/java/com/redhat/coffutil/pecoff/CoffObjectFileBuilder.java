@@ -1,7 +1,6 @@
 package com.redhat.coffutil.pecoff;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -16,13 +15,13 @@ public class CoffObjectFileBuilder {
         final CoffFile coffFile;
         in.order(ByteOrder.LITTLE_ENDIAN);
         in.rewind();
-        // test if this is an executable of an object file
+        /* test if this is an executable of an object file */
         final short mzmaybe = in.getShort();
         if (mzmaybe == 0x5a4d) {
             CoffUtilContext.getInstance().debug("'MZ' detected; nust be an executable\n");
             coffFile = parseExecutable(in);
         } else {
-            // should be a COFF object file
+            /* should be a COFF object file */
             in.rewind();
             coffFile = parseCoff(in, false);
         }
@@ -42,28 +41,28 @@ public class CoffObjectFileBuilder {
         final PESection[] sections;
         PESymbolTable symbols = null;
 
-        // parse header
+        /* parse header */
         hdr = PEFileHeader.build(in);
 
-        // parse optional header
+        /* parse optional header */
         if (hdr.getOptionalHeaderSize() > 0) {
             int oldposition = in.position();
             //PEOptionalHeader32 ohdr = new PEOptionalHeader32(in);
-            // seek to start of section headers, in case optionalheader is padded
+            /* seek to start of section headers, in case optionalheader is padded */
             in.position(oldposition + hdr.getOptionalHeaderSize());
         }
 
-        // parse sections
+        /* parse sections */
         sections = new PESection[hdr.getNumsections()];
         for (int n = 0; n < hdr.getNumsections(); n++) {
             PESection shdr = PESection.build(in, hdr);
             sections[n] = shdr;
         }
 
-        // parse symbols
+        /* parse symbols */
         if (hdr.getNumSymbols() > 0) {
             symbols = PESymbolTable.build(in, hdr);
-        } // if there's no symbol table at all, keep symbols null, instead of array[0]
+        } /* if there's no symbol table at all, keep symbols null, instead of array[0] */
 
         return new CoffFile(hdr, sections, symbols);
     }

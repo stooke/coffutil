@@ -45,10 +45,10 @@ public class CVTypeSectionBuilder implements CVConstants {
             ctx.info("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
         }
 
-        // parse symbol debug info
+        /* parse symbol debug info */
         while (in.position() < sectionEnd) {
 
-            // align on 4 bytes ?
+            /* align on 4 bytes ? */
             while (((in.position() - sectionBegin) & 3) != 0) {
                 in.get();
             }
@@ -123,8 +123,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_FIELDLIST: {
-                    // skip padding
-                    // this code would be buggy because in.get() is signed
+                    /* skip padding */
+                    /* this code would be buggy because in.get() is signed */
                     // while (in.get(in.position()) >= LF_PAD0) {
                     //    in.get();
                     //}
@@ -143,7 +143,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int fieldListIndex = in.getInt();
                     int derivedFromIndex = in.getInt();
                     int vshapeIndex = in.getInt();
-                    // TODO name and data
+                    /* TODO name and data */
                     String ln = leaf==LF_CLASS ? "LF_CLASS" : "LF_STRUCTURE";
                     info = String.format("%s count=%d properties=0x%04x fieldListIndex=0x%x derivedFrom=0x%x vshape=0x%x", ln, count, properties, fieldListIndex, derivedFromIndex, vshapeIndex);
                     break;
@@ -195,11 +195,12 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_TYPESERVER2: {
-                    /*  for some very odd reason GUID is stored like this:
-                    int guid1 = in.getInt();
-                    int guid2 = in.getShort();
-                    int guid3 = in.getShort();
-                    byte[] guid5[10]
+                    /*
+                     * for some very odd reason GUID is stored like this:
+                     *    int guid1 = in.getInt();
+                     *    int guid2 = in.getShort();
+                     *    int guid3 = in.getShort();
+                     *    byte[] guid5[10]
                      */
                     byte[] guid = new byte[16];
                     in.get(guid);
@@ -223,8 +224,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
             }
 
-            if (ctx.getDebugLevel() > 1) {
-                ctx.debug("  0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, info);
+            if (info != null) {
+                ctx.info("  0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, info);
             }
             currentTypeIndex++;
             in.position(nextPosition);

@@ -12,7 +12,7 @@ public class PECoffFile extends CoffFile {
     private final ArrayList<CVTypeSection> cvTypes;
     private final String directive;
 
-    // hdr, sections, symbols, cvSymbols, directive);
+    /* hdr, sections, symbols, cvSymbols, directive */
     PECoffFile(PEFileHeader hdr, PESection[] sections, PESymbolTable symbols, ArrayList<CVSymbolSection> cvSymbols, ArrayList<CVTypeSection> cvTypes, String directive) {
         super(hdr, sections, symbols);
         this.cvSymbols = cvSymbols;

@@ -42,7 +42,7 @@ class PEOptionalHeader32 {
      };
      **/
 
-    private int mMagic; // 0x010b - PE32, 0x020b - PE32+ (64 bit)
+    private int mMagic; /* 0x010b - PE32, 0x020b - PE32+ (64 bit) */
     private int mMajorLinkerVersion;
     private int mMinorLinkerVersion;
     private int mSizeOfCode;
@@ -75,7 +75,7 @@ class PEOptionalHeader32 {
 
     PEOptionalHeader32(ByteBuffer in) {
         int offset = in.position();
-        mMagic = in.getShort(); // 0x010b - PE32, 0x020b - PE32+ (64 bit)
+        mMagic = in.getShort(); /* 0x010b - PE32, 0x020b - PE32+ (64 bit) */
         mMajorLinkerVersion = in.get();
         mMinorLinkerVersion = in.get();
         mSizeOfCode = in.getInt();

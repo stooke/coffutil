@@ -46,9 +46,9 @@ public class MultiStreamFile {
         int blockSize;
         int freeBlockMapBlock;
         int numBlocks;
-        int numDirectoryBytes; // root stream size
+        int numDirectoryBytes; /* root stream size */
         int unknown;
-        int blockMapAddr;  // root stream page number list
+        int blockMapAddr;  /* root stream page number list */
 
         int build(ByteBuffer in, int pos) {
             //CoffUtilContext.instance().debug(Util.dumpHex(in, pos, magic.length()));
@@ -56,9 +56,9 @@ public class MultiStreamFile {
             blockSize = in.getInt();
             freeBlockMapBlock = in.getInt();
             numBlocks = in.getInt();
-            numDirectoryBytes = in.getInt();  // root stream size
+            numDirectoryBytes = in.getInt();  /* root stream size */
             unknown = in.getInt();
-            blockMapAddr = in.getInt();  // root stream page number list
+            blockMapAddr = in.getInt();  /* root stream page number list */
             return in.position();
         }
 
@@ -103,20 +103,20 @@ public class MultiStreamFile {
             this.pageList = pageList;
         }
 
-        // read pagelist
+        /* read pagelist */
 
         protected ByteBuffer get(ByteBuffer in) {
             if (bytes == null) {
                 int bs = superblock.blockSize;
-                byte[] inbytes = in.array(); // this fails for a readonly buffer
+                byte[] inbytes = in.array(); /* this fails for a readonly buffer */
                 bytes = new byte[streamsize];
-                int numPages = streamsize / bs;  // round down to get cound of whole blocks
-                // read full pages first
+                int numPages = streamsize / bs;  /* round down to get cound of whole blocks */
+                /* read full pages first */
                 for (int i = 0; i < numPages; i++) {
                     int srcPos = pageList[i] * bs;
                     System.arraycopy(inbytes, srcPos, bytes, i * bs, bs);
                 }
-                // read remainder partial block
+                /* read remainder partial block */
                 int remainder = streamsize % bs;
                 if (remainder != 0) {
                     int srcPos = pageList[numPages] * bs;
@@ -164,7 +164,7 @@ public class MultiStreamFile {
             buffer.position(0);
             int n = buffer.getInt();
             CoffUtilContext.getInstance().debug("Numsteams = %s\n");
-            streams = new StreamDef[n + 1]; // + 1 to leave room for this stream, the root stream
+            streams = new StreamDef[n + 1]; /* + 1 to leave room for this stream, the root stream */
             streams[0] = this;
             int sizePos = buffer.position();
             int plPos = buffer.position() + Integer.BYTES * n;

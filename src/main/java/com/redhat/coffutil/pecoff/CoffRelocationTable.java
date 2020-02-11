@@ -19,7 +19,7 @@ class CoffRelocationTable {
         void dump(PrintStream out, CoffFile ofile) {
             PESymbol symbol = ofile.getSymbols().get(symbolIndex);
             final String descr;
-            // assume x64
+            /* assume x64 */
             switch (type) {
                 case 0x00: descr = "Ignore(0)"; break;
                 case 0x01: descr = "IMAGE_REL_AMD64_ADDR64(1)"; break;

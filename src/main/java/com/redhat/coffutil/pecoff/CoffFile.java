@@ -8,7 +8,7 @@ public class CoffFile {
     private final PESection[] sections;
     private final PESymbolTable symbols;
 
-    // hdr, sections, symbols, cvSymbols, directive);
+    /* hdr, sections, symbols, cvSymbols, directive */
     public CoffFile(PEFileHeader hdr, PESection[] sections, PESymbolTable symbols) {
         this.hdr = hdr;
         this.sections = sections;
