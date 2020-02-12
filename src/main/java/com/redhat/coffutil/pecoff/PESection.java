@@ -1,5 +1,7 @@
 package com.redhat.coffutil.pecoff;
 
+import com.redhat.coffutil.CoffUtilContext;
+
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

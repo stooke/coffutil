@@ -1,4 +1,4 @@
-package com.redhat.coffutil.pecoff;
+package com.redhat.coffutil;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ public class CoffUtilContext {
 
     /* work variables */
     String currentInputFilename;
-    ByteBuffer in;
 
     /* command line */
     ArrayList<String> inputFiles = new ArrayList<>();
@@ -47,8 +46,6 @@ public class CoffUtilContext {
             } else {
                 switch (arg) {
                     case "-out":
-                        prev = arg;
-                        break;
                     case "-split":
                         prev = arg;
                         break;
@@ -87,7 +84,7 @@ public class CoffUtilContext {
         //}
     }
 
-    public void cleanup() {
+    void cleanup() {
         if (debugStream != System.err) {
             debugStream.close();
         }
@@ -112,7 +109,7 @@ public class CoffUtilContext {
         }
     }
 
-    public PrintStream getReportStream() {
+    PrintStream getReportStream() {
         return reportStream;
     }
 

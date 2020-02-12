@@ -1,19 +1,27 @@
 package com.redhat.coffutil.pecoff;
 
+import com.redhat.coffutil.CoffUtilContext;
+import com.redhat.coffutil.ExeFile;
+import com.redhat.coffutil.ExeFileBuilder;
 import com.redhat.coffutil.cv.CVSymbolSection;
 import com.redhat.coffutil.cv.CVSymbolSectionBuilder;
 import com.redhat.coffutil.cv.CVTypeSection;
 import com.redhat.coffutil.cv.CVTypeSectionBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-public class PECoffFileBuilder extends CoffObjectFileBuilder {
+public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileBuilder {
 
-    public PECoffFile build(String fn) throws IOException {
-        ByteBuffer in = Util.readFile(fn);
+    public ExeFile build(File file) throws IOException {
+        return buildPECoffFile(file);
+    }
+
+    public PECoffFile buildPECoffFile(File file) throws IOException {
+        ByteBuffer in = Util.readFile(file);
         return build(in);
     }
 

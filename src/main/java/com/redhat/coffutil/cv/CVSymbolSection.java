@@ -1,6 +1,6 @@
 package com.redhat.coffutil.cv;
 
-import com.redhat.coffutil.pecoff.CoffUtilContext;
+import com.redhat.coffutil.CoffUtilContext;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;

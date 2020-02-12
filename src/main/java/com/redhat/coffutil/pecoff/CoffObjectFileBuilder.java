@@ -1,13 +1,16 @@
 package com.redhat.coffutil.pecoff;
 
+import com.redhat.coffutil.CoffUtilContext;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class CoffObjectFileBuilder {
+class CoffObjectFileBuilder {
 
-    CoffFile build(String fn) throws IOException {
-        ByteBuffer in = Util.readFile(fn);
+    CoffFile buildCoffFile(File file) throws IOException {
+        ByteBuffer in = Util.readFile(file);
         return build(in);
     }
 

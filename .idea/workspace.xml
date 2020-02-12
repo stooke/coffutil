@@ -2,27 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFileBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFileBuilderFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffObjectFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffObjectFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffRelocationTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffRelocationTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilContext.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEFileHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEFileHeader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEOptionalHeader32.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEOptionalHeader32.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEStringTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEStringTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESymbol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESymbol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESymbolTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESymbolTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

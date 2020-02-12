@@ -1,8 +1,10 @@
 package com.redhat.coffutil.pecoff;
 
+import com.redhat.coffutil.ExeFile;
+
 import java.io.PrintStream;
 
-public class CoffFile {
+public class CoffFile implements ExeFile {
 
     private final PEFileHeader hdr;
     private final PESection[] sections;

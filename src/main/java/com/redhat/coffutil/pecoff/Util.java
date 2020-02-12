@@ -1,5 +1,6 @@
 package com.redhat.coffutil.pecoff;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -23,9 +24,9 @@ public abstract class Util {
         return sb.toString();
     }
 
-    public static ByteBuffer readFile(final String fn) throws IOException {
+    public static ByteBuffer readFile(final File file) throws IOException {
         ByteBuffer buffer = null;
-        RandomAccessFile coffFile = new RandomAccessFile(fn,"r");
+        RandomAccessFile coffFile = new RandomAccessFile(file,"r");
         FileChannel channel = coffFile.getChannel();
         long fsize = channel.size();
         buffer = ByteBuffer.allocate((int) fsize);

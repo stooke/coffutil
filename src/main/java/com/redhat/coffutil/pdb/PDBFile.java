@@ -1,13 +1,14 @@
 package com.redhat.coffutil.pdb;
 
 import com.redhat.coffutil.msf.MultiStreamFile;
-import com.redhat.coffutil.pecoff.CoffUtilContext;
+import com.redhat.coffutil.CoffUtilContext;
+import com.redhat.coffutil.ExeFile;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
 
-public class PDBFile extends MultiStreamFile {
+public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private static final int PDB_HEADERS_STREAM = 1;
     private static final int TYPE_INFO_STREAM = 2;
