@@ -2,18 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFileBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/ExeFileBuilderFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -382,11 +373,6 @@
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/settings.gradle</url>
           <option name="timeStamp" value="62" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/CoffUtilContext.java</url>
-          <line>110</line>
-          <option name="timeStamp" value="72" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
