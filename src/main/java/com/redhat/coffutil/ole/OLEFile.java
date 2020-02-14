@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.redhat.coffutil.ole.OLEFile.DirectoryEntry.BYTES;
 import static java.nio.charset.StandardCharsets.UTF_16LE;
@@ -97,12 +98,13 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
         dump(System.out);
         diFAT = new DiFAT().build(in);
         fat = new Fat().build(in);
-        ArrayList<DirectoryEntry> entries = readDirectory(in);
+        List<DirectoryEntry> entries = readDirectory(in);
     }
 
     private int sectorToOffset(int sectorNumber) {
         return (sectorNumber + 1) * sectorSize;
     }
+
 
     class Fat {
 
@@ -111,9 +113,9 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
         //static final int FATSECT = 0xfffffffd;
         //static final int DIFSECT = 0xfffffffc;
 
-        int[] fat;
+        private int[] fat;
 
-        ArrayList<Integer> chain(int start) {
+        List<Integer> chain(int start) {
             ArrayList<Integer> c = new ArrayList<>();
             int n = fat[start];
             c.add(start);
@@ -201,8 +203,8 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
                 major, minor, sectorSize, minisectorSize, numDirectorySectors, directoryStartSector, numFATSectors, numMiniFATSectors, miniFATStartSector, numDIFATSectors, DIFATStartSector);
     }
 
-    private ArrayList<DirectoryEntry> readDirectory(ByteBuffer in) {
-        ArrayList<Integer> chain = fat.chain(directoryStartSector);
+    private List<DirectoryEntry> readDirectory(ByteBuffer in) {
+        List<Integer> chain = fat.chain(directoryStartSector);
         int entriesPerSector = sectorSize / BYTES;
         int numEntries = (major == 3 ? chain.size() : numDirectorySectors) * entriesPerSector;
         ArrayList<DirectoryEntry> entries = new ArrayList<>(numEntries);
