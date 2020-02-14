@@ -33,6 +33,7 @@ public abstract class Util {
         channel.read(buffer);
         channel.close();
         coffFile.close();
+        buffer.position(0);
         return buffer;
     }
 }

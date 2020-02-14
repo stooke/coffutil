@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/ole/OLEFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinary.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/macho/fat/MachOFatBinaryBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/ExeFileBuilderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/ExeFileBuilderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -124,7 +127,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.graal object (hello)">
+  <component name="RunManager" selected="Application.Main">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -384,21 +387,20 @@
           <line>397</line>
           <option name="timeStamp" value="79" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/ole/OLEFile.java</url>
+          <line>278</line>
+          <option name="timeStamp" value="88" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/ole/OLEFile.java</url>
+          <line>97</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="evaluateCodeFragment">
-      <expression>
-        <expression-string>codeViewPos-startPosition</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>in.position()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-    </expressions>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/coffutil$Main.ic" NAME="Main Coverage Results" MODIFIED="1581702865433" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

@@ -1,18 +1,30 @@
 package com.redhat.coffutil.msf;
 
 import com.redhat.coffutil.CoffUtilContext;
+import com.redhat.coffutil.ExeFile;
+import com.redhat.coffutil.ExeFileBuilder;
 import com.redhat.coffutil.pecoff.Util;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class MultiStreamFile {
+public class MultiStreamFile implements ExeFileBuilder, ExeFile {
 
     private MSFSuperBlock superblock;
     private RootStream rootStream;
     private StreamDef[] streams;
     private ByteBuffer fileBuffer;
+
+    @Override
+    public ExeFile build(File file) throws IOException {
+        ByteBuffer in = Util.readFile(file);
+        in.order(ByteOrder.LITTLE_ENDIAN);
+        build(in);
+        return this;
+    }
 
     public void build(ByteBuffer in) {
         this.fileBuffer = in;
