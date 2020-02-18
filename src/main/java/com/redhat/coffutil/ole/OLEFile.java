@@ -17,7 +17,6 @@ import static java.nio.charset.StandardCharsets.UTF_16LE;
 
 public class OLEFile implements ExeFileBuilder, ExeFile {
 
-
     private static final byte[] MAGIC = {(byte)0xd0, (byte)0xcf, 0x11, (byte)0xe0, (byte)0xa1, (byte)0xb1, 0x1a, (byte)0xe1};
 
     private short major;
@@ -36,7 +35,9 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
     private int numDIFATSectors;
 
     private Fat fat;
-    private DiFAT diFAT;
+    private MiniFat miniFat;
+    private DiFat diFat;
+    private List<DirectoryEntry> entries;
 
     public static boolean isOLEFile(File file) {
         ByteBuffer in;
@@ -96,15 +97,44 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
         numDIFATSectors = in.getInt();
         assert ministreamMaxSize == 0x1000;
         dump(System.out);
-        diFAT = new DiFAT().build(in);
-        fat = new Fat().build(in);
-        List<DirectoryEntry> entries = readDirectory(in);
+        diFat = new DiFat().build(in);
+        fat = new Fat().build(in); /* needs the DIFAT */
+        entries = readDirectory(in); /* needs the FAT */
+        miniFat = new MiniFat().build(in); /* needs the FAT and the root directory entry */
+        /* dump out the source directory paths */
+        entries.stream().filter(entry -> entry.name.equals("DebuggerFindSource") ).forEach(entry -> {
+            System.out.format("src: %s\n", entry);
+            byte[] data = entry.getData(in);
+            ByteBuffer b = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+            b.position(Integer.BYTES * 2);
+            int count = b.getInt();
+            String[] dirs = new String[count];
+            for (int i=0; i<count; i++) {
+                int length = b.getInt() / 2;
+                StringBuilder s = new StringBuilder();
+                for (int j=0; j < length; j++) {
+                    char c = b.getChar();
+                    s.append(c);
+                }
+                dirs[i] = s.toString();
+            }
+            for (int i=0; i<dirs.length; i++) {
+                System.out.format("directory %s\n", dirs[0]);
+            }
+        } );
+    }
+
+    private byte[] getStream(ByteBuffer in, int startingSector, int streamSize) {
+        if (streamSize <= ministreamMaxSize && miniFat.miniStream.length > 0) {
+            return miniFat.getSmallStream(startingSector, streamSize);
+        } else {
+            return fat.getLargeStream(in, startingSector, streamSize);
+        }
     }
 
     private int sectorToOffset(int sectorNumber) {
         return (sectorNumber + 1) * sectorSize;
     }
-
 
     class Fat {
 
@@ -113,24 +143,28 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
         //static final int FATSECT = 0xfffffffd;
         //static final int DIFSECT = 0xfffffffc;
 
-        private int[] fat;
+        private int[] sectorMap;
+
+        int next(int start) {
+            return sectorMap[start];
+        }
 
         List<Integer> chain(int start) {
             ArrayList<Integer> c = new ArrayList<>();
-            int n = fat[start];
+            int n = sectorMap[start];
             c.add(start);
             while (n > 0) {
                 c.add(n);
-                n = fat[n];
+                n = sectorMap[n];
             }
             assert n == ENDOFCHAIN;
             return c;
         }
 
-        /*
+/**
         int find(int n) {
-            for (int i=0; i<fat.length; i++) {
-                if (fat[i] == n) {
+            for (int i = 0; i< sectorMap.length; i++) {
+                if (sectorMap[i] == n) {
                     return i;
                 }
             }
@@ -138,29 +172,132 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
         }
 
         void back() {
-            for (int i=0; i<fat.length; i++) {
-                if (fat[i] == ENDOFCHAIN) {
-                    System.out.format("chain 0x%04x:\n", i);
+            int nchain = 0;
+            for (int i = 0; i< sectorMap.length; i++) {
+                if (sectorMap[i] == ENDOFCHAIN) {
+                    nchain++;
+                    System.out.format("chain %2d 0x%04x:\n", nchain, i);
                     for (int j=find(i); j >= 0; j = find(j)) {
                         System.out.format("  0x%04x\n", j);
                     }
                 }
             }
-        }*/
+        }**/
 
         Fat build(ByteBuffer in) {
-            fat = new int[numFATSectors * sectorSize];
+            sectorMap = new int[numFATSectors * sectorSize];
             for (int i = 0; i < numFATSectors; i++) {
-                in.position(diFAT.getOffsetForFatSector(i));
+                in.position(diFat.getOffsetForFatSector(i));
                 for (int j = 0; j < sectorSize; j++) {
-                    fat[i * sectorSize + j] = in.getInt();
+                    sectorMap[i * sectorSize + j] = in.getInt();
                 }
             }
             return this;
         }
+
+        byte[] getLargeStream(ByteBuffer in, int startingSector, long streamSize) {
+            byte[] data = new byte[(int) streamSize];
+            byte[] filedata = in.array();
+            int nSectors = (int) streamSize / sectorSize;
+            int currentSector = startingSector;
+            //List<Integer> chain = chain(startingSector);
+            int remainder = (int) streamSize % sectorSize;
+            for (int i = 0; i < nSectors; i++) {
+                System.arraycopy(filedata, sectorToOffset(currentSector), data, i * sectorSize, sectorSize);
+                currentSector = next(currentSector);
+            }
+            if (remainder != 0) {
+                System.arraycopy(filedata, sectorToOffset(currentSector), data, nSectors * sectorSize, remainder);
+            }
+            return data;
+        }
     }
 
-    class DiFAT {
+    class MiniFat {
+
+        static final int ENDOFCHAIN = 0xfffffffe;
+        //static final int FREESECT = 0xffffffff;
+
+        private int[] sectorMap;
+        private byte[] miniStream;
+
+        MiniFat build(ByteBuffer in) {
+            if (miniFATStartSector == ENDOFCHAIN) {
+                sectorMap = new int[0];
+                miniStream = new byte[0];
+            } else {
+                byte[] fatData = fat.getLargeStream(in, miniFATStartSector, numMiniFATSectors * sectorSize);
+                sectorMap = new int[numMiniFATSectors * sectorSize / Integer.BYTES];
+                ByteBuffer.wrap(fatData).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(sectorMap);
+                DirectoryEntry entry0 = entries.get(0); /* root stream */
+                assert entry0.name.equals("Root Entry");
+                miniStream = fat.getLargeStream(in, entry0.startingSector, (int) entry0.streamSize);
+            }
+            return this;
+        }
+
+        int next(int start) {
+            return sectorMap[start];
+        }
+/**
+        List<Integer> chain(int start) {
+            ArrayList<Integer> c = new ArrayList<>();
+            int n = sectorMap[start];
+            c.add(start);
+            while (n > 0) {
+                c.add(n);
+                n = sectorMap[n];
+            }
+            assert n == ENDOFCHAIN;
+            return c;
+        }
+
+        int find(int n) {
+            for (int i=0; i<sectorMap.length; i++) {
+                if (sectorMap[i] == n) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        void back() {
+            int nchain = 0;
+            for (int i=0; i<sectorMap.length; i++) {
+                if (sectorMap[i] == ENDOFCHAIN) {
+                    nchain++;
+                    System.out.format("chain %2d 0x%04x:\n", nchain, i);
+                    for (int j=find(i); j >= 0; j = find(j)) {
+                        System.out.format("  0x%04x\n", j);
+                    }
+                }
+            }
+        }
+**/
+
+        int miniSectorToOffset(int sector) {
+            return sector * minisectorSize;
+        }
+
+        byte[] getSmallStream(int startingSector, int streamSize) {
+            byte[] data = new byte[streamSize];
+            int nSectors = streamSize / minisectorSize;
+            int currentSector = startingSector;
+            //List<Integer> chain = miniFat.chain(startingSector);
+            int remainder = streamSize % minisectorSize;
+            for (int i = 0; i < nSectors; i++) {
+                System.arraycopy(miniStream, miniSectorToOffset(currentSector), data, i * minisectorSize, minisectorSize);
+                currentSector = miniFat.next(currentSector);
+            }
+            if (remainder != 0) {
+                System.arraycopy(miniStream, miniSectorToOffset(currentSector), data, nSectors * minisectorSize, remainder);
+            }
+            return data;
+        }
+
+    }
+
+    class DiFat {
 
         static final int INITIAL_SIZE = 109;
         int[] difat;
@@ -169,7 +306,7 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
             return sectorToOffset(difat[n]);
         }
 
-        DiFAT build(ByteBuffer in) {
+        DiFat build(ByteBuffer in) {
             difat = new int[INITIAL_SIZE + numDIFATSectors * sectorSize];
             for (int i = 0; i < INITIAL_SIZE; i++) {
                 difat[i] = in.getInt();
@@ -189,7 +326,6 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
             }
             return this;
         }
-
     }
 
     @Override
@@ -199,8 +335,8 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
 
     @Override
     public String toString() {
-        return String.format("ole(%d.%d ssize=%d msize=%d ndirsect=%d dss=%d nfatsect=%d nmfatsect=%d mfatss=%d ndifat=%d difatss=%d)",
-                major, minor, sectorSize, minisectorSize, numDirectorySectors, directoryStartSector, numFATSectors, numMiniFATSectors, miniFATStartSector, numDIFATSectors, DIFATStartSector);
+        return String.format("ole(%d.%d tx=%d bo=%d ssize=%d msize=%d ndirsect=%d dss=%d nfatsect=%d nmfatsect=%d mfatss=%d ndifat=%d difatss=%d)",
+                major, minor, transactionNumber, byteorder, sectorSize, minisectorSize, numDirectorySectors, directoryStartSector, numFATSectors, numMiniFATSectors, miniFATStartSector, numDIFATSectors, DIFATStartSector);
     }
 
     private List<DirectoryEntry> readDirectory(ByteBuffer in) {
@@ -277,6 +413,11 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
             startingSector = in.getInt();
             streamSize = in.getLong();
             return this;
+        }
+
+        byte[] getData(ByteBuffer in) {
+            assert type == 2; /* must be stream type */
+            return getStream(in, startingSector, (int) streamSize);
         }
 
         int getStreamId() {
