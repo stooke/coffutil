@@ -175,7 +175,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             ByteBuffer buffer = get(in);
             buffer.position(0);
             int n = buffer.getInt();
-            CoffUtilContext.getInstance().debug("Numsteams = %s\n");
+            CoffUtilContext.getInstance().debug("Numsteams = %s\n", n);
             streams = new StreamDef[n + 1]; /* + 1 to leave room for this stream, the root stream */
             streams[0] = this;
             int sizePos = buffer.position();
