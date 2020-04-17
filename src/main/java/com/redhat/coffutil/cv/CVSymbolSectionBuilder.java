@@ -373,9 +373,17 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = String.format("S_UDT name=%s typeindex=0x%x", name, typeIndex);
                     break;
                 }
+                case S_WITH32:
                 case S_BLOCK32: {
-                    info = String.format("S_BLOCK32", cmd);
-                    /* unimplemented */
+                    String cmdStr = cmd == S_BLOCK32 ? "S_BLOCK32" : "S_WITH32";
+                    //System.out.format("%s %s\n", cmdStr, Util.dumpHex(in, in.position(), len));
+                    int parentblock = in.getInt();
+                    int blockend = in.getInt();
+                    int blocklen = in.getInt();
+                    int codeoffset = in.getInt();
+                    short segment = in.getShort();
+                    String name = PEStringTable.getNString(in, next - in.position());
+                    info = String.format("%s name=%s parent=0x%x end=0x%x len=0x%x codeoffset=0x%x:%x", cmdStr, name, parentblock, blockend, blocklen, segment, codeoffset);
                     in.position(next);
                     break;
                 }

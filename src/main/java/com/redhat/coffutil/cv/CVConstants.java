@@ -8,6 +8,7 @@ public interface CVConstants {
     int S_END       = 0x0006;
     int S_OBJNAME   = 0x1101;
     int S_BLOCK32   = 0x1103;
+    int S_WITH32    = 0x1104;
     int S_LDATA32_ST = 0x1007;
     int S_FRAMEPROC = 0x1012;
     int S_CONSTANT  = 0x1107;

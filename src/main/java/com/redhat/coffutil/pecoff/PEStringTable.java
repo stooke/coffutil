@@ -9,6 +9,7 @@ public class PEStringTable {
     private PEStringTable() {
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     private static String readNullTerminatedUTF8(ByteBuffer in) {
         int oldpos = in.position();
         while (in.hasRemaining() && in.get() != 0)
@@ -67,7 +68,7 @@ public class PEStringTable {
         return new String(buf, 0, len);
     }
 
-    static String getNString(ByteBuffer in, int mlen) {
+    public static String getNString(ByteBuffer in, int mlen) {
         int maxlen = in.getShort();
         byte[] buf = new byte[maxlen];
         int len = 0;
