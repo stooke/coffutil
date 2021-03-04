@@ -6,6 +6,7 @@
 
 # build directory
 build/
+target/
 
 # Log file
 *.log
