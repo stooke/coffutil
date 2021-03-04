@@ -48,7 +48,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 break;
             }
 
-            ctx.debug("debug$S: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", startPosition,
+            ctx.debug("debug$S: foffset=0x%x soffset=0x%x len=0x%x next=0x%x remain=0x%x cmd=0x%x\n", startPosition,
                         (startPosition - sectionBegin), debugLen, (nextPosition - sectionBegin), (sectionEnd - in.position()), debugCmd);
 
             String info = null;
@@ -60,7 +60,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 }
                 case DEBUG_S_SYMBOLS: {
                     if (ctx.getDebugLevel() > 0) {
-                        info = String.format("DEBUG_S_SYMBOLS off=0x%x len=0x%x next=0x%x", (in.position() - sectionBegin), debugLen, (nextPosition - sectionBegin));
+                        info = String.format("DEBUG_S_SYMBOLS(0xf1) soff=0x%x len=0x%x next=0x%x", (in.position() - sectionBegin), debugLen, (nextPosition - sectionBegin));
                         ctx.info("  0x%04x %s\n", (startPosition - sectionBegin), info);
                         info = null;
                     }
@@ -73,7 +73,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     short flags = in.getShort();
                     int cbCon = in.getInt();
                     boolean hasColumns = (flags & 1) == 1;
-                    /* unfortunatly, startOffset (the function address) is 0 here but added in by a relocation entry later */
+                    /* unfortunately, startOffset (the function address) is 0 here but added in by a relocation entry later */
                     StringBuilder infoBuilder = new StringBuilder(String.format("DEBUG_S_LINES(0xf2) startOffset=0x%x:%x flags=0x%x cbCon=0x%x", segment, startOffset, flags, cbCon));
                     while (in.position() < nextPosition) {
                         int fileId = in.getInt();
@@ -188,7 +188,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             final int cmd = in.getShort();
             final int next = start + len + 2;
             if (ctx.getDebugLevel() > 1) {
-                ctx.debug("  debugsubsection: foffset=0x%x soffset=0x%x len=%d next=0x%x remain=%d cmd=0x%x\n", start,
+                ctx.debug("  debugsubsection: foffset=0x%x soffset=0x%x len=0x%x next=0x%x remain=0x%x cmd=0x%x\n", start,
                         (start - sectionBegin), len, (next - sectionBegin), (endOfSubsection - in.position()), cmd);
             }
             String info;
@@ -263,7 +263,10 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = infoBuilder.toString();
                     break;
                 }
+
                 case S_FRAMEPROC: {
+                    String[] x64Regs = { "none", "sp", "bp", "r13"};
+                    //CVSymbolSectionBuilder.java
                     int frameLength = in.getInt();
                     int padLen = in.getInt();
                     int padOffset = in.getInt();
@@ -271,11 +274,97 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int ehOffset = in.getInt();
                     int ehSection = in.getShort();
                     int flags = in.getInt();
+                    StringBuilder sb = new StringBuilder();
+                    if ((flags & 0x0001) != 0) {
+                        sb.append(" alloca");
+                    }
+                    if ((flags & 0x0002) != 0) {
+                        sb.append(" setjmp");
+                    }
+                    if ((flags & 0x0004) != 0) {
+                        sb.append(" longjmp");
+                    }
+                    if ((flags & 0x0008) != 0) {
+                        sb.append(" inlineasm");
+                    }
+                    if ((flags & 0x0010) != 0) {
+                        sb.append(" eh");
+                    }
+                    if ((flags & 0x0020) != 0) {
+                        sb.append(" inlinespec");
+                    }
+                    if ((flags & 0x0040) != 0) {
+                        sb.append(" seh");
+                    }
+                    if ((flags & 0x0080) != 0) {
+                        sb.append(" naked");
+                    }
+                    if ((flags & 0x0100) != 0) {
+                        sb.append(" seccheck");
+                    }
+                    if ((flags & 0x0200) != 0) {
+                        sb.append(" asynceh");
+                    }
+                    if ((flags & 0x0400) != 0) {
+                        sb.append(" nostackorder");
+                    }
+                    if ((flags & 0x0800) != 0) {
+                        sb.append(" wasinlined"); // into another function  *****
+                    }
+                    if ((flags & 0x1000) != 0) {
+                        sb.append(" gscheck");
+                    }
+                    if ((flags & 0x2000) != 0) {
+                        sb.append(" safebuffers");
+                    }
                     int localBasePointer = (flags >> 14) & 3;
+                    sb.append(" lbp=").append(x64Regs[localBasePointer]);
                     int localParamPointer =  (flags >> 16) & 3;
-                    String[] regs = { "default", "al", "cl", "bl" };
-                    info = String.format("S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x eh=0x%x:%x lbp=%s lpp=%s",
-                            frameLength, padLen, padOffset, saveRegsCount, flags, ehSection, ehOffset, regs[localBasePointer], regs[localParamPointer]);
+                    sb.append(" pbp=").append(x64Regs[localParamPointer]);
+                    if ((flags & 0x040000) != 0) {
+                        sb.append(" pogoon");
+                    }
+                    if ((flags & 0x080000) != 0) {
+                        sb.append(" valid_pgo_counts");
+                    } else {
+                        sb.append(" invalid_pgo_counts");
+                    }
+                    if ((flags & 0x100000) != 0) {
+                        sb.append(" optspeed");
+                    }
+                    if ((flags & 0x200000) != 0) {
+                        sb.append(" guardcf");
+                    }
+                    if ((flags & 0x400000) != 0) {
+                        sb.append(" guardcfw");
+                    }
+                    /*-
+                     *     struct {
+                     *         unsigned long   fHasAlloca  :  1;   // function uses _alloca()
+                     *         unsigned long   fHasSetJmp  :  1;   // function uses setjmp()
+                     *         unsigned long   fHasLongJmp :  1;   // function uses longjmp()
+                     *         unsigned long   fHasInlAsm  :  1;   // function uses inline asm
+                     *         unsigned long   fHasEH      :  1;   // function has EH states
+                     *         unsigned long   fInlSpec    :  1;   // function was speced as inline
+                     *         unsigned long   fHasSEH     :  1;   // function has SEH
+                     *         unsigned long   fNaked      :  1;   // function is __declspec(naked)
+                     *         unsigned long   fSecurityChecks :  1;   // function has buffer security check introduced by /GS.
+                     *         unsigned long   fAsyncEH    :  1;   // function compiled with /EHa
+                     *         unsigned long   fGSNoStackOrdering :  1;   // function has /GS buffer checks, but stack ordering couldn't be done
+                     *         unsigned long   fWasInlined :  1;   // function was inlined within another function
+                     *         unsigned long   fGSCheck    :  1;   // function is __declspec(strict_gs_check)
+                     *         unsigned long   fSafeBuffers : 1;   // function is __declspec(safebuffers)
+                     *         unsigned long   encodedLocalBasePointer : 2;  // record function's local pointer explicitly.
+                     *         unsigned long   encodedParamBasePointer : 2;  // record function's parameter pointer explicitly.
+                     *         unsigned long   fPogoOn      : 1;   // function was compiled with PGO/PGU
+                     *         unsigned long   fValidCounts : 1;   // Do we have valid Pogo counts?
+                     *         unsigned long   fOptSpeed    : 1;  // Did we optimize for speed?
+                     *         unsigned long   fGuardCF    :  1;   // function contains CFG checks (and no write checks)
+                     *         unsigned long   fGuardCFW   :  1;   // function contains CFW checks and/or instrumentation
+                     *         unsigned long   pad          : 9;   // must be zero
+                     */
+                    info = String.format("S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x%s eh=0x%x:%x",
+                            frameLength, padLen, padOffset, saveRegsCount, flags, sb.toString(), ehSection, ehOffset);
                     break;
                 }
                 case S_GDATA32: {
@@ -293,7 +382,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int pparent = in.getInt();
                     int pend = in.getInt();
                     int pnext = in.getInt();
-                    int proclen = in.getInt();
+                    int proclen = in.getInt(); /* length of object code for this procedure */
                     int debugStart = in.getInt();
                     int debugEnd = in.getInt();
                     int typeIndex = in.getInt();

@@ -8,7 +8,7 @@
 build/
 target/
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files

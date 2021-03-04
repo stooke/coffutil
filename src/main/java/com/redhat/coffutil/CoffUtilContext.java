@@ -3,7 +3,6 @@ package com.redhat.coffutil;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class CoffUtilContext {
@@ -34,8 +33,7 @@ public class CoffUtilContext {
                     case "-out": {
                         try {
                             new File(arg).delete();
-                            debugStream = new PrintStream(arg);
-                            reportStream = debugStream;
+                            reportStream = new PrintStream(arg);;
                         } catch (IOException e) {
                             fatal("error creating %s: %s", arg, e.getLocalizedMessage());
                             System.exit(2);
@@ -45,21 +43,30 @@ public class CoffUtilContext {
                 prev = null;
             } else {
                 switch (arg) {
-                    case "-out":
                     case "-split":
-                        prev = arg;
+                    case "--split":
+                        prev = "-split";
+                        break;
+                    case "-out":
+                    case "--out":
+                    case "-o":
+                        prev = "-out";
                         break;
                     case "-debug":
                     case "-verbose":
+                    case "--debug":
+                    case "--verbose":
+                    case "-v":
                         debugLevel += 1;
                         break;
                     case "-dump":
                         dump = true;
                         break;
                     case "-h":
+                    case "-help":
                     case "--help":
                     case "/?":
-                        error("Usage:\ncoffutil [-dump] [-split prefix] [-debug] [-h] inputfiles...");
+                        error("Usage:\ncoffutil [-dump] [-split prefix] [-debug] [-h] inputfiles... [-out filename]");
                         System.exit(0);
                         break;
                     default:
@@ -127,13 +134,17 @@ public class CoffUtilContext {
 
     public void error(String format, Object ... args) {
         String nformat = "error: " + format + "\n";
-        debugStream.format(nformat, args);
+        if (debugStream != System.err) {
+            debugStream.format(nformat, args);
+        }
         System.err.format(nformat, args);
     }
 
     public void fatal(String format, Object ... args) {
         String nformat = "fatal: " + format + "\n";
-        debugStream.format(nformat, args);
+        if (debugStream != System.err) {
+            debugStream.format(nformat, args);
+        }
         System.err.format(nformat, args);
         System.exit(99);
     }
