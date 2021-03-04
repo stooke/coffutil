@@ -7,7 +7,7 @@ plugins {
 group 'com.redhat'
 version '1.0-SNAPSHOT'
 
-//sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ task runApp(type: JavaExec) {
     //args = ['./helloworld.obj']
     //args = ['-dump', 'c:/tmp/graal-8/graalvm-demos/native-list-dir/listdir.exe']
     args = ['-dump', 'helloworld.pdb']
-    workingDir = 'c:/tmp/graal-8'
+    workingDir = '.'
 }
 
 application {
@@ -37,4 +37,12 @@ application {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+if(JavaVersion.current() >= JavaVersion.VERSION_11) {
+    dependencies {
+        compile 'javax.xml.bind:jaxb-api:2.3.0'
+        compile 'com.sun.xml.bind:jaxb-core:2.3.0'
+        compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
+    }
 }
