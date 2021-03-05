@@ -30,6 +30,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
         this.fileBuffer = in;
         superblock = new MSFSuperBlock();
         superblock.build(in, 0);
+        /* TODO - may need to skip to free page map location instead of assuming it's sequential. */
         FreeBlockMap fbm1 = new FreeBlockMap();
         fbm1.build(in, superblock.blockSize);
         FreeBlockMap fbm2 = new FreeBlockMap();
@@ -41,42 +42,52 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
     public void dump(PrintStream out) {
         out.println("superblock: " + superblock);
         rootStream.dump(out);
-        for (int i=0; i<Math.min(20, streams.length); i++) {
+        for (int i=0; i < Math.min(20, streams.length); i++) {
             out.format("stream %d: ", i);
             StreamDef stream = streams[i];
-            stream.dumpData(out);
+            stream.dumpDataSmall(out);
         }
     }
 
-    public ByteBuffer getStream(int i) {
+    public ByteBuffer getStreamBuffer(int i) {
         return streams[i].get(fileBuffer);
+    }
+
+    public StreamDef getStream(int i) {
+        return streams[i];
+    }
+
+    public int streamCount() {
+        return streams.length;
     }
 
     static class MSFSuperBlock {
 
         final static String magic = "Microsoft C/C++ MSF 7.00\r\n\u001aDS\u0000\u0000\u0000";
         int blockSize;
-        int freeBlockMapBlock;
+        int freeBlockMapPage;
         int numBlocks;
         int numDirectoryBytes; /* root stream size */
         int unknown;
-        int blockMapAddr;  /* root stream page number list */
+        int blockMapPage;  /* root stream page number list */
 
         int build(ByteBuffer in, int pos) {
             //CoffUtilContext.instance().debug(Util.dumpHex(in, pos, magic.length()));
+            // some implementations take 'magic' from byte 0 to the first EOF + "DS" + NULL
+            //   (0x1a 0x44 0x53 0x00 + padding until next DWORD)
             in.position(pos + magic.length());
             blockSize = in.getInt();
-            freeBlockMapBlock = in.getInt();
+            freeBlockMapPage = in.getInt();
             numBlocks = in.getInt();
             numDirectoryBytes = in.getInt();  /* root stream size */
             unknown = in.getInt();
-            blockMapAddr = in.getInt();  /* root stream page number list */
+            blockMapPage = in.getInt();  /* root stream page number list */
             return in.position();
         }
 
         @Override
         public String toString() {
-            return String.format("msfsuper(bs=%d fbm=%d nb=%d bmapaddr=0x%x dirBytes=%d", blockSize, freeBlockMapBlock, numBlocks, blockMapAddr, numDirectoryBytes);
+            return String.format("msfsuper(pageSize=%d numPages=%d dirBytes=%d freePageMap=0x%x blockMap=0x%x", blockSize, numBlocks, numDirectoryBytes, freeBlockMapPage, blockMapPage);
         }
     }
 
@@ -95,7 +106,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
         }
     }
 
-    class StreamDef {
+    public class StreamDef {
 
         int streamsize;
         int[] pageList;
@@ -113,6 +124,10 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
         StreamDef(int streamsize, int[] pageList) {
             this.streamsize = streamsize;
             this.pageList = pageList;
+        }
+
+        public int length() {
+            return streamsize;
         }
 
         /* read pagelist */
@@ -147,7 +162,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             return String.format("msfstream(streamsize=%d npages=%d start=0x%x)", streamsize, pageList.length, pageList.length > 0 ? pageList[0] * superblock.blockSize : 0);
         }
 
-        void dump(PrintStream out) {
+        public void dump(PrintStream out) {
             out.print(" " + this + " [");
             for (int i=0; i<pageList.length; i++) {
                 if (i < 10) {
@@ -160,7 +175,12 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             out.println("]");
         }
 
-        void dumpData(PrintStream out) {
+        public void dumpData(PrintStream out) {
+            String s = new HexDump().makeLines(get(), 0, 0, streamsize);
+            out.print(s);
+        }
+
+        public void dumpDataSmall(PrintStream out) {
             out.format(" %s [%s]\n", this, Util.dumpHex(get(), 0, Math.min(16, bytes.length)));
         }
     }
@@ -168,19 +188,19 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
     class RootStream extends StreamDef {
 
         RootStream(ByteBuffer in) {
-            super(in, superblock.numDirectoryBytes, superblock.blockMapAddr * superblock.blockSize);
+            super(in, superblock.numDirectoryBytes, superblock.blockMapPage * superblock.blockSize);
         }
 
         int build(ByteBuffer in) {
             ByteBuffer buffer = get(in);
             buffer.position(0);
-            int n = buffer.getInt();
-            CoffUtilContext.getInstance().debug("Numsteams = %s\n", n);
-            streams = new StreamDef[n + 1]; /* + 1 to leave room for this stream, the root stream */
+            int numStreams = buffer.getInt();
+            CoffUtilContext.getInstance().debug("Numsteams = %s\n", numStreams);
+            streams = new StreamDef[numStreams + 1]; /* + 1 to leave room for this stream, the root stream */
             streams[0] = this;
             int sizePos = buffer.position();
-            int plPos = buffer.position() + Integer.BYTES * n;
-            for (int i=0; i < n; i++) {
+            int plPos = buffer.position() + Integer.BYTES * numStreams;
+            for (int i=0; i < numStreams; i++) {
                 int size = buffer.getInt(sizePos + Integer.BYTES * i);
                 StreamDef stream = new StreamDef(buffer, size, plPos);
                 int np = (size + superblock.blockSize - 1) / superblock.blockSize;
@@ -195,7 +215,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             return String.format("rootstream(streamsize=%d npages=%d nstream=%d)", streamsize, pageList.length, streams.length);
         }
 
-        void dump(PrintStream out) {
+        public void dump(PrintStream out) {
             out.format("root: %d streams:\n", streams.length);
             int max = 10;
             int min = 1;

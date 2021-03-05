@@ -10,18 +10,23 @@ import java.util.HashMap;
 
 public class CVSymbolSectionBuilder implements CVConstants {
 
-    private PESection peSection;
     private CoffUtilContext ctx = CoffUtilContext.getInstance();
     private HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
     private HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
     private ArrayList<CVSymbolSection.LineInfo> lines = new ArrayList<>(100);
     private HashMap<String, String> env = new HashMap<>(10);
+    private int alignment = 0;
 
     public CVSymbolSection build(ByteBuffer in, PESection shdr) {
-
-        this.peSection = shdr;
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
+        alignment = shdr.alignment();
+        ctx.debug("debug$S section %s %s begin=0x%x end=0x%x\n", shdr.getName(), shdr.translateCharacteristics(shdr.getCharacteristics()), sectionBegin, sectionEnd);
+        return build(in, sectionBegin, sectionEnd);
+    }
+
+    public CVSymbolSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
+
         in.position(sectionBegin);
 
         final int symSig = in.getInt();
@@ -29,7 +34,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             ctx.debug("**** unexpected debug$S signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
 
-        ctx.debug("debug$S section %s %s begin=0x%x end=0x%x\n", peSection.getName(), peSection.translateCharacteristics(peSection.getCharacteristics()), sectionBegin, sectionEnd);
+
 
         /* parse symbol debug info */
         while (in.position() < sectionEnd) {
@@ -484,15 +489,15 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 ctx.info("    0x%05x %s\n", (start - sectionBegin), info);
             }
 
-            if (peSection.alignment() > 1) {
-                int mask = peSection.alignment() - 1;
+            if (alignment > 1) {
+                int mask = alignment - 1;
                 while (((in.position() - sectionBegin) & mask) != 0) {
                     in.get();
                 }
             }
 
             if (next != in.position()) {
-                ctx.error("*** debug$S DEBUG_S_SYMBOLS cmd=0x%x addr0x%05x did not consume exact bytes: want=0x%x current=0x%x align=%d", cmd, start - sectionBegin, sectionBegin, next - sectionBegin, in.position() - sectionBegin, peSection.alignment());
+                ctx.error("*** debug$S DEBUG_S_SYMBOLS cmd=0x%x addr0x%05x did not consume exact bytes: want=0x%x current=0x%x align=%d", cmd, start - sectionBegin, sectionBegin, next - sectionBegin, in.position() - sectionBegin, alignment);
             }
             in.position(next);
         }
