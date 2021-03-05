@@ -42,7 +42,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
     public void dump(PrintStream out) {
         out.println("superblock: " + superblock);
         rootStream.dump(out);
-        for (int i=0; i < Math.min(20, streams.length); i++) {
+        for (int i=0; i < Math.min(1999, streams.length); i++) {
             out.format("stream %d: ", i);
             StreamDef stream = streams[i];
             stream.dumpDataSmall(out);
@@ -116,7 +116,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             in.position(pos);
             this.streamsize = streamsize;
             pageList = new int[(streamsize +  superblock.blockSize - 1)/ superblock.blockSize];
-            for (int i=0; i<pageList.length; i++) {
+            for (int i = 0; i < pageList.length; i++) {
                 pageList[i] = in.getInt();
             }
         }
@@ -134,6 +134,10 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
 
         protected ByteBuffer get(ByteBuffer in) {
             if (bytes == null) {
+                if (streamsize < 0) {
+                    bytes = new byte[0];
+                    return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+                }
                 int bs = superblock.blockSize;
                 byte[] inbytes = in.array(); /* this fails for a readonly buffer */
                 bytes = new byte[streamsize];
@@ -200,7 +204,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             streams[0] = this;
             int sizePos = buffer.position();
             int plPos = buffer.position() + Integer.BYTES * numStreams;
-            for (int i=0; i < numStreams; i++) {
+            for (int i = 0; i < numStreams; i++) {
                 int size = buffer.getInt(sizePos + Integer.BYTES * i);
                 StreamDef stream = new StreamDef(buffer, size, plPos);
                 int np = (size + superblock.blockSize - 1) / superblock.blockSize;
@@ -217,7 +221,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
 
         public void dump(PrintStream out) {
             out.format("root: %d streams:\n", streams.length);
-            int max = 10;
+            int max = 19999;
             int min = 1;
             for (StreamDef stream : streams) {
                 if (max-- < 0) break;

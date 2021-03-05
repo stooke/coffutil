@@ -10,12 +10,16 @@ import java.util.HashMap;
 
 public class CVSymbolSectionBuilder implements CVConstants {
 
-    private CoffUtilContext ctx = CoffUtilContext.getInstance();
+    private CoffUtilContext ctx;
     private HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
     private HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
     private ArrayList<CVSymbolSection.LineInfo> lines = new ArrayList<>(100);
     private HashMap<String, String> env = new HashMap<>(10);
     private int alignment = 0;
+
+    public CVSymbolSectionBuilder() {
+        this.ctx =CoffUtilContext.getInstance();
+    }
 
     public CVSymbolSection build(ByteBuffer in, PESection shdr) {
         final int sectionBegin = shdr.getRawDataPtr();
@@ -33,8 +37,6 @@ public class CVSymbolSectionBuilder implements CVConstants {
         if (symSig != CV_SIGNATURE_C13) {
             ctx.debug("**** unexpected debug$S signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
-
-
 
         /* parse symbol debug info */
         while (in.position() < sectionEnd) {
@@ -185,14 +187,14 @@ public class CVSymbolSectionBuilder implements CVConstants {
         return new CVSymbolSection(sourceFiles, stringTable, lines, env);
     }
 
-    private void parseCVSymbolSubsection(ByteBuffer in, final int sectionBegin, final int maxlen) {
+    public void parseCVSymbolSubsection(ByteBuffer in, final int sectionBegin, final int maxlen) {
         final int endOfSubsection = in.position() + maxlen;
         while (in.position() < endOfSubsection) {
             final int start = in.position();
             final int len = in.getShort();
             final int cmd = in.getShort();
             final int next = start + len + 2;
-            if (ctx.getDebugLevel() > 1) {
+            if (ctx != null && ctx.getDebugLevel() > 1) {
                 ctx.debug("  debugsubsection: foffset=0x%x soffset=0x%x len=0x%x next=0x%x remain=0x%x cmd=0x%x\n", start,
                         (start - sectionBegin), len, (next - sectionBegin), (endOfSubsection - in.position()), cmd);
             }

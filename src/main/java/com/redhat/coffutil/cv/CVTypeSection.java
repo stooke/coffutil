@@ -7,6 +7,6 @@ import java.io.PrintStream;
 public class CVTypeSection {
 
     public void dump(PrintStream out) {
-        CoffUtilContext.getInstance().info("CV Types not yet implemented\n");
+        CoffUtilContext.getInstance().info("CV Type dump not yet implemented\n");
     }
 }

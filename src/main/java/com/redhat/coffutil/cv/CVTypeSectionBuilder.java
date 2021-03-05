@@ -1,8 +1,10 @@
 package com.redhat.coffutil.cv;
 
 import com.redhat.coffutil.CoffUtilContext;
+import com.redhat.coffutil.msf.HexDump;
 import com.redhat.coffutil.pecoff.PESection;
 import com.redhat.coffutil.pecoff.PEStringTable;
+import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
@@ -29,15 +31,6 @@ public class CVTypeSectionBuilder implements CVConstants {
     public CVTypeSection build(ByteBuffer in, PESection shdr) {
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
-        return build(in, sectionBegin, sectionEnd);
-    }
-
-    public CVTypeSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
-
-        int currentTypeIndex = 0x1000;
-
-        //dump("types:", in, sectionBegin, shdr.getRawDataSize());
-
         in.position(sectionBegin);
 
         int symSig = in.getInt();
@@ -48,6 +41,15 @@ public class CVTypeSectionBuilder implements CVConstants {
         if (ctx.getDebugLevel() > 0) {
             ctx.info("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
         }
+        return build(in, in.position(), sectionEnd);
+    }
+
+    public CVTypeSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
+
+        int currentTypeIndex = 0x1000;
+        in.position(sectionBegin);
+
+        //dump("types:", in, sectionBegin, shdr.getRawDataSize());
 
         /* parse symbol debug info */
         while (in.position() < sectionEnd) {
@@ -133,10 +135,12 @@ public class CVTypeSectionBuilder implements CVConstants {
                     //    in.get();
                     //}
                     info = "LF_FIELDLIST";
+                    String dump = new HexDump().makeLines(in, -in.position(), in.position(), len);
+                    info = info + ": \n" + dump.substring(0, dump.length() - 1);
                     break;
                 }
                 case LF_BITFIELD: {
-                    info = "LF_BITFIELD";
+                    info = "LF_BITFIELD: " + Util.dumpHex(in, in.position(), len);
                     break;
                 }
                 //case LF_INTERFACE:

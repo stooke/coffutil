@@ -7,6 +7,12 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/HexDump.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/HexDump.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/MultiStreamFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -442,33 +448,44 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>28</line>
+          <line>37</line>
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>105</line>
+          <line>112</line>
           <option name="timeStamp" value="90" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>70</line>
+          <line>77</line>
           <option name="timeStamp" value="91" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>57</line>
+          <line>64</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>127</line>
+          <line>134</line>
           <option name="timeStamp" value="94" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>496</line>
-          <option name="timeStamp" value="98" />
+          <url>jar://$PROJECT_DIR$/../../tools/openjdk-11.0.5_10/lib/src.zip!/java.base/java/nio/Buffer.java</url>
+          <line>681</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/../../tools/openjdk-11.0.5_10/lib/src.zip!/java.base/java/nio/Buffer.java</url>
+          <line>687</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java</url>
+          <line>24</line>
+          <properties field="NAME_MAP_STREAM" class="com.redhat.coffutil.pdb.PDBFile" />
+          <option name="timeStamp" value="100" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

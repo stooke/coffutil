@@ -27,6 +27,9 @@ public interface CVConstants {
     int S_PROC_ID_END = 0x114f;
     int S_BUILDINFO  = 0x114c;
 
+    // from https://github.com/MartinNowak/cv2pdb/blob/master/src/mscvpdb.h
+    int S_MSTOOL_V3 = 0x1116;
+
     /* S_FRAMEPROC flags */
     int SFP_HAS_ALLOCA = 0x01;
     int SFP_HAS_SETJMP = 0x02;

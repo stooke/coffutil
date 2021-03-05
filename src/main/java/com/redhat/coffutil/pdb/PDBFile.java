@@ -3,13 +3,15 @@ package com.redhat.coffutil.pdb;
 import com.redhat.coffutil.cv.CVTypeSection;
 import com.redhat.coffutil.cv.CVTypeSectionBuilder;
 import com.redhat.coffutil.msf.MultiStreamFile;
-import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.ExeFile;
+import com.redhat.coffutil.pecoff.PEStringTable;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.time.Instant;
+
+import static com.redhat.coffutil.cv.CVConstants.CV_SIGNATURE_C13;
 
 // https://llvm.org/docs/PDB/index.html
 // https://github.com/jcdickinson/symblr/tree/master/Symblr.Core/Symbols/Pdb70
@@ -20,13 +22,18 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private static final int PDB_HEADERS_STREAM = 2;
     private static final int TYPE_INFO_STREAM = 3;
+    private static final int NAME_MAP_STREAM = 3;
+    private static final int MODULE_INFO_STREAM = 4;
+    private static final int GLOBAL_INFO_STREAM = 5;
+    private static final int PUBLIC_INFO_STREAM = 6;
+    private static final int TYPE_HASH_STREAM = 7;
 
     private static final int VERSION_VC70 = 20000404;
 
     private StreamDef pdbHeaderStream;
     private StreamDef typeInfoStream;
 
-    /* PDB info */
+    /* PDB header */
     private int version = 0;
     private int signature = 0;
     private int age = 0;
@@ -37,21 +44,38 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         super.build(in);
 
         pdbHeaderStream = getStream(PDB_HEADERS_STREAM);
-        buildPDBInfo(pdbHeaderStream);
+        buildPDBHeader(pdbHeaderStream);
+
         typeInfoStream = getStream(TYPE_INFO_STREAM);
         buildTypeInfo(typeInfoStream);
+
+        for (int i = 4; i < streamCount(); i++) {
+            processUnknownStream(getStream(i));
+        }
     }
+
+    private void processUnknownStream(StreamDef stream) {
+        if (stream.length() < 4) {
+            return;
+        }
+        ByteBuffer in = stream.get();
+        int cvsig = in.getInt();
+        if (cvsig == CV_SIGNATURE_C13) {
+            //new CVSymbolSectionBuilder().parseCVSymbolSubsection(in, 0, stream.length());
+            //ss.dump(System.out);
+        }
+    }
+
 
     public void dump(PrintStream out) {
         super.dump(out);
 
         out.println("pdbHeaderStream: " + pdbHeaderStream.toString());
+        out.format("pdbinfo: version=%d sig=%d(%s) age=%d len=%d checksum=[%s]\n", version, signature, sig.toString(), age, pdbHeaderStream.length(), Util.dumpHex(checksum));
         pdbHeaderStream.dumpData(out);
-        CoffUtilContext.getInstance().info("pdbinfo: version=%d sig=%d(%s) age=%d len=%d checksum=[%s]\n", version, signature, sig.toString(), age, pdbHeaderStream.length(), Util.dumpHex(checksum));
 
         out.println("typeInfoStream: " + typeInfoStream.toString());
         typeInfoStream.dumpData(out);
-        CVTypeSection ts = new CVTypeSectionBuilder().build(typeInfoStream.get(), 0, typeInfoStream.length());
 
         for (int i = 4; i < streamCount(); i++) {
             StreamDef s = getStream(i);
@@ -61,10 +85,11 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
     }
 
     private void buildTypeInfo(StreamDef stream) {
-
+        final int typeInfoBegin = 0x38; /* derived by inspection and probably inaccurate */
+        CVTypeSection ts = new CVTypeSectionBuilder().build(typeInfoStream.get(), typeInfoBegin, typeInfoStream.length());
     }
 
-    private void buildPDBInfo(StreamDef stream) {
+    private void buildPDBHeader(StreamDef stream) {
         ByteBuffer in = stream.get();
 
         /* read header */
@@ -76,6 +101,19 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         sig = Instant.ofEpochSecond(signature);
         assert version == VERSION_VC70;  /* this is the only version we can handle */
         // TODO read hash table
+        int hsize = in.getShort();
+        int hflag = in.getShort();
+        int htop = in.position() + hsize;
+        int nameCount = 0;
+        while (in.position() < htop) {
+            String name = PEStringTable.getString0(in, htop - in.position());
+            System.out.format("name: %s\n", name);
+            nameCount++;
+        }
+        // pad to even
+        while (in.position() % 2 != 0) {
+            in.get();
+        }
     }
 
     /* from http://www.godevtool.com/Other/pdb.htm

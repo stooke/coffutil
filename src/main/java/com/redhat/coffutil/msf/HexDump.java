@@ -23,7 +23,7 @@ public class HexDump {
         StringBuilder sb = new StringBuilder();
         long end = start + length;
         while (start < end) {
-            start = makeLine(sb, data, start, length);
+            start = makeLine(sb, data, start, end - start);
             sb.append("\n");
         }
         return sb.toString();
@@ -33,7 +33,7 @@ public class HexDump {
         /* Format aaaa bbbbbbbb bbbbbbbb  bbbbbbbb bbbbbbbb  ........ ........ */
         final long end = start + length;
         final long lineStart = start - (start % LINELENGTH);
-        if (lineStart >= length) {
+        if (lineStart >= end) {
             return end;
         }
         final long lineEnd = Math.min(end, lineStart + LINELENGTH);
@@ -52,7 +52,7 @@ public class HexDump {
 
         /* Write bytes in hex. */
         for (int i = 0; i < LINELENGTH; i++) {
-            if (((lineStart + i) < start) || ((lineStart + i) >= length))
+            if (((lineStart + i) < start) || ((lineStart + i) >= end))
                 sb.append("  ");
             else
                 toHexByte(sb, data.get((int)(lineStart + i)));
@@ -64,7 +64,7 @@ public class HexDump {
 
         // write bytes in text
         for (int i = 0; i < LINELENGTH; i++) {
-            if (((lineStart + i) < start) || ((lineStart + i) >= length))
+            if (((lineStart + i) < start) || ((lineStart + i) >= end))
                 sb.append(' ');
             else {
                 byte b = data.get((int)(lineStart + i));
