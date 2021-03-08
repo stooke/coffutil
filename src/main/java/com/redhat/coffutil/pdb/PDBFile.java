@@ -12,23 +12,24 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 
-import static com.redhat.coffutil.cv.CVConstants.CV_SIGNATURE_C13;
-
-// https://llvm.org/docs/PDB/index.html
-// https://github.com/jcdickinson/symblr/tree/master/Symblr.Core/Symbols/Pdb70
-// http://moyix.blogspot.com/2007/08/pdb-stream-decomposition.html
-// http://moyix.blogspot.com/2007/10/types-stream.html
+/*
+ https://llvm.org/docs/PDB/index.html
+ https://github.com/jcdickinson/symblr/tree/master/Symblr.Core/Symbols/Pdb70
+ http://moyix.blogspot.com/2007/08/pdb-stream-decomposition.html
+ http://moyix.blogspot.com/2007/10/types-stream.html
+*/
 
 public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private static final int PDB_HEADERS_STREAM = 2;
     private static final int TYPE_INFO_STREAM = 3;
+    /*
     private static final int NAME_MAP_STREAM = 3;
     private static final int MODULE_INFO_STREAM = 4;
     private static final int GLOBAL_INFO_STREAM = 5;
     private static final int PUBLIC_INFO_STREAM = 6;
     private static final int TYPE_HASH_STREAM = 7;
-
+    */
     private static final int VERSION_VC70 = 20000404;
 
     private StreamDef pdbHeaderStream;
@@ -56,7 +57,8 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         }
     }
 
-    private void processUnknownStream(StreamDef stream) {
+    private void processUnknownStream(@SuppressWarnings("unused") StreamDef stream) {
+        /*
         if (stream.length() < 4) {
             return;
         }
@@ -66,6 +68,8 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
             //new CVSymbolSectionBuilder().parseCVSymbolSubsection(in, 0, stream.length());
             //ss.dump(System.out);
         }
+
+         */
     }
 
 
@@ -99,7 +103,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private CVTypeSection buildTypeInfo(StreamDef stream) {
         final int typeInfoBegin = 0x38; /* derived by inspection and probably inaccurate */
-        return new CVTypeSectionBuilder().build(typeInfoStream.get(), typeInfoBegin, typeInfoStream.length());
+        return new CVTypeSectionBuilder().build(stream.get(), typeInfoBegin, typeInfoStream.length());
     }
 
     private void buildPDBHeader(StreamDef stream) {
@@ -115,13 +119,13 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         assert version == VERSION_VC70;  /* this is the only version we can handle */
         // TODO read hash table
         int hsize = in.getShort();
-        int hflag = in.getShort();
+      //  int hflag = in.getShort();
         int htop = in.position() + hsize;
-        int nameCount = 0;
+     //   int nameCount = 0;
         while (in.position() < htop) {
             String name = PEStringTable.getString0(in, htop - in.position());
             System.out.format("name: %s\n", name);
-            nameCount++;
+     //       nameCount++;
         }
         // pad to even
         while (in.position() % 2 != 0) {

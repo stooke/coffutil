@@ -144,13 +144,15 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_METHODLIST: {
-                    info = "LF_METHODLIST: " + Util.dumpHex(in, in.position(), nextPosition - in.position());
+                    StringBuilder infoBuilder = new StringBuilder("LF_METHODLIST: ");
+                    infoBuilder.append(Util.dumpHex(in, in.position(), nextPosition - in.position()));
                     while (in.position() < nextPosition) {
                         int d1 = in.getShort();
                         int d2 = in.getShort();
                         int typeIndex = in.getInt();
-                        info += String.format("\n  d1=%d d2=%d type=0x%04x", d1, d2, typeIndex);
+                        infoBuilder.append(String.format("\n  d1=%d d2=%d type=0x%04x", d1, d2, typeIndex));
                     }
+                    info = infoBuilder.toString();
                     break;
                 }
                 case LF_VTSHAPE: {
@@ -168,7 +170,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_FIELDLIST: {
-                    info = "LF_FIELDLIST:";
+                    StringBuilder infoBuilder = new StringBuilder("LF_FIELDLIST:");
                     skipPadding(in);
                     while (in.position() < nextPosition) {
                         int type = in.getShort();
@@ -178,7 +180,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 long l = fetchVariable(in);
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_ENUMERATE type=0x%x attr=0x%x l=%d %s", type, attr, l, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_BCLASS: {
@@ -187,7 +189,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 long l = fetchVariable(in);
                               //  String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_BCLASS type=0x%x attr=0x%x baseindex=0x%x len=%d", type, attr, baseTypeIndex, l);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_VBCLASS:
@@ -196,7 +198,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%x attr=0x%x 0x%x %s", type, attr, n, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_MEMBER: {
@@ -206,13 +208,13 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 // TODO - probably need to skip forward by 'l' bytes
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_MEMBER type=0x%04x attr=0x%x typeidx=0x%04x offset=0x%04x %s", type, attr, fieldTypeIdx, l, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_VFUNCTAB: {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                info += String.format("\n  field LF_VFUNCTAB: type=0x%04x attr=0x%x type=0x%x", type, attr, fieldTypeIdx);
+                                infoBuilder.append(String.format("\n  field LF_VFUNCTAB: type=0x%04x attr=0x%x type=0x%x", type, attr, fieldTypeIdx));
                                 break;
                             }
                             case LF_METHOD: {
@@ -220,7 +222,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int listIdx = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_METHOD type=0x%04x count=0x%x typeidx=0x%04x %s",  type, count, listIdx, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_ONEMETHOD: {
@@ -229,7 +231,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int vtbleOffset = ((attr & (MPROP_VIRTUAL | MPROP_IVIRTUAL)) != 0) ? in.getInt() : 0;
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_ONEMETHOD type=0x%04x attr=0x%x typeidx=0x%04x voffset=%d %s", type, attr, fieldTypeIdx, vtbleOffset, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             case LF_NESTTYPE: {
@@ -237,7 +239,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int fieldTypeIdx = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_NESTTYPE type=0x%04x attr=0x%x typeidx=0x%04x %s",  type, attr, fieldTypeIdx, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                             default: {
@@ -245,12 +247,13 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field *** type=0x%04x (unknown) attr=0x%x 0x%x %s\n", type, attr, n, name);
-                                info += field;
+                                infoBuilder.append(field);
                                 break;
                             }
                         }
                         skipPadding(in);
                     }
+                    info = infoBuilder.toString();
                     break;
                 }
                 case LF_BITFIELD: {

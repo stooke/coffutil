@@ -15,7 +15,7 @@ public class PDBBuilder implements ExeFileBuilder {
         return buildPDBFile(file);
     }
 
-    public PDBFile buildPDBFile(File file) throws IOException {
+    private PDBFile buildPDBFile(File file) throws IOException {
         ByteBuffer in = Util.readFile(file);
         in.order(ByteOrder.LITTLE_ENDIAN);
         PDBFile pdbfile = new PDBFile();

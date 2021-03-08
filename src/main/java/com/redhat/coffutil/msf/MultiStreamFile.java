@@ -184,7 +184,7 @@ public class MultiStreamFile implements ExeFileBuilder, ExeFile {
             out.print(s);
         }
 
-        public void dumpDataSmall(PrintStream out) {
+        private void dumpDataSmall(PrintStream out) {
             out.format(" %s [%s]\n", this, Util.dumpHex(get(), 0, Math.min(16, bytes.length)));
         }
     }
