@@ -7,8 +7,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.redhat.coffutil.cv.CVConstants.LF_ENUMERATE;
 import static com.redhat.coffutil.cv.CVConstants.LF_FIELDLIST;
+import static com.redhat.coffutil.cv.CVConstants.LF_METHODLIST;
 
 public class CVTypeSection {
 
@@ -19,10 +19,9 @@ public class CVTypeSection {
     }
     public void dump(PrintStream out) {
         for (CVTypeRecord record : records) {
-            out.format("0x%05x 0x%04x len=%d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
-            if (CoffUtilContext.getInstance().getDumpHex() && record.getLeafType() == LF_ENUMERATE) {
-                int headerLength = 2 * Short.BYTES;
-                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position() + headerLength, record.getLen() - headerLength);
+            out.format("0x%04x 0x%04x len=%d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
+            if (CoffUtilContext.getInstance().getDumpHex() && (record.getLeafType() == LF_METHODLIST || record.getLeafType() == LF_FIELDLIST)) {
+                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
                 out.print(dump);
             }
         }

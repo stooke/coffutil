@@ -1,7 +1,6 @@
 package com.redhat.coffutil.cv;
 
 import com.redhat.coffutil.CoffUtilContext;
-import com.redhat.coffutil.msf.HexDump;
 import com.redhat.coffutil.pecoff.PESection;
 import com.redhat.coffutil.pecoff.PEStringTable;
 import com.redhat.coffutil.pecoff.Util;
@@ -74,6 +73,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                         (startPosition - sectionBegin), len, (nextPosition - sectionBegin), (sectionEnd - in.position()));
             }
 
+            ByteBuffer data = ByteBuffer.wrap(in.array(), in.position(), nextPosition - in.position());
+
             int leaf = in.getShort();
             String info;
 
@@ -97,6 +98,18 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int flags     = (attributes & 0x380000) >> 19;
                     info = String.format("LF_POINTER refType=0x%06x attrib=0x%06x kind=%d mode=%d modifiers=%d size=%d flags=%d",
                             referentType, attributes, kind, mode, modifiers, size, flags);
+                    break;
+                }
+                case LF_MFUNCTION: {
+                    int returnType = in.getInt();
+                    int classType = in.getInt();
+                    int thisType = in.getInt();
+                    byte callType = in.get();
+                    byte funcAttr = in.get();
+                    short paramCount = in.getShort();
+                    int argList = in.getInt();
+                    int thisAdjustment = in.getInt();
+                    info = String.format("LF_MFUNCTION returnType=0x%06x classType=0x%04x thisType=0x%x callType=0x%x funcAttr=0x%x nparam=%d argListType=0x%04x thisAdjust=%d", returnType, classType, thisType, callType, funcAttr, paramCount, argList, thisAdjustment);
                     break;
                 }
                 case LF_PROCEDURE: {
@@ -130,25 +143,50 @@ public class CVTypeSectionBuilder implements CVConstants {
                     info = infoBuilder.toString();
                     break;
                 }
+                case LF_METHODLIST: {
+                    info = "LF_METHODLIST: " + Util.dumpHex(in, in.position(), nextPosition - in.position());
+                    while (in.position() < nextPosition) {
+                        int d1 = in.getShort();
+                        int d2 = in.getShort();
+                        int typeIndex = in.getInt();
+                        info += String.format("\n  d1=%d d2=%d type=0x%04x", d1, d2, typeIndex);
+                    }
+                    break;
+                }
+                case LF_VTSHAPE: {
+                    int count = in.getShort();
+                    info = String.format("LF_VTSHAPE count=%d [%s]", count, Util.dumpHex(in, in.position(), nextPosition - in.position()));
+                    break;
+                }
+                case LF_UNION: {
+                    int count = in.getShort();
+                    int properties = in.getShort() & 0xffff;
+                    int descriptorListIndex = in.getInt();
+                    long length = fetchVariable(in);
+                    String name = PEStringTable.getString0(in, nextPosition);
+                    info = String.format("LF_UNION count=%d attr=0x%x fieldType=0x%04x len=%d %s", count, properties, descriptorListIndex, length, name);
+                    break;
+                }
                 case LF_FIELDLIST: {
                     info = "LF_FIELDLIST:";
                     skipPadding(in);
                     while (in.position() < nextPosition) {
-                        short type = in.getShort();
+                        int type = in.getShort();
                         switch (type) {
                             case LF_ENUMERATE: {
                                 short attr = in.getShort();
-                                // TODO this may be missing info
+                                long l = fetchVariable(in);
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_ENUMERATE type=0x%x attr=0x%x %s\n", type, attr, name);
+                                String field = String.format("\n  field LF_ENUMERATE type=0x%x attr=0x%x l=%d %s", type, attr, l, name);
                                 info += field;
                                 break;
                             }
                             case LF_BCLASS: {
                                 short attr = in.getShort();
-                                int n = in.getInt();
-                                String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_BCLASS type=0x%x attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                int baseTypeIndex = in.getInt();
+                                long l = fetchVariable(in);
+                              //  String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_BCLASS type=0x%x attr=0x%x baseindex=0x%x len=%d", type, attr, baseTypeIndex, l);
                                 info += field;
                                 break;
                             }
@@ -157,41 +195,48 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%x attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%x attr=0x%x 0x%x %s", type, attr, n, name);
                                 info += field;
                                 break;
                             }
                             case LF_MEMBER: {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                int membertype = ((int)in.getShort()) & 0xffff;
-                                long l = 0;
-                                switch (membertype) {
-                                    case LF_CHAR:
-                                        l = in.get();
-                                        break;
-                                    case LF_USHORT:
-                                    case LF_SHORT:
-                                        l = in.getShort() & 0xffff;
-                                        break;
-                                    case LF_ULONG:
-                                    case LF_LONG:
-                                        l = in.getInt() & 0xffffffffL;
-                                        break;
-                                    case LF_UQUADWORD:
-                                    case LF_QUADWORD:
-                                        l = in.getLong();
-                                        break;
-                                    default:
-                                        if (membertype < LF_NUMERIC) {
-                                            l = membertype;
-                                        } else {
-                                            System.err.format("\nXXX unknown member type 0x%x\n", membertype);
-                                        }
-                                }
+                                long l = fetchVariable(in);
                                 // TODO - probably need to skip forward by 'l' bytes
                                 String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_MEMBER type=0x%04x attr=0x%x typeidx=0x%04x offset=0x%04x %s", type, attr, fieldTypeIdx, l, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_VFUNCTAB: {
+                                short attr = in.getShort();
+                                int fieldTypeIdx = in.getInt();
+                                info += String.format("\n  field LF_VFUNCTAB: type=0x%04x attr=0x%x type=0x%x", type, attr, fieldTypeIdx);
+                                break;
+                            }
+                            case LF_METHOD: {
+                                short count = in.getShort();
+                                int listIdx = in.getInt();
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_METHOD type=0x%04x count=0x%x typeidx=0x%04x %s",  type, count, listIdx, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_ONEMETHOD: {
+                                int attr = in.getShort();
+                                int fieldTypeIdx = in.getInt();
+                                int vtbleOffset = ((attr & (MPROP_VIRTUAL | MPROP_IVIRTUAL)) != 0) ? in.getInt() : 0;
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_ONEMETHOD type=0x%04x attr=0x%x typeidx=0x%04x voffset=%d %s", type, attr, fieldTypeIdx, vtbleOffset, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_NESTTYPE: {
+                                short attr = in.getShort();
+                                int fieldTypeIdx = in.getInt();
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_NESTTYPE type=0x%04x attr=0x%x typeidx=0x%04x %s",  type, attr, fieldTypeIdx, name);
                                 info += field;
                                 break;
                             }
@@ -199,7 +244,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("  field *** type=0x04%x (unknown) attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                String field = String.format("\n  field *** type=0x%04x (unknown) attr=0x%x 0x%x %s\n", type, attr, n, name);
                                 info += field;
                                 break;
                             }
@@ -306,7 +351,7 @@ public class CVTypeSectionBuilder implements CVConstants {
 
             if (info != null) {
                 ctx.debug("  0x%04x 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, leaf, info);
-                CVTypeRecord typeRecord = new CVTypeRecord(currentTypeIndex, leaf, len, info, ByteBuffer.wrap(in.array(), startPosition, len));
+                CVTypeRecord typeRecord = new CVTypeRecord(currentTypeIndex, leaf, len, info, data);
                 typeSection.addRecord(typeRecord);
             }
             currentTypeIndex++;
@@ -314,6 +359,36 @@ public class CVTypeSectionBuilder implements CVConstants {
         }
 
         return typeSection;
+    }
+
+    private long fetchVariable(ByteBuffer in) {
+
+        int membertype = ((int)in.getShort()) & 0xffff;
+        long l = 0;
+        switch (membertype) {
+            case LF_CHAR:
+                l = in.get();
+                break;
+            case LF_USHORT:
+            case LF_SHORT:
+                l = in.getShort() & 0xffff;
+                break;
+            case LF_ULONG:
+            case LF_LONG:
+                l = in.getInt() & 0xffffffffL;
+                break;
+            case LF_UQUADWORD:
+            case LF_QUADWORD:
+                l = in.getLong();
+                break;
+            default:
+                if (membertype < LF_NUMERIC) {
+                    l = membertype;
+                } else {
+                    System.err.format("\nXXX unknown member type 0x%x\n", membertype);
+                }
+        }
+        return l;
     }
 
     private void skipPadding(ByteBuffer in) {

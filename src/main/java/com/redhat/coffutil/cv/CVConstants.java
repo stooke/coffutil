@@ -66,28 +66,38 @@ public interface CVConstants {
 
     // see also sun.jvm.hotspot.debugger.win32.coff.DebugVC50SSGlobalTypes
 
+    int LF_VTSHAPE     = 0x000a;
     int LF_MODIFIER    = 0x1001;
     int LF_POINTER     = 0x1002;
     int LF_PROCEDURE   = 0x1008;
+    int LF_MFUNCTION   = 0x1009;
     int LF_ARGLIST     = 0x1201;
     int LF_FIELDLIST   = 0x1203;
     int LF_BITFIELD    = 0x1205;
+    int LF_METHODLIST  = 0x1206;
     int LF_BCLASS      = 0x1400;
     int LF_VBCLASS     = 0x1401;
     int LF_IVBCLASS    = 0x1402;
+    int LF_VFUNCTAB    = 0x1409;
     int LF_ENUMERATE   = 0x1502;
     int LF_ARRAY       = 0x1503;
     int LF_CLASS       = 0x1504;
     int LF_STRUCTURE   = 0x1505;
+    int LF_UNION       = 0x1506;
     int LF_ENUM        = 0x1507;
     int LF_MEMBER      = 0x150d;
+    int LF_STMEMBER    = 0x150e;
+    int LF_METHOD      = 0x150f;
+    int LF_NESTTYPE    = 0x1510;
+    int LF_ONEMETHOD   = 0x1511;
     int LF_TYPESERVER2 = 0x1515;
     int LF_FUNC_ID     = 0x1601;
     int LF_MFUNC_ID    = 0x1602;
     int LF_BUILDINFO   = 0x1603;
     int LF_STRING_ID   = 0x1605;
     int LF_UDT_SRC_LINE = 0x1606;
-
+    int LF_UDT_MOD_SRC_LINE = 0x1607;
+    int LF_ID_LAST     = 0x1608;
 
     int LF_NUMERIC     = 0x8000;
     int LF_CHAR        = 0x8000;
@@ -103,4 +113,11 @@ public interface CVConstants {
     int LF_UOCTWORD    = 0x8018;
 
     int LF_PAD0        = 0xf0;
+
+
+    int MPROP_VANILLA   = 0;
+    int MPROP_VIRTUAL   = (1 << 2);  // redefinition
+    int MPROP_STATIC    = (2 << 2);
+    int MPROP_FRIEND    = (3 << 2);
+    int MPROP_IVIRTUAL  = (4 << 2);
 }
