@@ -209,7 +209,10 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_BITFIELD: {
-                    info = "LF_BITFIELD: " + Util.dumpHex(in, in.position(), len);
+                    int typeIndex = in.getInt();
+                    int length = in.get() & 0xff;
+                    int pos = in.get() & 0xff;
+                    info = String.format("LF_BITFIELD: type=0x%04x length=%d pos=%d", typeIndex, length, pos);
                     break;
                 }
                 //case LF_INTERFACE:

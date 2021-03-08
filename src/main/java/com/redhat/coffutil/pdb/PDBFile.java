@@ -1,5 +1,6 @@
 package com.redhat.coffutil.pdb;
 
+import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.cv.CVTypeSection;
 import com.redhat.coffutil.cv.CVTypeSectionBuilder;
 import com.redhat.coffutil.msf.MultiStreamFile;
@@ -69,20 +70,30 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
 
     public void dump(PrintStream out) {
-        super.dump(out);
+        CoffUtilContext ctx = CoffUtilContext.getInstance();
+
+        if (ctx.getDebugLevel() > 1) {
+            super.dump(out);
+        }
 
         out.println("pdbHeaderStream: " + pdbHeaderStream.toString());
         out.format("pdbinfo: version=%d sig=%d(%s) age=%d len=%d checksum=[%s]\n", version, signature, sig.toString(), age, pdbHeaderStream.length(), Util.dumpHex(checksum));
-        pdbHeaderStream.dumpData(out);
+        if (ctx.getDumpHex()) {
+            pdbHeaderStream.dumpData(out);
+        }
 
         out.println("typeInfoStream: " + typeInfoStream.toString());
         typeSection.dump(out);
-        typeInfoStream.dumpData(out);
+        if (ctx.getDumpHex()) {
+            typeInfoStream.dumpData(out);
+        }
 
         for (int i = 4; i < streamCount(); i++) {
             StreamDef s = getStream(i);
             out.println("stream " + i + ": " + s.toString());
-            s.dumpData(out);
+            if (ctx.getDumpHex()) {
+                s.dumpData(out);
+            }
         }
     }
 

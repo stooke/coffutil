@@ -17,6 +17,7 @@ public class CoffUtilContext {
     ArrayList<String> inputFiles = new ArrayList<>();
     private int debugLevel = 1;
     boolean dump = false;
+    boolean dumpHex = false;
     String split = null;
 
     private static CoffUtilContext instance = null;
@@ -26,11 +27,11 @@ public class CoffUtilContext {
         for (String arg : args) {
             if (prev != null) {
                 switch (prev) {
-                    case "-split": {
+                    case "--split": {
                         split = arg;
                         break;
                     }
-                    case "-out": {
+                    case "--out": {
                         try {
                             new File(arg).delete();
                             reportStream = new PrintStream(arg);;
@@ -43,30 +44,30 @@ public class CoffUtilContext {
                 prev = null;
             } else {
                 switch (arg) {
-                    case "-split":
                     case "--split":
-                        prev = "-split";
+                        prev = "--split";
                         break;
-                    case "-out":
                     case "--out":
                     case "-o":
-                        prev = "-out";
+                        prev = "--out";
                         break;
-                    case "-debug":
-                    case "-verbose":
                     case "--debug":
                     case "--verbose":
                     case "-v":
                         debugLevel += 1;
                         break;
-                    case "-dump":
+                    case "--dump":
                         dump = true;
                         break;
+                    case "--dumphex":
+                    case "-x":
+                        dump = true;
+                        dumpHex = true;
+                        break;
                     case "-h":
-                    case "-help":
                     case "--help":
                     case "/?":
-                        error("Usage:\ncoffutil [-dump] [-split prefix] [-debug] [-h] inputfiles... [-out filename]");
+                        error("Usage:\ncoffutil [--dump] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
                         System.exit(0);
                         break;
                     default:
@@ -108,6 +109,10 @@ public class CoffUtilContext {
 
     public int getDebugLevel() {
         return debugLevel;
+    }
+
+    public boolean getDumpHex() {
+        return dumpHex && dump;
     }
 
     public void report(String format, Object ... args) {

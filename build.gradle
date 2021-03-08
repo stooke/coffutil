@@ -20,8 +20,8 @@ task runApp(type: JavaExec) {
     // arguments to pass to the application
     //args = ['./tmp/stuff/listdir.obj']
     //args = ['./helloworld.obj']
-    //args = ['-dump', 'c:/tmp/graal-8/graalvm-demos/native-list-dir/listdir.exe']
-    args = ['-dump', 'helloworld.pdb']
+    //args = ['--dump', 'c:/tmp/graal-8/graalvm-demos/native-list-dir/listdir.exe']
+    args = ['--dump', 'helloworld.pdb']
     workingDir = '.'
 }
 
