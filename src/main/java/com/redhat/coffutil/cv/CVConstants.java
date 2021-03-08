@@ -1,5 +1,6 @@
 package com.redhat.coffutil.cv;
 
+@SuppressWarnings("unused")
 public interface CVConstants {
 
     int CV_SIGNATURE_C13 = 4;
@@ -63,12 +64,15 @@ public interface CVConstants {
     int T_POINTER32     = 0x0400; /* 32 bit pointer */
     int T_POINTER64     = 0x0600; /* 64 bit pointer */
 
+    // see also sun.jvm.hotspot.debugger.win32.coff.DebugVC50SSGlobalTypes
+
     int LF_MODIFIER    = 0x1001;
     int LF_POINTER     = 0x1002;
     int LF_PROCEDURE   = 0x1008;
     int LF_ARGLIST     = 0x1201;
     int LF_FIELDLIST   = 0x1203;
     int LF_BITFIELD    = 0x1205;
+    int LF_ENUMERATE   = 0x1502;
     int LF_ARRAY       = 0x1503;
     int LF_CLASS       = 0x1504;
     int LF_STRUCTURE   = 0x1505;

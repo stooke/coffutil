@@ -9,6 +9,7 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/HexDump.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/msf/HexDump.java" afterDir="false" />
@@ -181,7 +182,7 @@
     <configuration name="c++ object - helloworld (vc++) pdb" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
       <module name="coffutil.main" />
-      <option name="PROGRAM_PARAMETERS" value="-dump -debug /tmp/build-1/helloworld_vs/vc100.pdb" />
+      <option name="PROGRAM_PARAMETERS" value="-dump /tmp/build-1/helloworld_vs/vc100.pdb" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -480,6 +481,11 @@
           <url>jar://$PROJECT_DIR$/../../tools/openjdk-11.0.5_10/lib/src.zip!/java.base/java/nio/Buffer.java</url>
           <line>687</line>
           <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java</url>
+          <line>78</line>
+          <option name="timeStamp" value="112" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-field">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java</url>

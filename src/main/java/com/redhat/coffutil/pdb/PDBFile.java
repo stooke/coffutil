@@ -32,6 +32,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private StreamDef pdbHeaderStream;
     private StreamDef typeInfoStream;
+    private CVTypeSection typeSection;
 
     /* PDB header */
     private int version = 0;
@@ -47,7 +48,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         buildPDBHeader(pdbHeaderStream);
 
         typeInfoStream = getStream(TYPE_INFO_STREAM);
-        buildTypeInfo(typeInfoStream);
+        typeSection = buildTypeInfo(typeInfoStream);
 
         for (int i = 4; i < streamCount(); i++) {
             processUnknownStream(getStream(i));
@@ -75,6 +76,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         pdbHeaderStream.dumpData(out);
 
         out.println("typeInfoStream: " + typeInfoStream.toString());
+        typeSection.dump(out);
         typeInfoStream.dumpData(out);
 
         for (int i = 4; i < streamCount(); i++) {
@@ -84,9 +86,9 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         }
     }
 
-    private void buildTypeInfo(StreamDef stream) {
+    private CVTypeSection buildTypeInfo(StreamDef stream) {
         final int typeInfoBegin = 0x38; /* derived by inspection and probably inaccurate */
-        CVTypeSection ts = new CVTypeSectionBuilder().build(typeInfoStream.get(), typeInfoBegin, typeInfoStream.length());
+        return new CVTypeSectionBuilder().build(typeInfoStream.get(), typeInfoBegin, typeInfoStream.length());
     }
 
     private void buildPDBHeader(StreamDef stream) {
