@@ -131,17 +131,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_FIELDLIST: {
-                    /* skip padding */
-                    /* this code would be buggy because in.get() is signed */
-                   // while (in.get(in.position()) >= LF_PAD0) {
-                  //      in.get();
-                   // }
-                    // instead chat and do an  even pad
-                    while ((in.position() & 1) != 0) {
-                        in.get();
-                    }
-                    info = "LF_FIELDLIST:\n";
-                    //String dump = new HexDump().makeLines(in, -in.position(), in.position(), len);
+                    info = "LF_FIELDLIST:";
+                    skipPadding(in);
                     while (in.position() < nextPosition) {
                         short type = in.getShort();
                         switch (type) {
@@ -149,7 +140,58 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 // TODO this may be missing info
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("  field type=0x%x attr=0x%x %s\n", type, attr, name);
+                                String field = String.format("\n  field LF_ENUMERATE type=0x%x attr=0x%x %s\n", type, attr, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_BCLASS: {
+                                short attr = in.getShort();
+                                int n = in.getInt();
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_BCLASS type=0x%x attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_VBCLASS:
+                            case LF_IVBCLASS: {
+                                short attr = in.getShort();
+                                int n = in.getInt();
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%x attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                info += field;
+                                break;
+                            }
+                            case LF_MEMBER: {
+                                short attr = in.getShort();
+                                int fieldTypeIdx = in.getInt();
+                                int membertype = ((int)in.getShort()) & 0xffff;
+                                long l = 0;
+                                switch (membertype) {
+                                    case LF_CHAR:
+                                        l = in.get();
+                                        break;
+                                    case LF_USHORT:
+                                    case LF_SHORT:
+                                        l = in.getShort() & 0xffff;
+                                        break;
+                                    case LF_ULONG:
+                                    case LF_LONG:
+                                        l = in.getInt() & 0xffffffffL;
+                                        break;
+                                    case LF_UQUADWORD:
+                                    case LF_QUADWORD:
+                                        l = in.getLong();
+                                        break;
+                                    default:
+                                        if (membertype < LF_NUMERIC) {
+                                            l = membertype;
+                                        } else {
+                                            System.err.format("\nXXX unknown member type 0x%x\n", membertype);
+                                        }
+                                }
+                                // TODO - probably need to skip forward by 'l' bytes
+                                String name = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_MEMBER type=0x%04x attr=0x%x typeidx=0x%04x offset=0x%04x %s", type, attr, fieldTypeIdx, l, name);
                                 info += field;
                                 break;
                             }
@@ -157,13 +199,12 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("  field type=0x%x attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                String field = String.format("  field *** type=0x04%x (unknown) attr=0x%x 0x%x %s\n", type, attr, n, name);
                                 info += field;
                                 break;
                             }
                         }
-
-
+                        skipPadding(in);
                     }
                     break;
                 }
@@ -272,6 +313,15 @@ public class CVTypeSectionBuilder implements CVConstants {
         return typeSection;
     }
 
+    private void skipPadding(ByteBuffer in) {
+        while (true) {
+            int pad = in.get() & 0xff;
+            if (pad < LF_PAD0) {
+                in.position(in.position() - 1);
+                break;
+            }
+        }
+    }
     private void swap(byte[] b, int idx1, int idx2) {
         byte tmp = b[idx1];
         b[idx1] = b[idx2];

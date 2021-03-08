@@ -72,11 +72,15 @@ public interface CVConstants {
     int LF_ARGLIST     = 0x1201;
     int LF_FIELDLIST   = 0x1203;
     int LF_BITFIELD    = 0x1205;
+    int LF_BCLASS      = 0x1400;
+    int LF_VBCLASS     = 0x1401;
+    int LF_IVBCLASS    = 0x1402;
     int LF_ENUMERATE   = 0x1502;
     int LF_ARRAY       = 0x1503;
     int LF_CLASS       = 0x1504;
     int LF_STRUCTURE   = 0x1505;
     int LF_ENUM        = 0x1507;
+    int LF_MEMBER      = 0x150d;
     int LF_TYPESERVER2 = 0x1515;
     int LF_FUNC_ID     = 0x1601;
     int LF_MFUNC_ID    = 0x1602;
@@ -84,6 +88,8 @@ public interface CVConstants {
     int LF_STRING_ID   = 0x1605;
     int LF_UDT_SRC_LINE = 0x1606;
 
+
+    int LF_NUMERIC     = 0x8000;
     int LF_CHAR        = 0x8000;
     int LF_SHORT       = 0x8001;
     int LF_USHORT      = 0x8002;

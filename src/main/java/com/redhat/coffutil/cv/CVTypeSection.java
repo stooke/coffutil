@@ -20,7 +20,8 @@ public class CVTypeSection {
         for (CVTypeRecord record : records) {
             out.format("0x%05x 0x%04x len=%d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
             if (record.getLeafType() == LF_FIELDLIST || record.getLeafType() == LF_ENUMERATE) {
-                String dump = new HexDump().makeLines(record.getData(), 0, 0, record.getLen());
+                int headerLength = 2 * Short.BYTES;
+                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position() + headerLength, record.getLen() - headerLength);
                 out.print(dump);
             }
         }
