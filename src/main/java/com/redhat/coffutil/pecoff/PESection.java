@@ -62,8 +62,8 @@ public class PESection {
             rawDataPtr = in.getInt();
             relocationPtr = in.getInt();
             lineNumberPtr = in.getInt();
-            relocationCount = in.getShort();
-            lineNumberCount = in.getShort();
+            relocationCount = 0xffff & (int)in.getShort();
+            lineNumberCount = 0xffff & (int)in.getShort();
             characteristics = in.getInt();
         }
 
@@ -128,12 +128,19 @@ public class PESection {
             out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
         }
         out.println();
-        if (getLineNumberCount() != 0) {
-            lineNumberTable.dump(out);
+
+        if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+            out.println();
+            if (getLineNumberCount() != 0) {
+                lineNumberTable.dump(out);
+            }
         }
-        if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
-            if (getRelocationCount() != 0) {
-                relocations.dump(out, objectFile);
+
+        if (CoffUtilContext.getInstance().dumpRelocations()) {
+            if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
+                if (getRelocationCount() != 0) {
+                    relocations.dump(out, objectFile);
+                }
             }
         }
     }

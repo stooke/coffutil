@@ -37,9 +37,7 @@ public class CVTypeSectionBuilder implements CVConstants {
             ctx.error("**** unexpected debug signature " + symSig + "; expected " + CV_SIGNATURE_C13);
         }
 
-        if (ctx.getDebugLevel() > 0) {
-            ctx.info("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
-        }
+        ctx.debug("debug$T section begin=0x%x end=0x%x\n", sectionBegin, sectionEnd);
         return build(in, in.position(), sectionEnd);
     }
 
@@ -61,7 +59,7 @@ public class CVTypeSectionBuilder implements CVConstants {
             }
 
             int startPosition = in.position();
-            int len = in.getShort();
+            int len = 0xffff & (int)in.getShort();
 
             int nextPosition = startPosition + len + Short.BYTES;
             if (nextPosition > sectionEnd) {
@@ -353,7 +351,9 @@ public class CVTypeSectionBuilder implements CVConstants {
             }
 
             if (info != null) {
-                ctx.debug("  0x%04x 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, leaf, info);
+                if (ctx.dumpTypes()) {
+                    ctx.debug("  0x%04x 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, leaf, info);
+                }
                 CVTypeRecord typeRecord = new CVTypeRecord(currentTypeIndex, leaf, len, info, data);
                 typeSection.addRecord(typeRecord);
             }

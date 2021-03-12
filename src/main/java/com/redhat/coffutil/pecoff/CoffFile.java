@@ -1,5 +1,6 @@
 package com.redhat.coffutil.pecoff;
 
+import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.ExeFile;
 
 import java.io.PrintStream;
@@ -22,8 +23,10 @@ public class CoffFile implements ExeFile {
         for (final PESection shdr : sections) {
             shdr.dump(out, this);
         }
-        if (symbols != null) {
-            symbols.dump(out);
+        if (CoffUtilContext.getInstance().dumpSymbols()) {
+            if (symbols != null) {
+                symbols.dump(out);
+            }
         }
     }
 

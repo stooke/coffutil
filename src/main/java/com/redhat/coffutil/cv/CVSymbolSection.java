@@ -1,6 +1,7 @@
 package com.redhat.coffutil.cv;
 
 import com.redhat.coffutil.CoffUtilContext;
+import com.redhat.coffutil.msf.HexDump;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CVSymbolSection {
@@ -18,6 +20,11 @@ public class CVSymbolSection {
     /* parsing ".debug$S" sections */
 
    // private static final String[] languageStrings = { "C", "C++", "Fortran", "masm", "Pascal", "Basic", "COBOL", "LINK", "CVTRES", "CVTPGT", "C#", "VisualBasic", "ILASM", "Java", "JScript", "MSIL", "HSIL" };
+    private final List<CVSymbolRecord> records = new ArrayList<>(1000);
+
+    void addRecord(CVSymbolRecord record) {
+        records.add(record);
+    }
 
     static class FileInfo {
         int filePos;
@@ -145,15 +152,25 @@ public class CVSymbolSection {
     }
 
     public void dump(PrintStream out) {
-        out.println("CV sourcefiles:");
-        for (final FileInfo fi : sourceFiles.values()) {
-            StringInfo si = stringTable.get(fi.getFileId());
-            if (si != null) {
-                fi.setFileName(si.getString());
-            } else {
-                CoffUtilContext.getInstance().error("****** invalid fileid on file %s", fi.toString());
+        for (CVSymbolRecord record : records) {
+            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
+            if (CoffUtilContext.getInstance().getDumpHex() && false) {
+                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
+                out.print(dump);
             }
-            fi.dump(out);
+        }
+
+        out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());
+        if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+            for (final FileInfo fi : sourceFiles.values()) {
+                StringInfo si = stringTable.get(fi.getFileId());
+                if (si != null) {
+                    fi.setFileName(si.getString());
+                } else {
+                    CoffUtilContext.getInstance().error("****** invalid fileid on file %s", fi.toString());
+                }
+                fi.dump(out);
+            }
         }
         if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
             out.println("CV Strings");
@@ -168,15 +185,17 @@ public class CVSymbolSection {
             }
         }
         if (!lines.isEmpty()) {
-            out.println("CV lines:");
-            for (final LineInfo line : lines) {
-                FileInfo fi = sourceFiles.get(line.getFileId());
-                if (fi != null) {
-                    line.setFileName(fi.getFileName());
-                } else {
-                    CoffUtilContext.getInstance().error("****** invalid fileid on line %s", line.toString());
+            out.format("CV lines (count=%d):\n", lines.size());
+            if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+                for (final LineInfo line : lines) {
+                    FileInfo fi = sourceFiles.get(line.getFileId());
+                    if (fi != null) {
+                        line.setFileName(fi.getFileName());
+                    } else {
+                        CoffUtilContext.getInstance().error("****** invalid fileid on line %s", line.toString());
+                    }
+                    line.dump(out);
                 }
-                line.dump(out);
             }
         }
     }

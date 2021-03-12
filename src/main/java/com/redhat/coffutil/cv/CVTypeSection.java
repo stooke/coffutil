@@ -9,6 +9,7 @@ import java.util.List;
 
 import static com.redhat.coffutil.cv.CVConstants.LF_FIELDLIST;
 import static com.redhat.coffutil.cv.CVConstants.LF_METHODLIST;
+import static com.redhat.coffutil.cv.CVConstants.LF_VTSHAPE;
 
 public class CVTypeSection {
 
@@ -17,10 +18,11 @@ public class CVTypeSection {
     void addRecord(CVTypeRecord record) {
         records.add(record);
     }
+
     public void dump(PrintStream out) {
         for (CVTypeRecord record : records) {
-            out.format("0x%04x 0x%04x len=%d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
-            if (CoffUtilContext.getInstance().getDumpHex() && (record.getLeafType() == LF_METHODLIST || record.getLeafType() == LF_FIELDLIST)) {
+            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
+            if (CoffUtilContext.getInstance().getDumpHex() && (record.getLeafType() == LF_METHODLIST || record.getLeafType() == LF_FIELDLIST) || record.getLeafType() == LF_VTSHAPE) {
                 String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
                 out.print(dump);
             }

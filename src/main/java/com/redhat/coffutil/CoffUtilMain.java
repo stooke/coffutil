@@ -24,7 +24,7 @@ class CoffUtilMain {
             File file = new File(fn);
             ExeFile exefile = ExeFileBuilderFactory.builderFor(file).build(file);
             if (ctx.dump) {
-                    exefile.dump(ctx.getReportStream());
+                exefile.dump(ctx.getReportStream());
             }
             if (ctx.split != null) {
                 if (!(exefile instanceof PECoffFile)) {

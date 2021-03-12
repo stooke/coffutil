@@ -17,7 +17,11 @@ public class CoffUtilContext {
     ArrayList<String> inputFiles = new ArrayList<>();
     private int debugLevel = 1;
     boolean dump = false;
-    boolean dumpHex = false;
+    private boolean dumpHex = false;
+    private boolean dumpLinenumbers = false;
+    private boolean dumpRelocations = false;
+    private boolean dumpTypes = true;
+    private boolean dumpSymbols = true;
     String split = null;
 
     private static CoffUtilContext instance = null;
@@ -27,6 +31,13 @@ public class CoffUtilContext {
         for (String arg : args) {
             if (prev != null) {
                 switch (prev) {
+                    case "--only": {
+                        dumpLinenumbers = arg.contains("line");
+                        dumpRelocations = arg.contains("reloc");
+                        dumpTypes = arg.contains("type");
+                        dumpSymbols = arg.contains("sym");
+                        break;
+                    }
                     case "--split": {
                         split = arg;
                         break;
@@ -51,6 +62,9 @@ public class CoffUtilContext {
                     case "-o":
                         prev = "--out";
                         break;
+                    case "--only":
+                        prev = "--only";
+                        break;
                     case "--debug":
                     case "--verbose":
                     case "-v":
@@ -67,7 +81,7 @@ public class CoffUtilContext {
                     case "-h":
                     case "--help":
                     case "/?":
-                        error("Usage:\ncoffutil [--dump] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
+                        error("Usage:\ncoffutil [--dump] [--only types|line|recloc|sym] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
                         System.exit(0);
                         break;
                     default:
@@ -158,4 +172,19 @@ public class CoffUtilContext {
         return instance;
     }
 
+    public boolean dumpLinenumbers() {
+        return dumpLinenumbers;
+    }
+
+    public boolean dumpRelocations() {
+        return dumpRelocations;
+    }
+
+    public boolean dumpTypes() {
+        return dumpTypes;
+    }
+
+    public boolean dumpSymbols() {
+        return dumpSymbols;
+    }
 }

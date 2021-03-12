@@ -72,7 +72,6 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
          */
     }
 
-
     public void dump(PrintStream out) {
         CoffUtilContext ctx = CoffUtilContext.getInstance();
 
@@ -87,7 +86,9 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         }
 
         out.println("typeInfoStream: " + typeInfoStream.toString());
-        typeSection.dump(out);
+        if (ctx.dumpTypes()) {
+            typeSection.dump(out);
+        }
         if (ctx.getDumpHex()) {
             typeInfoStream.dumpData(out);
         }
