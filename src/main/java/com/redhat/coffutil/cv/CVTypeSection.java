@@ -7,6 +7,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.redhat.coffutil.cv.CVConstants.LF_CLASS;
+import static com.redhat.coffutil.cv.CVConstants.LF_ENUM;
 import static com.redhat.coffutil.cv.CVConstants.LF_FIELDLIST;
 import static com.redhat.coffutil.cv.CVConstants.LF_METHODLIST;
 import static com.redhat.coffutil.cv.CVConstants.LF_VTSHAPE;
@@ -21,8 +23,9 @@ public class CVTypeSection {
 
     public void dump(PrintStream out) {
         for (CVTypeRecord record : records) {
-            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
-            if (CoffUtilContext.getInstance().getDumpHex() && (record.getLeafType() == LF_METHODLIST || record.getLeafType() == LF_FIELDLIST) || record.getLeafType() == LF_VTSHAPE) {
+            //out.format("0x%04x 0x%04x len=%-4d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
+            out.format("0x%04x %s\n", record.getIdx(), record.toString());
+            if (CoffUtilContext.getInstance().getDumpHex() && (record.getLeafType() == LF_METHODLIST || record.getLeafType() == LF_FIELDLIST || record.getLeafType() == LF_VTSHAPE || record.getLeafType() == LF_ENUM || record.getLeafType() == LF_CLASS)) {
                 String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
                 out.print(dump);
             }
