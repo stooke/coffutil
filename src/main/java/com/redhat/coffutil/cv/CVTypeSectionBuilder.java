@@ -87,15 +87,25 @@ public class CVTypeSectionBuilder implements CVConstants {
                     break;
                 }
                 case LF_POINTER: {
+                    String[] ptrType = { "near16", "far16", "huge", "base-seg", "base-val", "base-segval", "base-addr", "base-segaddr", "base-type", "base-self", "near32", "far32", "64"};
+                    String[] memStrs = { "(old)", "data-single", "data-multiple", "data-virtual", "data", "func-single", "mfunc-multiple", "mfunc-virtual", "mfunc"};
+                    String[] modeStrs = {"normal", "lvalref", "datamem", "memfunc", "rvalref"};
+
                     int referentType = in.getInt();
                     int attributes = in.getInt();
                     int kind      =  attributes & 0x00001f;
                     int mode      = (attributes & 0x0000e0) >> 5;
-                    int modifiers = (attributes & 0x001f00) >> 8;
+                    int flags1    = (attributes & 0x001f00) >> 8;
                     int size      = (attributes & 0x07e000) >> 13;
-                    int flags     = (attributes & 0x380000) >> 19;
-                    info = String.format("LF_POINTER refType=0x%04x attrib=0x%x kind=%d mode=%d modifiers=%d size=%d flags=%d",
-                            referentType, attributes, kind, mode, modifiers, size, flags);
+                    int flags2     = (attributes & 0x380000) >> 19;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append((flags1 & 1) != 0 ? "flat32" : "");
+                    sb.append((flags1 & 2) != 0 ? " volatile" : "");
+                    sb.append((flags1 & 4) != 0 ? " const" : "");
+                    sb.append((flags1 & 8) != 0 ? " unaligned" : "");
+                    sb.append((flags1 & 16) != 0 ? " restricted" : "");
+                    info = String.format("LF_POINTER refType=0x%04x attrib=0x%x kind=%d (%s) mode=%d(%s) flags1=0x%x (%s) size=%d flags2=0x%x",
+                            referentType, attributes, kind, ptrType[kind], mode, modeStrs[mode], flags1, sb.toString(), size, flags2);
                     break;
                 }
                 case LF_MFUNCTION: {
@@ -161,11 +171,11 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
                 case LF_UNION: {
                     int count = in.getShort();
-                    int properties = in.getShort() & 0xffff;
+                    int properties = in.getShort();
                     int descriptorListIndex = in.getInt();
                     long length = fetchVariable(in);
                     String name = PEStringTable.getString0(in, nextPosition);
-                    info = String.format("LF_UNION count=%d attr=0x%x fieldType=0x%04x len=%d %s", count, properties, descriptorListIndex, length, name);
+                    info = String.format("LF_UNION count=%d attr=0x%x (%s) fieldType=0x%04x len=%d %s", count, properties, propertyString(properties), descriptorListIndex, length, name);
                     break;
                 }
                 case LF_FIELDLIST: {
@@ -178,7 +188,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 long value = fetchVariable(in);
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_ENUMERATE type=0x%04x attr=0x%x value=%d %s", type, attr, value, name);
+                                String field = String.format("\n  field LF_ENUMERATE type=0x%04x attr=0x%x (%s) value=%d %s", type, attr, fieldString(attr), value, name);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -187,7 +197,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int baseTypeIndex = in.getInt();
                                 long offset = fetchVariable(in);
                               //  String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_BCLASS type=0x%04x attr=0x%x baseindex=0x%04x offset=%x", type, attr, baseTypeIndex, offset);
+                                String field = String.format("\n  field LF_BCLASS type=0x%04x attr=0x%x (%s) baseindex=0x%04x offset=%x", type, attr, fieldString(attr), baseTypeIndex, offset);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -199,7 +209,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 long vbpOffset = fetchVariable(in);
                                 long vbteIndex = fetchVariable(in);
                                 //String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%04x attr=0x%x vbType=0x%04x", type, attr, vbIndex);
+                                String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%04x attr=0x%x (%s) vbType=0x%04x", type, attr, fieldString(attr), vbIndex);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -209,14 +219,14 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 long offset = fetchVariable(in);
                                 // TODO - probably need to skip forward by 'l' bytes
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_MEMBER type=0x%04x attr=0x%x typeidx=0x%04x offset=0x%x %s", type, attr, fieldTypeIdx, offset, name);
+                                String field = String.format("\n  field LF_MEMBER type=0x%04x attr=0x%x (%s) typeidx=0x%04x offset=0x%x %s", type, attr, fieldString(attr), fieldTypeIdx, offset, name);
                                 infoBuilder.append(field);
                                 break;
                             }
                             case LF_VFUNCTAB: {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                infoBuilder.append(String.format("\n  field LF_VFUNCTAB: type=0x%04x attr=0x%x type=0x%04x", type, attr, fieldTypeIdx));
+                                infoBuilder.append(String.format("\n  field LF_VFUNCTAB: type=0x%04x attr=0x%x (%s) type=0x%04x", type, attr, fieldString(attr), fieldTypeIdx));
                                 break;
                             }
                             case LF_METHOD: {
@@ -232,7 +242,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int fieldTypeIdx = in.getInt();
                                 int vtbleOffset = ((attr & (MPROP_VIRTUAL | MPROP_IVIRTUAL)) != 0) ? in.getInt() : 0;
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_ONEMETHOD type=0x%04x attr=0x%x typeidx=0x%04x voffset=%d %s", type, attr, fieldTypeIdx, vtbleOffset, name);
+                                String field = String.format("\n  field LF_ONEMETHOD type=0x%04x attr=0x%x (%s) typeidx=0x%04x voffset=%d %s", type, attr, fieldString(attr), fieldTypeIdx, vtbleOffset, name);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -240,7 +250,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field LF_NESTTYPE type=0x%04x attr=0x%x typeidx=0x%04x %s",  type, attr, fieldTypeIdx, name);
+                                String field = String.format("\n  field LF_NESTTYPE type=0x%04x attr=0x%x (%s) typeidx=0x%04x %s",  type, attr, fieldString(attr), fieldTypeIdx, name);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -248,7 +258,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 short attr = in.getShort();
                                 int n = in.getInt();
                                 String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  field *** type=0x%04x (unknown) attr=0x%x 0x%x %s\n", type, attr, n, name);
+                                String field = String.format("\n  field *** type=0x%04x (unknown) attr=0x%x (%s) 0x%x %s", type, attr, fieldString(attr), n, name);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -275,9 +285,9 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int vshapeIndex = in.getInt();
                     long size = fetchVariable(in);
                     String name = PEStringTable.getString0(in, nextPosition);
-                    /* TODO name and data */
+                    String uniqueName = ((properties & 0x0200) != 0) ? PEStringTable.getString0(in, nextPosition) : "";
                     String ln = leaf == LF_CLASS ? "LF_CLASS" : "LF_STRUCTURE";
-                    info = String.format("%s count=%d properties=0x%04x fieldList=0x%04x derivedFrom=0x%04x vshape=0x%x size=%d %s", ln, count, properties, fieldListIndex, derivedFromIndex, vshapeIndex, size, name);
+                    info = String.format("%s count=%d properties=0x%04x (%s) fieldList=0x%04x derivedFrom=0x%04x vshape=0x%x size=%d %s (%s)", ln, count, properties, propertyString(properties), fieldListIndex, derivedFromIndex, vshapeIndex, size, name, uniqueName);
                     break;
                 }
                 case LF_ENUM: {
@@ -286,7 +296,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int underLyingTypeIndex = in.getInt();
                     int fieldListIndex = in.getInt();
                     String name = PEStringTable.getString0(in, nextPosition - in.position());
-                    info = String.format("LF_ENUM count=%d properties=0x%04x fieldListIndex=0x%04x underLyingTypeIndex=0x%04x %s", count, properties, fieldListIndex, underLyingTypeIndex, name);
+                    String uniqueName = ((properties & 0x0200) != 0) ? PEStringTable.getString0(in, nextPosition) : "";
+                    info = String.format("LF_ENUM count=%d properties=0x%04x (%s) fieldListIndex=0x%04x underLyingTypeIndex=0x%04x %s (%s)", count, properties, propertyString(properties), fieldListIndex, underLyingTypeIndex, name, uniqueName);
                     break;
                 }
                 case LF_FUNC_ID: {
@@ -402,6 +413,88 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
         }
         return l;
+    }
+
+    private String fieldString(int properties) {
+        StringBuilder sb = new StringBuilder();
+
+        /* Low byte. */
+        if ((properties & 0x0003) != 0) {
+            String[] aStr = {"", "private", "protected", "public"};
+            sb.append(aStr[properties & 0x0003]);
+        }
+        if ((properties & 0x001c) != 0) {
+            int p = (properties & 0x001c) >> 2;
+            String[] pStr = {"", " virtual", " static", " friend", " intro", " pure", " intro-pure", " (*7*)"};
+            sb.append(pStr[p]);
+        }
+        if ((properties & 0x0020) != 0) {
+            sb.append(" pseudo");
+        }
+        if ((properties & 0x0040) != 0) {
+            sb.append(" final-class");
+        }
+        if ((properties & 0x0080) != 0) {
+            sb.append(" abstract");
+        }
+        if ((properties & 0x0100) != 0) {
+            sb.append(" compgenx");
+        }
+        if ((properties & 0x0200) != 0) {
+            sb.append(" final-method");
+        }
+        return sb.toString();
+    }
+
+    private String propertyString(int properties) {
+        StringBuilder sb = new StringBuilder();
+
+        /* Low byte. */
+        if ((properties & 0x0001) != 0) {
+            sb.append(" packed");
+        }
+        if ((properties & 0x0002) != 0) {
+            sb.append(" ctor");
+        }
+        if ((properties & 0x0004) != 0) {
+            sb.append(" ovlops");
+        }
+        if ((properties & 0x0008) != 0) {
+            sb.append(" isnested");
+        }
+        if ((properties & 0x0010) != 0) {
+            sb.append(" cnested");
+        }
+        if ((properties & 0x0020) != 0) {
+            sb.append(" opassign");
+        }
+        if ((properties & 0x0040) != 0) {
+            sb.append(" opcast");
+        }
+        if ((properties & 0x0080) != 0) {
+            sb.append(" forwardref");
+        }
+
+        /* High byte. */
+        if ((properties & 0x0100) != 0) {
+            sb.append(" scope");
+        }
+        if ((properties & 0x0200) != 0) {
+            sb.append(" hasuniquename");
+        }
+        if ((properties & 0x0400) != 0) {
+            sb.append(" sealed");
+        }
+        if ((properties & 0x1800) != 0) {
+            sb.append(" hfa...");
+        }
+        if ((properties & 0x2000) != 0) {
+            sb.append(" intrinsic");
+        }
+        if ((properties & 0xc000) != 0) {
+            sb.append(" macom...");
+        }
+        return sb.toString();
     }
 
     private void skipPadding(ByteBuffer in) {
