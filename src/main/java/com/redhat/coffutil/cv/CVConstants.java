@@ -19,6 +19,7 @@ public interface CVConstants {
     int S_LPROC32   = 0x110f;
     int S_GPROC32   = 0x1110;
     int S_REGREL32  = 0x1111;
+    int S_CALLSITEINFO = 0x1139;
     int S_COMPILE3  = 0x113c;
     int S_ENVBLOCK  = 0x113d;
     int S_LOCAL     = 0x113e;
@@ -27,6 +28,7 @@ public interface CVConstants {
     int S_GPROC32_ID = 0x1147;
     int S_PROC_ID_END = 0x114f;
     int S_BUILDINFO  = 0x114c;
+    int S_HEAPALLOCSITE = 0x115e;
 
     // from https://github.com/MartinNowak/cv2pdb/blob/master/src/mscvpdb.h
     int S_MSTOOL_V3 = 0x1116;

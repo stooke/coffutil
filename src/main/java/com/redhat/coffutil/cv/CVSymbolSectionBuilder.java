@@ -293,6 +293,24 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     break;
                 }
 
+                case S_CALLSITEINFO: {
+                    int offset = in.getInt();
+                    int sectionIndex = in.getShort();
+                    int dummy0 = in.getShort();
+                    int funcSig = in.getInt();
+                    info = String.format("S_CALLSITEINFO section:offset=0x%x:0x%x functionIndex=0x%x", sectionIndex, offset, funcSig);
+                    break;
+                }
+
+                case S_HEAPALLOCSITE: {
+                    int offset = in.getInt();
+                    int sectionIndex = in.getShort();
+                    int length = in.getShort();
+                    int funcSig = in.getInt();
+                    info = String.format("S_HEAPALLOCSITE section:offset=0x%x:0x%x length=0x%x functionIndex=0x%x", sectionIndex, offset, length, funcSig);
+                    break;
+                }
+
                 case S_FRAMEPROC: {
                     String[] x64Regs = { "none", "sp", "bp", "r13"};
                     //CVSymbolSectionBuilder.java
