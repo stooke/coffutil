@@ -54,32 +54,4 @@ public class PEStringTable {
             return longname.trim();
         }
     }
-
-    public static String getString0(ByteBuffer in, int maxlen) {
-        byte[] buf = new byte[maxlen];
-        int len = 0;
-        while (maxlen-- > 0) {
-            byte b = in.get();
-            if (b == 0) {
-                break;
-            }
-            buf[len++] = b;
-        }
-        return new String(buf, 0, len);
-    }
-
-    public static String getNString(ByteBuffer in, int mlen) {
-        int maxlen = in.getShort();
-        byte[] buf = new byte[maxlen];
-        int len = 0;
-        while (maxlen-- > 0) {
-            byte b = in.get();
-            if (b == 0) {
-                break;
-            }
-            buf[len++] = b;
-        }
-        return new String(buf, 0, len);
-    }
-
 }

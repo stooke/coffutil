@@ -93,9 +93,11 @@ public interface CVConstants {
     int LF_NESTTYPE    = 0x1510;
     int LF_ONEMETHOD   = 0x1511;
     int LF_TYPESERVER2 = 0x1515;
+    int LF_VFTABLE     = 0x151d;
     int LF_FUNC_ID     = 0x1601;
     int LF_MFUNC_ID    = 0x1602;
     int LF_BUILDINFO   = 0x1603;
+    int LF_SUBSTR_LIST = 0x1604;
     int LF_STRING_ID   = 0x1605;
     int LF_UDT_SRC_LINE = 0x1606;
     int LF_UDT_MOD_SRC_LINE = 0x1607;

@@ -5,7 +5,6 @@ import com.redhat.coffutil.cv.CVTypeSection;
 import com.redhat.coffutil.cv.CVTypeSectionBuilder;
 import com.redhat.coffutil.msf.MultiStreamFile;
 import com.redhat.coffutil.ExeFile;
-import com.redhat.coffutil.pecoff.PEStringTable;
 import com.redhat.coffutil.pecoff.Util;
 
 import java.io.PrintStream;
@@ -23,6 +22,8 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private static final int PDB_HEADERS_STREAM = 2;
     private static final int TYPE_INFO_STREAM = 3;
+    private static final int ID_STREAM = 5;
+
     /*
     private static final int NAME_MAP_STREAM = 3;
     private static final int MODULE_INFO_STREAM = 4;
@@ -34,7 +35,10 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private StreamDef pdbHeaderStream;
     private StreamDef typeInfoStream;
+    private StreamDef idStream;
+
     private CVTypeSection typeSection;
+    private CVTypeSection idSection;
 
     /* PDB header */
     private int version = 0;
@@ -51,6 +55,9 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
         typeInfoStream = getStream(TYPE_INFO_STREAM);
         typeSection = buildTypeInfo(typeInfoStream);
+
+        idStream = getStream(ID_STREAM);
+        idSection = buildTypeInfo(idStream);
 
         for (int i = 4; i < streamCount(); i++) {
             processUnknownStream(getStream(i));
@@ -93,18 +100,31 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
             typeInfoStream.dumpData(out);
         }
 
-        for (int i = 4; i < streamCount(); i++) {
-            StreamDef s = getStream(i);
-            out.println("stream " + i + ": " + s.toString());
-            if (ctx.getDumpHex()) {
-                s.dumpData(out);
-            }
+        out.println("idStream: " + idStream.toString());
+        if (ctx.dumpTypes()) {
+            idSection.dump(out);
+        }
+        if (ctx.getDumpHex()) {
+            idStream.dumpData(out);
+        }
+
+        dumpStream(ctx, out, 4);
+        for (int i = 6; i < streamCount(); i++) {
+            dumpStream(ctx, out, i);
+        }
+    }
+
+    private void dumpStream(CoffUtilContext ctx, PrintStream out, int i) {
+        StreamDef s = getStream(i);
+        out.println("stream " + i + ": " + s.toString());
+        if (ctx.getDumpHex()) {
+            s.dumpData(out);
         }
     }
 
     private CVTypeSection buildTypeInfo(StreamDef stream) {
         final int typeInfoBegin = 0x38; /* derived by inspection and probably inaccurate */
-        return new CVTypeSectionBuilder().build(stream.get(), typeInfoBegin, typeInfoStream.length());
+        return new CVTypeSectionBuilder().build(stream.get(), typeInfoBegin, stream.length());
     }
 
     private void buildPDBHeader(StreamDef stream) {
@@ -124,7 +144,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
         int htop = in.position() + hsize;
      //   int nameCount = 0;
         while (in.position() < htop) {
-            String name = PEStringTable.getString0(in, htop - in.position());
+            String name = Util.getString0(in, htop - in.position());
             System.out.format("name: %s\n", name);
      //       nameCount++;
         }

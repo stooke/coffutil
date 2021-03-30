@@ -95,7 +95,7 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
                     break;
                 case ".drectve":
                     in.position(shdr.getRawDataPtr());
-                    directive = PEStringTable.getString0(in, shdr.getRawDataSize());
+                    directive = Util.getString0(in, shdr.getRawDataSize());
             }
         }
 

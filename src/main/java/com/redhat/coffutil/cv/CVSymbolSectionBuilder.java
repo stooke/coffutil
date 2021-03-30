@@ -2,7 +2,7 @@ package com.redhat.coffutil.cv;
 
 import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.pecoff.PESection;
-import com.redhat.coffutil.pecoff.PEStringTable;
+import com.redhat.coffutil.pecoff.Util;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int cvStringTableOffset = in.position();
                     while (in.position() < nextPosition) {
                         int pos = in.position() - cvStringTableOffset;
-                        String s = PEStringTable.getString0(in, nextPosition - in.position());
+                        String s = Util.getString0(in, nextPosition - in.position());
                         stringTable.put(pos, new CVSymbolSection.StringInfo(pos,s));
                     }
                     if (ctx.getDebugLevel() > 1) {
@@ -137,7 +137,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         in.position(cvStringTableOffset);
                         while (in.position() < nextPosition) {
                             int pos = in.position() - cvStringTableOffset;
-                            String s = PEStringTable.getString0(in, nextPosition - in.position());
+                            String s = Util.getString0(in, nextPosition - in.position());
                             infoBuilder.append(String.format("\n    0x%04x %s", pos, s));
                         }
                         info = infoBuilder.toString();
@@ -233,7 +233,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int f1 = in.get();
                     int f2 = in.get();
                     int f3 = in.get();
-                    String version = PEStringTable.getString0(in, next - in.position());
+                    String version = Util.getString0(in, next - in.position());
                     info = String.format("S_COMPILE machine=%d version=%s f1=%d f2=%d f3=%d", cmachine, version, f1, f2, f3);
                     break;
                 }
@@ -252,7 +252,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int beMinor = in.getShort();
                     int beBuild = ((int)in.getShort()) & 0xffff;
                     int beQFE = in.getShort();
-                    String compiler = PEStringTable.getString0(in, next - in.position());
+                    String compiler = Util.getString0(in, next - in.position());
                     info = String.format("S_COMPILE3 machine=%d lang=%d debug=%s fe=%d.%d.%d-%d be=%d.%d.%d-%d compiler=%s",
                             machine, language, hasDebug ? "true" : "false", feMajor, feMinor, feBuild, feQFE, beMajor, beMinor, beBuild, beQFE, compiler);
                     break;
@@ -260,7 +260,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 case S_CONSTANT: {
                     int typeindex = in.getInt();
                     int leaf = in.getShort();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_CONSTANT name=%s typeindex=0x%x leaf=0x%x", name, typeindex, leaf);
                     break;
                 }
@@ -276,7 +276,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     ArrayList<String> strs = new ArrayList<>(20);
                     int flags = in.get(); // should be 0
                     while (in.position() < next) {
-                        String s = PEStringTable.getString0(in, next - in.position());
+                        String s = Util.getString0(in, next - in.position());
                         if (s.length() == 0) {
                             break;
                         }
@@ -418,7 +418,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
@@ -436,7 +436,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offset = in.getInt();
                     int segment = in.getShort();
                     int flags = in.get();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     String cmdStr = "(unknown)";
                     switch (cmd) {
                         case S_LPROC32_ID:  cmdStr = "S_LPROC32_ID";    break;
@@ -452,7 +452,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
@@ -460,13 +460,13 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LDATA32_ST name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
                 case S_OBJNAME: {
                     int signature = in.getInt();
-                    String objname = PEStringTable.getString0(in, next - in.position());
+                    String objname = Util.getString0(in, next - in.position());
                     info = String.format("S_OBJNAME objectname=%s signature=0x%x", objname, signature);
                     break;
                 }
@@ -474,7 +474,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offset = in.getInt();       /* offset from the register */
                     int typeIndex = in.getInt();    /* type index */
                     int reg = in.getShort();        /* register */
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=0x%x", name, offset, typeIndex, reg);
                     break;
                 }
@@ -482,7 +482,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();
                     int localVarFlags = in.getShort();
                     boolean isParam = (localVarFlags & 0x0001) == 0x0001;
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LOCAL name=%s isParam=%s typeindex=0x%x flags=0x%x", name, isParam, typeIndex, localVarFlags);
                     break;
                 }
@@ -505,7 +505,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 }
                 case S_UDT: {
                     int typeIndex = in.getInt();
-                    String name = PEStringTable.getString0(in, next - in.position());
+                    String name = Util.getString0(in, next - in.position());
                     info = String.format("S_UDT name=%s typeindex=0x%x", name, typeIndex);
                     break;
                 }
@@ -518,7 +518,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int blocklen = in.getInt();
                     int codeoffset = in.getInt();
                     short segment = in.getShort();
-                    String name = PEStringTable.getNString(in, next - in.position());
+                    String name = Util.getNString(in, next - in.position());
                     info = String.format("%s name=%s parent=0x%x end=0x%x len=0x%x codeoffset=0x%x:%x", cmdStr, name, parentblock, blockend, blocklen, segment, codeoffset);
                     in.position(next);
                     break;
