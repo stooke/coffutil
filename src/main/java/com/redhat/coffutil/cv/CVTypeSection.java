@@ -18,7 +18,7 @@ public class CVTypeSection {
     public void dump(PrintStream out) {
         for (CVTypeRecord record : records) {
             //out.format("0x%04x 0x%04x len=%-4d %s\n", record.getIdx(), record.getLeafType(), record.getLen(), record.toString());
-            out.format("0x%04x %s\n", record.getIdx(), record.toString());
+            out.format("0x%04x 0x%04x %s\n", record.getPos(), record.getIdx(), record.toString());
             if (CoffUtilContext.getInstance().getDumpHex()) {
                 String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
                 out.print(dump);

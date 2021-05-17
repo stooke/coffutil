@@ -163,11 +163,6 @@ public class CVTypeSectionBuilder implements CVConstants {
                     info = infoBuilder.toString();
                     break;
                 }
-                case LF_VTSHAPE: {
-                    int count = in.getShort();
-                    info = String.format("LF_VTSHAPE count=%d [%s]", count, Util.dumpHex(in, in.position(), nextPosition - in.position()));
-                    break;
-                }
                 case LF_UNION: {
                     int count = in.getShort();
                     int attr = in.getShort();
@@ -209,6 +204,14 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 long vbteIndex = fetchVariable(in);
                                 //String name = PEStringTable.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_VBCLASS/LF_IVBCLASS type=0x%04x attr=0x%x (%s) vbType=0x%04x", type, attr, fieldString(attr), vbIndex);
+                                infoBuilder.append(field);
+                                break;
+                            }
+                            case LF_STMEMBER: {
+                                short attr = in.getShort();
+                                int fieldTypeIdx = in.getInt();
+                                String name = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  field LF_STMEMBER type=0x%04x attr=0x%x (%s) typeidx=0x%04x %s", type, attr, fieldString(attr), fieldTypeIdx, name);
                                 infoBuilder.append(field);
                                 break;
                             }
@@ -320,6 +323,14 @@ public class CVTypeSectionBuilder implements CVConstants {
                     info = String.format("LF_UDT_SRC_LINE typeIndex=0x%04x filename-typeIndex=0x%04x line=%d", typeIndex, stringIndex, line);
                     break;
                 }
+                case LF_UDT_MOD_SRC_LINE: {
+                    int typeIndex = in.getInt();
+                    int stringIndex = in.getInt();
+                    int line = in.getInt();
+                    int mod = in.getShort();
+                    info = String.format("LF_UDT_MOD_SRC_LINE typeIndex=0x%04x filename-typeIndex=0x%04x line=%d module=%d", typeIndex, stringIndex, line, mod);
+                    break;
+                }
                 case LF_SUBSTR_LIST: {
                     int count = in.getInt();
                     StringBuilder sb = new StringBuilder();
@@ -347,6 +358,17 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int pdb = in.getInt();
                     int args = in.getInt();
                     info = String.format("LF_BUILDINFO count=%d cwd=0x%x tool=0x%x source=0x%x pdb=0x%x args=0x%x", count, cwd, buildTool, sourceFile, pdb, args);
+                    break;
+                }
+                case LF_VTSHAPE: {
+                    int count = in.getShort();
+                    String hex = "0123456789abcdef";
+                    info = String.format("LF_VTSHAPE count=%d [%s]", count, Util.dumpHex(in, in.position(), nextPosition - in.position()));
+                    for (int j = 0; j < count; j++) {
+                        int n = in.get(in.position() + j / 2);
+                        int b = ((j & 1) == 1 ? n >> 4 : n) & 0xf;
+                        info = info + hex.charAt(b) + "-";
+                    }
                     break;
                 }
                 case LF_VFTABLE: {
@@ -406,7 +428,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                 if (ctx.dumpTypes()) {
                     ctx.debug("  0x%04x 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, leaf, info);
                 }
-                CVTypeRecord typeRecord = new CVTypeRecord(currentTypeIndex, leaf, len, info, data);
+                CVTypeRecord typeRecord = new CVTypeRecord((startPosition - sectionBegin), currentTypeIndex, leaf, len, info, data);
                 typeSection.addRecord(typeRecord);
             }
             currentTypeIndex++;

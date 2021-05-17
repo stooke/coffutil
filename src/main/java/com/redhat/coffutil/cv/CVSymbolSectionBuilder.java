@@ -414,14 +414,6 @@ public class CVSymbolSectionBuilder implements CVConstants {
                             frameLength, padLen, padOffset, saveRegsCount, flags, sb.toString(), ehSection, ehOffset);
                     break;
                 }
-                case S_GDATA32: {
-                    int typeIndex = in.getInt();
-                    int offset = in.getInt();
-                    int segment = in.getShort();
-                    String name = Util.getString0(in, next - in.position());
-                    info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
-                    break;
-                }
                 case S_LPROC32_ID:
                 case S_LPROC32:
                 case S_GPROC32_ID:
@@ -446,6 +438,14 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     }
                     info = String.format("%s name=%s parent=%d pend=%d pnext=%d debugStart=0x%x debugEnd=0x%x offset=0x%x:%x procLen=%d typeIndex=0x%x flags=0x%x",
                                             cmdStr, name, pparent, pend, pnext, debugStart, debugEnd, segment, offset, proclen, typeIndex, flags);
+                    break;
+                }
+                case S_GDATA32: {
+                    int typeIndex = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    String name = Util.getString0(in, next - in.position());
+                    info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
                 case S_LDATA32: {

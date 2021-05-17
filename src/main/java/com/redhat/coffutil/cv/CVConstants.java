@@ -1,6 +1,6 @@
 package com.redhat.coffutil.cv;
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 public interface CVConstants {
 
     int CV_SIGNATURE_C13 = 4;
@@ -52,14 +52,25 @@ public interface CVConstants {
     /* type table */
     int T_NOTYPE       = 0x0000;
     int T_VOID         = 0x0003;
-    int T_CHAR         = 0x0010; /* 8 bit signed (java type) */
+    int T_CHAR         = 0x0010; /* 8 bit signed (java byte type) */
+    int T_UCHAR        = 0x0020;
     int T_WCHAR        = 0x0071;
-    int T_CHAR16       = 0x007a; /* 16 bit unicode (Java type) */
-    int T_SHORT        = 0x0011; /* 16 bit signed int (Java type) */
-    int T_LONG         = 0x0014; /* 32 bit signed (java type? maybe T_INT4?) */
-    int T_QUAD         = 0x0013; /* 64 bit signed int (Java type) */
-    int T_REAL32       = 0x0040; /* 32 bit float (Java type) */
-    int T_REAL64       = 0x0041; /* 64 but double (Java type) */
+    int T_CHAR16       = 0x007a; /* 16 bit unicode (java char type) */
+    int T_INT1         = 0x0068;
+    int T_UINT1        = 0x0069;
+    int T_INT2         = 0x0072;
+    int T_UINT2        = 0x0073;
+    int T_SHORT        = 0x0011; /* 16 bit signed int (kava short type) */
+    int T_USHORT       = 0x0021;
+    int T_INT4         = 0x0074; /* 32 bit signed (java int type) */
+    int T_UINT4        = 0x0075;
+    int T_INT8         = 0x0076;
+    int T_UINT8        = 0x0077;
+    int T_INT16        = 0x0078;
+    int T_UINT16       = 0x0079;
+    int T_QUAD         = 0x0013; /* 64 bit signed int (Java long type) */
+    int T_REAL32       = 0x0040; /* 32 bit float (Java float type) */
+    int T_REAL64       = 0x0041; /* 64 but double (Java double type) */
     int T_RCHAR        = 0x0070; /* ?? "really a char" */
 
     int T_POINTER_BITS  = 0x0700;

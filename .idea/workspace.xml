@@ -5,11 +5,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEStringTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PEStringTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/Util.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -150,7 +148,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.c++ object - helloworld (llvm-o)">
+  <component name="RunManager" selected="Application.c++ object - helloworld (vc++) vc140.pdb">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -454,7 +452,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java</url>
-          <line>204</line>
+          <line>199</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
