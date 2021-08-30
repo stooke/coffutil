@@ -16,6 +16,7 @@ public interface CVConstants {
     int S_UDT       = 0x1108;
     int S_LDATA32   = 0x110c;
     int S_GDATA32   = 0x110d;
+    int S_PUB32     = 0x110e;
     int S_LPROC32   = 0x110f;
     int S_GPROC32   = 0x1110;
     int S_REGREL32  = 0x1111;

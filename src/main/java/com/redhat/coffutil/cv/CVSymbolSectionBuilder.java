@@ -448,6 +448,14 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=0x%x", name, segment, offset, typeIndex);
                     break;
                 }
+                case S_PUB32: {
+                    int flags = in.getInt();
+                    int offset = in.getInt();
+                    int segment = in.getShort();
+                    String name = Util.getString0(in, next - in.position());
+                    info = String.format("S_PUB32 name=%s offset=0x%x:%x flags=0x%x", name, segment, offset, flags);
+                    break;
+                }
                 case S_LDATA32: {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
@@ -475,7 +483,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();    /* type index */
                     int reg = in.getShort();        /* register */
                     String name = Util.getString0(in, next - in.position());
-                    info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=0x%x", name, offset, typeIndex, reg);
+                    info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=r%d", name, offset, typeIndex, reg);
                     break;
                 }
                 case S_LOCAL: {
