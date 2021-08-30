@@ -132,14 +132,14 @@ public class PESection {
         if (CoffUtilContext.getInstance().dumpLinenumbers()) {
             out.println();
             if (getLineNumberCount() != 0) {
-                lineNumberTable.dump(out);
+                lineNumberTable.dump(out, Integer.MAX_VALUE);
             }
         }
 
         if (CoffUtilContext.getInstance().dumpRelocations()) {
             if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
                 if (getRelocationCount() != 0) {
-                    relocations.dump(out, objectFile);
+                    relocations.dump(out, objectFile, Integer.MAX_VALUE);
                 }
             }
         }

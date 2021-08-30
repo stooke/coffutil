@@ -54,7 +54,7 @@ class CoffRelocationTable {
         }
         in.position(offset);
         CoffRelocationTable.Entry[] ln = new CoffRelocationTable.Entry[nLines];
-        for (int i=0; i < nLines; i++) {
+        for (int i = 0; i < nLines; i++) {
             int addr = in.getInt();
             int symIdx = in.getInt();
             int type = in.getShort();
@@ -64,9 +64,8 @@ class CoffRelocationTable {
         return ln;
     }
 
-    void dump(PrintStream out, CoffFile ofile) {
+    void dump(PrintStream out, CoffFile ofile, int limit) {
         if (relocs != null) {
-            int limit = 50;
             for (CoffRelocationTable.Entry e : relocs) {
                 e.dump(out, ofile);
                 if (limit-- < 0) break;

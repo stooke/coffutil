@@ -54,9 +54,8 @@ class CoffLineNumberTable {
         return ln;
     }
 
-    void dump(PrintStream out) {
+    void dump(PrintStream out, int limit) {
         if (lineNumbers != null) {
-            int limit = 50;
             for (Entry e : lineNumbers) {
                 e.dump(out);
                 if (limit-- < 0) break;
