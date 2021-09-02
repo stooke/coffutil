@@ -24,8 +24,21 @@ public abstract class Util {
         return sb.toString();
     }
 
+    public static String dumpHex(byte[] in, int count, char sep) {
+        StringBuilder sb = new StringBuilder(in.length);
+        int n = 0;
+        for (byte b : in) {
+            sb.append(String.format("%02x", b));
+            if (n > 0 && (n % count == 0)) {
+                sb.append(sep);
+            }
+            n++;
+        }
+        return sb.toString();
+    }
+
     public static ByteBuffer readFile(final File file) throws IOException {
-        ByteBuffer buffer = null;
+        ByteBuffer buffer;
         RandomAccessFile coffFile = new RandomAccessFile(file,"r");
         FileChannel channel = coffFile.getChannel();
         long fsize = channel.size();

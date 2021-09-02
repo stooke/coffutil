@@ -2,8 +2,11 @@ package com.redhat.coffutil.cv;
 
 import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.msf.HexDump;
+import com.redhat.coffutil.pecoff.CoffRelocationTable;
+import com.redhat.coffutil.pecoff.PECoffFile;
+import com.redhat.coffutil.pecoff.PESection;
+import com.redhat.coffutil.pecoff.Util;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -14,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.redhat.coffutil.cv.CVConstants.S_GDATA32;
 
 public class CVSymbolSection {
 
@@ -27,6 +32,7 @@ public class CVSymbolSection {
     }
 
     static class FileInfo {
+
         int filePos;
         String fileName = null;
         byte[] checksum;
@@ -60,21 +66,21 @@ public class CVSymbolSection {
                 out.format("%02x", ((int) (b) & 0xff));
             }
             out.format("] %s\n", fileName);
-            /*
-            try {
-                String md5 = calculateMD5Sum(filename);
-                out.format("calculated=%s", md5);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
+            if (false) {
+                try {
+                    String md5 = calculateMD5Sum(fileName);
+                    out.format("calculated=%s", md5);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
-        public String calculateMD5Sum(String fn) throws NoSuchAlgorithmException, IOException
-        {
+        public String calculateMD5Sum(String fn) throws NoSuchAlgorithmException, IOException {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(Files.readAllBytes(Paths.get(fn)));
             byte[] digest = md.digest();
-            return DatatypeConverter.printHexBinary(digest).toUpperCase();
+            return Util.dumpHex(digest, 4, ' ').toUpperCase();
         }
     }
 
@@ -88,6 +94,7 @@ public class CVSymbolSection {
         boolean isStatement;
         int deltaEnd;
         String fileName;
+
         LineInfo(int addr, int fileId, int lineNo, boolean isStatement, int deltaEnd) {
             this.addr = addr;
             this.fileId = fileId;
@@ -112,14 +119,14 @@ public class CVSymbolSection {
         void dump(PrintStream out) {
             String fileNameStr = fileName != null ? fileName : "";
             String isStatementStr = isStatement ? " isStatement" : "";
-            out.format("  line: 0x%04x deltaEnd=%d%s 0x%04x %s:%d\n", addr, deltaEnd, isStatementStr, fileId, fileNameStr, lineNo);
+            out.format("  line: 0x%x deltaEnd=%d%s 0x%04x %s:%d\n", addr, deltaEnd, isStatementStr, fileId, fileNameStr, lineNo);
         }
     }
 
     static class StringInfo {
 
-        private long offset;
-        private String string;
+        private final long offset;
+        private final String string;
 
         StringInfo(long offset, String string) {
             this.offset = offset;
@@ -143,25 +150,39 @@ public class CVSymbolSection {
     private final HashMap<Integer, StringInfo> stringTable;
     private final ArrayList<LineInfo> lines;
     private final HashMap<String, String> env;
+    private final PESection section;
 
-    CVSymbolSection(HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, ArrayList<LineInfo> lines, HashMap<String,String> env) {
+    CVSymbolSection(PESection section, HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, ArrayList<LineInfo> lines, HashMap<String,String> env) {
+        this.section = section;
         this.sourceFiles = sourceFiles;
         this.stringTable = stringTable;
         this.lines = lines;
         this.env = env;
     }
 
-    public void dump(PrintStream out) {
+    public void dump(PrintStream out, PECoffFile coffFile) {
+
+        boolean dumpHex = CoffUtilContext.getInstance().getDumpHex();
+        boolean dumpLineNumbers = CoffUtilContext.getInstance().dumpLinenumbers();
+        boolean dumpRelocations = CoffUtilContext.getInstance().dumpRelocations();
+
         for (CVSymbolRecord record : records) {
             out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
-            if (CoffUtilContext.getInstance().getDumpHex() && false) {
+            if (dumpHex) {
                 String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
                 out.print(dump);
+            }
+            if (dumpRelocations) {
+                /* Dump reloc records associated with this symbol record */
+                List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
+                for (CoffRelocationTable.Entry reloc : relocs) {
+                    reloc.dump(out, coffFile);
+                }
             }
         }
 
         out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());
-        if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+        if (dumpLineNumbers) {
             for (final FileInfo fi : sourceFiles.values()) {
                 StringInfo si = stringTable.get(fi.getFileId());
                 if (si != null) {
@@ -172,6 +193,7 @@ public class CVSymbolSection {
                 fi.dump(out);
             }
         }
+
         if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
             out.println("CV Strings");
             for (final StringInfo si : stringTable.values()) {
@@ -186,7 +208,7 @@ public class CVSymbolSection {
         }
         if (!lines.isEmpty()) {
             out.format("CV lines (count=%d):\n", lines.size());
-            if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+            if (dumpLineNumbers) {
                 for (final LineInfo line : lines) {
                     FileInfo fi = sourceFiles.get(line.getFileId());
                     if (fi != null) {

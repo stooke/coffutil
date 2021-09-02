@@ -58,6 +58,12 @@ public class CoffUtilContext {
                     case "--split":
                         prev = "--split";
                         break;
+                    case "--all":
+                        dumpRelocations = true;
+                        dumpLinenumbers = true;
+                        dumpSymbols = true;
+                        dumpTypes = true;
+                        break;
                     case "--out":
                     case "-o":
                         prev = "--out";
@@ -81,7 +87,7 @@ public class CoffUtilContext {
                     case "-h":
                     case "--help":
                     case "/?":
-                        error("Usage:\ncoffutil [--dump] [--only types|line|recloc|sym] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
+                        error("Usage:\ncoffutil [--dump] [--all] [--only types|line|recloc|sym] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
                         System.exit(0);
                         break;
                     default:

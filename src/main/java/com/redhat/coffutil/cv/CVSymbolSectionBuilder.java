@@ -10,18 +10,20 @@ import java.util.HashMap;
 
 public class CVSymbolSectionBuilder implements CVConstants {
 
-    private CoffUtilContext ctx;
-    private HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
-    private HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
-    private ArrayList<CVSymbolSection.LineInfo> lines = new ArrayList<>(100);
-    private HashMap<String, String> env = new HashMap<>(10);
+    private final CoffUtilContext ctx;
+    private final HashMap<Integer,CVSymbolSection.FileInfo> sourceFiles = new HashMap<>(20);
+    private final HashMap<Integer,CVSymbolSection.StringInfo> stringTable = new HashMap<>(20);
+    private final ArrayList<CVSymbolSection.LineInfo> lines = new ArrayList<>(100);
+    private final HashMap<String, String> env = new HashMap<>(10);
     private int alignment = 0;
+    private PESection section;
 
     public CVSymbolSectionBuilder() {
         this.ctx = CoffUtilContext.getInstance();
     }
 
     public CVSymbolSection build(ByteBuffer in, PESection shdr) {
+        section = shdr;
         final int sectionBegin = shdr.getRawDataPtr();
         final int sectionEnd = sectionBegin + shdr.getRawDataSize();
         alignment = shdr.alignment();
@@ -31,7 +33,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
 
     public CVSymbolSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
 
-        CVSymbolSection symbolSection = new CVSymbolSection(sourceFiles, stringTable, lines, env);
+        CVSymbolSection symbolSection = new CVSymbolSection(section, sourceFiles, stringTable, lines, env);
 
         in.position(sectionBegin);
 

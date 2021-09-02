@@ -2,13 +2,16 @@ package com.redhat.coffutil.pecoff;
 
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-class CoffRelocationTable {
+public class CoffRelocationTable {
 
-    static class Entry {
-        private int virtualAddr;
-        private int symbolIndex;
-        private int type;
+    public static class Entry {
+        private final int virtualAddr;
+        private final int symbolIndex;
+        private final int type;
 
         Entry(int addr, int symbolIndex, int type) {
             this.symbolIndex = symbolIndex;
@@ -16,7 +19,7 @@ class CoffRelocationTable {
             this.type = type;
         }
 
-        void dump(PrintStream out, CoffFile ofile) {
+        public void dump(PrintStream out, CoffFile ofile) {
             PESymbol symbol = ofile.getSymbols().get(symbolIndex);
             final String descr;
             /* assume x64 */
@@ -40,7 +43,7 @@ class CoffRelocationTable {
         }
     }
 
-    CoffRelocationTable.Entry[] relocs;
+    Entry[] relocs;
 
     CoffRelocationTable(ByteBuffer in, PESection section, PEFileHeader hdr) {
         int offset = section.getRelocationPtr();
@@ -48,25 +51,29 @@ class CoffRelocationTable {
         relocs = read(in, offset, nLines);
     }
 
-    private CoffRelocationTable.Entry[] read(ByteBuffer in, int offset, int nLines) {
+    private Entry[] read(ByteBuffer in, int offset, int nLines) {
         if (nLines == 0) {
             return null;
         }
         in.position(offset);
-        CoffRelocationTable.Entry[] ln = new CoffRelocationTable.Entry[nLines];
+        Entry[] ln = new Entry[nLines];
         for (int i = 0; i < nLines; i++) {
             int addr = in.getInt();
             int symIdx = in.getInt();
             int type = in.getShort();
-            CoffRelocationTable.Entry e = new CoffRelocationTable.Entry(addr, symIdx, type); // symtab index or pysical addr
+            Entry e = new Entry(addr, symIdx, type); // symtab index or pysical addr
             ln[i] = e;
         }
         return ln;
     }
 
+    public List<Entry> inRange(int begin, int end) {
+        return Arrays.stream(relocs).filter(f -> f.virtualAddr >= begin && f.virtualAddr < end).collect(Collectors.toList());
+    }
+
     void dump(PrintStream out, CoffFile ofile, int limit) {
         if (relocs != null) {
-            for (CoffRelocationTable.Entry e : relocs) {
+            for (Entry e : relocs) {
                 e.dump(out, ofile);
                 if (limit-- < 0) break;
             }

@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 class CoffLineNumberTable {
 
     static class Entry {
-        private int lineNumber;
-        private int symbolIndex;
-        private int physicalAddress;
+        private final int lineNumber;
+        private final int symbolIndex;
+        private final int physicalAddress;
 
         Entry(int symbolIndex) {
             this.symbolIndex = symbolIndex;
@@ -31,7 +31,7 @@ class CoffLineNumberTable {
         }
     }
 
-    private Entry[] lineNumbers;
+    private final Entry[] lineNumbers;
 
     CoffLineNumberTable(ByteBuffer in, PESection section, PEFileHeader hdr) {
         int offset = section.getLineNumberPtr();

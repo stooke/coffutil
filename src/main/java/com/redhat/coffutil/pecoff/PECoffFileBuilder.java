@@ -32,7 +32,7 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
         /* test if this is an executable or an object file */
         final short mzmaybe = in.getShort();
         if (mzmaybe == 0x5a4d) {
-            CoffUtilContext.getInstance().debug("'MZ' detected; nust be an executable\n");
+            CoffUtilContext.getInstance().debug("'MZ' detected; must be an executable\n");
             coffFile = parseExecutable(in);
         } else {
             /* should be a COFF object file */
@@ -96,6 +96,10 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
                 case ".drectve":
                     in.position(shdr.getRawDataPtr());
                     directive = Util.getString0(in, shdr.getRawDataSize());
+                    break;
+                case ".reloc":
+                    // TODO: executables move all the relocs to one section */
+                    break;
             }
         }
 

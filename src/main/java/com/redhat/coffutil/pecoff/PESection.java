@@ -19,8 +19,8 @@ public class PESection {
     private static final int PE_REMOVE        = 0x00000800;     /* IMAGE_SCN_LNK_REMOVE */
     private static final int PE_COMDAT        = 0x00001000;     /* IMAGE_SCN_LNK_COMDAT */
 
-    private static final int PE_ALINGMENT_MASK   = 0x00f00000;
-    private static final int PE_ALINGMENT_SHIFT  = 20;
+    private static final int PE_ALIGNMENT_MASK = 0x00f00000;
+    private static final int PE_ALIGNMENT_SHIFT = 20;
 
     private static final int PE_EXTENDED_RELOCS  = 0x01000000; /* IMAGE_SCN_LNK_NRELOC_OVFL */
     private static final int PE_DISARDABLE       = 0x02000000; /* IMAGE_SCN_MEM_DISCARDABLE */
@@ -30,6 +30,12 @@ public class PESection {
     private static final int PE_PERM_EXECUTE     = 0x20000000; /* IMAGE_SCN_MEM_EXECUTE */
     private static final int PE_PERM_READ        = 0x40000000; /* IMAGE_SCN_MEM_READ */
     private static final int PE_PERM_WRITE       = 0x80000000; /* IMAGE_SCN_MEM_WRITE */
+
+    private CoffLineNumberTable lineNumberTable;
+    private CoffRelocationTable relocations;
+
+    private PESectionHeader sectionHeader;
+    private ByteBuffer rawData;
 
     public static class PESectionHeader {
 
@@ -74,12 +80,6 @@ public class PESection {
         }
     }
 
-    private CoffLineNumberTable lineNumberTable;
-    private CoffRelocationTable relocations;
-
-    private PESectionHeader sectionHeader;
-    private ByteBuffer rawData;
-
     private PESection() {
     }
 
@@ -108,8 +108,12 @@ public class PESection {
     }
 
     public int alignment() {
-        int align = (getCharacteristics() & PE_ALINGMENT_MASK) >> PE_ALINGMENT_SHIFT;
+        int align = (getCharacteristics() & PE_ALIGNMENT_MASK) >> PE_ALIGNMENT_SHIFT;
         return 1 << (align-1);
+    }
+
+    public CoffRelocationTable getRelocations() {
+        return relocations;
     }
 
     void dump(PrintStream out, CoffFile objectFile) {
@@ -127,22 +131,18 @@ public class PESection {
         if (getRelocationCount() != 0) {
             out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
         }
-        out.println();
 
-        if (CoffUtilContext.getInstance().dumpLinenumbers()) {
+        if (CoffUtilContext.getInstance().dumpLinenumbers() && getLineNumberCount() != 0) {
             out.println();
-            if (getLineNumberCount() != 0) {
-                lineNumberTable.dump(out, Integer.MAX_VALUE);
-            }
+            lineNumberTable.dump(out, Integer.MAX_VALUE);
         }
 
-        if (CoffUtilContext.getInstance().dumpRelocations()) {
-            if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
-                if (getRelocationCount() != 0) {
-                    relocations.dump(out, objectFile, Integer.MAX_VALUE);
-                }
-            }
+        if (CoffUtilContext.getInstance().dumpRelocations() && getRelocationCount() != 0) {
+            out.println();
+            relocations.dump(out, objectFile, Integer.MAX_VALUE);
         }
+
+        out.println();
     }
 
     public String getName() {
@@ -207,9 +207,9 @@ public class PESection {
         c = testCharacteristic(c, sb, PE_PERM_EXECUTE, "execute");
         c = testCharacteristic(c, sb, PE_PERM_READ, "read");
         c = testCharacteristic(c, sb, PE_PERM_WRITE, "write");
-        int align = (c & PE_ALINGMENT_MASK) >> PE_ALINGMENT_SHIFT;
-        sb.append(" align=").append( 1 << (align-1) );
-        c = c & ~PE_ALINGMENT_MASK;
+        int align = (c & PE_ALIGNMENT_MASK) >> PE_ALIGNMENT_SHIFT;
+        sb.append(" align=").append(align);
+        c = c & ~PE_ALIGNMENT_MASK;
         if (c != 0) {
             sb.append(" (remaining bits: ").append(c).append(")");
         }

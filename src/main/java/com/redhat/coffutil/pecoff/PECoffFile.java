@@ -23,7 +23,7 @@ public class PECoffFile extends CoffFile {
     public void dump(PrintStream out) {
         super.dump(out);
         for (final CVSymbolSection section : cvSymbols) {
-            section.dump(out);
+            section.dump(out, this);
         }
         for (final CVTypeSection section : cvTypes) {
             section.dump(out);

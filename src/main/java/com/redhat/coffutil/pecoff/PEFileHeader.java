@@ -51,13 +51,9 @@ public class PEFileHeader {
     }
 
     void dump(PrintStream out) {
-        out.print("magic = " + pemagic + " machine = " + pemachine + " nsections = " + numsections + " nsymbols = " + numSymbols);
-        if ((characteristics & 0x2) == 0x2) {
-            out.println("   executable image");
-        }
-        if ((characteristics & 0x20) == 0x20) {
-            out.println("   large addess aware");
-        }
+        String exeStr = ((characteristics & 0x2) == 0x2) ? " executable image" : "";
+        String x64 = ((characteristics & 0x20) == 0x20) ? " large addess aware" : "";
+        out.format("magic = 0x%x machine = 0x%x nsections = %d nsymbols = %d%s%s\n", pemagic, pemachine, numsections, numSymbols, exeStr, x64);
     }
 
     public int getPemagic() {
