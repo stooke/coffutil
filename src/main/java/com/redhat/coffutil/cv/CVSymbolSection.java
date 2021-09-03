@@ -4,6 +4,7 @@ import com.redhat.coffutil.CoffUtilContext;
 import com.redhat.coffutil.msf.HexDump;
 import com.redhat.coffutil.pecoff.CoffRelocationTable;
 import com.redhat.coffutil.pecoff.PECoffFile;
+import com.redhat.coffutil.pecoff.PERelocSection;
 import com.redhat.coffutil.pecoff.PESection;
 import com.redhat.coffutil.pecoff.Util;
 
@@ -173,10 +174,14 @@ public class CVSymbolSection {
                 out.print(dump);
             }
             if (dumpRelocations) {
-                /* Dump reloc records associated with this symbol record */
+                /* Dump reloc records (from this section) associated with this symbol record */
                 List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
                 for (CoffRelocationTable.Entry reloc : relocs) {
                     reloc.dump(out, coffFile);
+                }
+                List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
+                for (PERelocSection.PERelocEntry relocEntry : perelocs) {
+                    relocEntry.dump(out);
                 }
             }
         }

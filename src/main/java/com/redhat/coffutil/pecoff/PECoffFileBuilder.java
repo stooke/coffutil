@@ -53,6 +53,7 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
 
         final PEFileHeader hdr;
         final PESection[] sections;
+        PERelocSection relocSection = null;
         PESymbolTable symbols = null;
         ArrayList<CVSymbolSection> cvSymbols = new ArrayList<>(10);
         ArrayList<CVTypeSection> cvTypes = new ArrayList<>(10);
@@ -98,11 +99,11 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
                     directive = Util.getString0(in, shdr.getRawDataSize());
                     break;
                 case ".reloc":
-                    // TODO: executables move all the relocs to one section */
+                    relocSection = new PERelocSection(in, shdr, hdr);
                     break;
             }
         }
 
-        return new PECoffFile(hdr, sections, symbols, cvSymbols, cvTypes, directive);
+        return new PECoffFile(hdr, sections, symbols, relocSection, cvSymbols, cvTypes, directive);
     }
 }

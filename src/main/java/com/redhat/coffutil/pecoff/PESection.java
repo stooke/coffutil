@@ -116,6 +116,10 @@ public class PESection {
         return relocations;
     }
 
+    public PESectionHeader getSectionHeader() {
+        return sectionHeader;
+    }
+
     void dump(PrintStream out, CoffFile objectFile) {
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.format("section: %8s flags=[%s]", getName(), translateCharacteristics(getCharacteristics()));
@@ -131,17 +135,14 @@ public class PESection {
         if (getRelocationCount() != 0) {
             out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
         }
-
         if (CoffUtilContext.getInstance().dumpLinenumbers() && getLineNumberCount() != 0) {
             out.println();
             lineNumberTable.dump(out, Integer.MAX_VALUE);
         }
-
         if (CoffUtilContext.getInstance().dumpRelocations() && getRelocationCount() != 0) {
             out.println();
             relocations.dump(out, objectFile, Integer.MAX_VALUE);
         }
-
         out.println();
     }
 
@@ -226,5 +227,4 @@ public class PESection {
         }
         return c;
     }
-
 }
