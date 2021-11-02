@@ -179,9 +179,11 @@ public class CVSymbolSection {
                 for (CoffRelocationTable.Entry reloc : relocs) {
                     reloc.dump(out, coffFile);
                 }
-                List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
-                for (PERelocSection.PERelocEntry relocEntry : perelocs) {
-                    relocEntry.dump(out);
+                if (coffFile.getRelocs() != null) {
+                    List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
+                    for (PERelocSection.PERelocEntry relocEntry : perelocs) {
+                        relocEntry.dump(out);
+                    }
                 }
             }
         }
