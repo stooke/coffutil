@@ -208,7 +208,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
         return symbolSection;
     }
 
-    public void parseCVSymbolSubsection(ByteBuffer in, final int sectionBegin, final int maxlen, CVSymbolSection symbolSection) {
+    private void parseCVSymbolSubsection(ByteBuffer in, final int sectionBegin, final int maxlen, CVSymbolSection symbolSection) {
+
+        assert ctx != null;
         final int endOfSubsection = in.position() + maxlen;
         while (in.position() < endOfSubsection) {
             final int start = in.position();
@@ -218,7 +220,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
 
             ByteBuffer data = ByteBuffer.wrap(in.array(), in.position(), next - in.position());
 
-            if (ctx != null && ctx.getDebugLevel() > 1) {
+            if (ctx.getDebugLevel() > 1) {
                 ctx.debug("  debugsubsection: foffset=0x%x soffset=0x%x len=0x%x next=0x%x remain=0x%x cmd=0x%x\n", start,
                         (start - sectionBegin), len, (next - sectionBegin), (endOfSubsection - in.position()), cmd);
             }
@@ -298,7 +300,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 case S_CALLSITEINFO: {
                     int offset = in.getInt();
                     int sectionIndex = in.getShort();
-                    int dummy0 = in.getShort();
+                    /*int dummy0 =*/ in.getShort();
                     int funcSig = in.getInt();
                     info = String.format("S_CALLSITEINFO section:offset=0x%x:0x%x functionIndex=0x%x", sectionIndex, offset, funcSig);
                     break;
@@ -413,7 +415,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                      *         unsigned long   pad          : 9;   // must be zero
                      */
                     info = String.format("S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x%s eh=0x%x:%x",
-                            frameLength, padLen, padOffset, saveRegsCount, flags, sb.toString(), ehSection, ehOffset);
+                            frameLength, padLen, padOffset, saveRegsCount, flags, sb, ehSection, ehOffset);
                     break;
                 }
                 case S_LPROC32_ID:
@@ -502,9 +504,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
                     info = String.format("S_DEFRANGE_FRAMEPOINTER_REL o1=0x%x os=0x%x is=0x%x cbr=0x%x", offsetToFramPointer, offsetStart, isectStart, cbRange);
-                    /* some number of gaps: */
+                    /* some number of gaps: *
                     //    short gapStartOffset = in.getShort();
-                    //    short gapcbRange = in.getShort();
+                    //    short gapcbRange = in.getShort();*/
                     break;
                 }
                 case S_SSEARCH: {
@@ -533,8 +535,18 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     in.position(next);
                     break;
                 }
+                case S_FRAMECOOKIE: {
+                    int codeoffset = in.getInt();
+                    int register = in.getShort();
+                    int type = in.get();
+                    int flags = in.get();
+                    String regStr = register == 335 ? "bp" : "(" + register + "?)";
+                    String[] types = new String[] {"copy", "xor_sp", "xor_bp", "xor_r13"};
+                    info = String.format("S_FRAMECOOKIE reg=%s+0x%x type=%s flags=0x%x", regStr, codeoffset, types[type], flags);
+                    break;
+                }
                 default:
-                    info = String.format("(UNKNOWN) cmd=0x%x", cmd);
+                    info = String.format("(UNKNOWN) cmd=0x%x %s", cmd, Util.dumpHex(in, in.position(), len));
                     break;
             }
             if (info != null) {

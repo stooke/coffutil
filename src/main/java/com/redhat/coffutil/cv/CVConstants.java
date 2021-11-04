@@ -21,6 +21,7 @@ public interface CVConstants {
     int S_GPROC32   = 0x1110;
     int S_REGREL32  = 0x1111;
     int S_CALLSITEINFO = 0x1139;
+    int S_FRAMECOOKIE = 0x113a;
     int S_COMPILE3  = 0x113c;
     int S_ENVBLOCK  = 0x113d;
     int S_LOCAL     = 0x113e;
