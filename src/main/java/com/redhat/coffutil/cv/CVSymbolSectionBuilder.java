@@ -100,6 +100,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         int fileId = in.getInt();
                         int nLines = in.getInt();
                         int fileBlock = in.getInt();
+                        if (fileId == 0) {
+                            ctx.info("warning: creating LineInfos with fileid 0: pos=0x%04x nlines=%d\n", in.position() - 2 * Integer.BYTES, nLines);
+                        }
                         if (!skipLineNumbers) {
                             infoBuilder.append(String.format("\n    File 0x%04x nLines=%d lineBlockSize=0x%x", fileId, nLines, fileBlock));
                         }

@@ -117,10 +117,15 @@ public class CVSymbolSection {
             this.fileName = fn;
         }
 
-        void dump(PrintStream out) {
-            String fileNameStr = fileName != null ? fileName : "";
+        @Override
+        public String toString() {
+            String fileNameStr = fileName != null ? fileName : String.format("(file=0x%x)", fileId);
             String isStatementStr = isStatement ? " isStatement" : "";
-            out.format("  line: 0x%x deltaEnd=%d%s 0x%04x %s:%d\n", addr, deltaEnd, isStatementStr, fileId, fileNameStr, lineNo);
+            return String.format("line addr=0x%x deltaEnd=%d%s %s:%d", addr, deltaEnd, isStatementStr, fileNameStr, lineNo);
+        }
+
+        void dump(PrintStream out) {
+            out.format("  %s\n", this);
         }
     }
 
@@ -195,7 +200,7 @@ public class CVSymbolSection {
                 if (si != null) {
                     fi.setFileName(si.getString());
                 } else {
-                    CoffUtilContext.getInstance().error("****** invalid fileid on file %s", fi.toString());
+                    CoffUtilContext.getInstance().error("****** `invalid fileid on file %s", fi.toString());
                 }
                 fi.dump(out);
             }
@@ -221,7 +226,7 @@ public class CVSymbolSection {
                     if (fi != null) {
                         line.setFileName(fi.getFileName());
                     } else {
-                        CoffUtilContext.getInstance().error("****** invalid fileid on line %s", line.toString());
+                        CoffUtilContext.getInstance().error("****** invalid fileid %s", line.toString());
                     }
                     line.dump(out);
                 }

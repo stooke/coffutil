@@ -466,7 +466,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                 if (membertype < LF_NUMERIC) {
                     l = membertype;
                 } else {
-                    System.err.format("\nXXX unknown member type 0x%x\n", membertype);
+                    ctx.error("unknown member type 0x%x", membertype);
                 }
         }
         return l;
