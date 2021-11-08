@@ -137,4 +137,7 @@ public interface CVConstants {
     int MPROP_STATIC    = (2 << 2);
     int MPROP_FRIEND    = (3 << 2);
     int MPROP_IVIRTUAL  = (4 << 2);
+    int MPROP_PURE_VIRTUAL = (5 << 2);
+    int MPROP_PURE_IVIRTUAL = (6 << 2);
+    int MPROP_VSF_MASK = 0x1c;
 }

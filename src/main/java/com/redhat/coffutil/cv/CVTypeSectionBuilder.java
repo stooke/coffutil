@@ -156,10 +156,10 @@ public class CVTypeSectionBuilder implements CVConstants {
                     infoBuilder.append(Util.dumpHex(in, in.position(), nextPosition - in.position()));
                     while (in.position() < nextPosition) {
                         int attr = in.getShort();
-                        int d2 = in.getShort();
+                        int padding = in.getShort();
                         int typeIndex = in.getInt();
-                        int vtable_offset = (attr & MPROP_IVIRTUAL) == MPROP_IVIRTUAL ? in.getInt() : 0;
-                        infoBuilder.append(String.format("\n  attr=0x%x (%s) d2=%d vtlb_offset=%d type=0x%04x", attr, fieldString(attr), d2, vtable_offset, typeIndex));
+                        int vtable_offset = ((attr & MPROP_VSF_MASK) == MPROP_IVIRTUAL || (attr & MPROP_VSF_MASK) == MPROP_PURE_IVIRTUAL) ? in.getInt() : 0;
+                        infoBuilder.append(String.format("\n  attr=0x%x (%s) d1=%d vtlb_offset=%d type=0x%04x", attr, fieldString(attr), padding, vtable_offset, typeIndex));
                     }
                     info = infoBuilder.toString();
                     break;
@@ -243,7 +243,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                             case LF_ONEMETHOD: {
                                 int attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                int vtbleOffset = ((attr & MPROP_IVIRTUAL) == MPROP_IVIRTUAL) ? in.getInt() : 0;
+                                int vtbleOffset = ((attr & MPROP_VSF_MASK) == MPROP_IVIRTUAL || (attr & MPROP_VSF_MASK) == MPROP_PURE_IVIRTUAL) ? in.getInt() : 0;
                                 String name = Util.getString0(in, nextPosition);
                                 String field = String.format("\n  field LF_ONEMETHOD(0x%04x) attr=0x%x (%s) funcIdx=0x%04x voffset=%d %s", type, attr, fieldString(attr), fieldTypeIdx, vtbleOffset, name);
                                 infoBuilder.append(field);
