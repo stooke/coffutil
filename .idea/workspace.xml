@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeRecord.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list id="0cbad041-7170-4568-998f-6e4a1294c69c" name="intellij files" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries-with-intellij-classes.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/coffutil.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,58 +45,6 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="coffutil" type="f1a62948:ProjectNode" />
               </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="application" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build setup" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="distribution" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="documentation" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="other" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="verification" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
-              </path>
             </expand>
             <select />
           </tree_state>
@@ -112,8 +68,62 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="2" end1="2" start2="2" end2="5" changelist="0cbad041-7170-4568-998f-6e4a1294c69c" />
+        <range start1="6" end1="9" start2="9" end2="9" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="10" end1="10" start2="10" end2="19" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="11" end1="12" start2="20" end2="20" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="39" end1="91" start2="47" end2="47" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="114" end1="114" start2="70" end2="114" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="115" end1="115" start2="115" end2="124" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="116" end1="116" start2="125" end2="126" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="138" end1="150" start2="148" end2="148" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="207" end1="208" start2="205" end2="206" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="220" end1="221" start2="218" end2="228" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="223" end1="224" start2="230" end2="240" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="228" end1="229" start2="244" end2="245" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="231" end1="232" start2="247" end2="248" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="252" end1="253" start2="268" end2="271" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="271" end1="272" start2="289" end2="292" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="290" end1="291" start2="310" end2="313" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="309" end1="310" start2="331" end2="334" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="328" end1="329" start2="352" end2="355" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="358" end1="359" start2="384" end2="387" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="361" end1="365" start2="389" end2="391" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="366" end1="368" start2="392" end2="395" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="369" end1="370" start2="396" end2="397" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="372" end1="372" start2="399" end2="400" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="375" end1="375" start2="403" end2="404" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="377" end1="378" start2="406" end2="406" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="381" end1="381" start2="409" end2="410" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="387" end1="387" start2="416" end2="417" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="420" end1="421" start2="450" end2="514" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="428" end1="431" start2="521" end2="522" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="435" end1="435" start2="526" end2="527" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="437" end1="438" start2="529" end2="531" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="442" end1="443" start2="535" end2="545" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="447" end1="452" start2="549" end2="549" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="454" end1="455" start2="551" end2="552" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="458" end1="461" start2="555" end2="558" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="463" end1="466" start2="560" end2="563" changelist="86dcf165-6872-4330-b778-a5bc41c86438" />
+        <range start1="476" end1="476" start2="573" end2="578" changelist="0cbad041-7170-4568-998f-6e4a1294c69c" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProjectId" id="1S4VpisEV0v5bYiqVlBMWwID8gt" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="flattenModules" value="true" />
+    <option name="flattenPackages" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showVisibilityIcons" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="Downloaded.Files.Path.Enabled" value="true" />
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
@@ -135,18 +145,6 @@
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.redhat.coffutil.cv" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Application.c++ object - helloworld (vc++) vc140.pdb">
     <configuration default="true" type="Applet">
@@ -205,7 +203,7 @@
     <configuration name="c++ object - helloworld (vc++)" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
       <module name="coffutil.main" />
-      <option name="PROGRAM_PARAMETERS" value="--dump --debug --debug /tmp/build-1/helloworld_vs/helloworld.obj" />
+      <option name="PROGRAM_PARAMETERS" value="--dump --all --debug --debug /tmp/build-1/helloworld_vs/helloworld.obj" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -218,18 +216,36 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="graal object (hello)" type="Application" factoryName="Application">
+    <configuration name="graal exe (listdir)" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
       <module name="coffutil.main" />
-      <option name="PROGRAM_PARAMETERS" value="--dump -x -v -v /tmp/build-1/hello_java/hello.pdb" />
+      <option name="PROGRAM_PARAMETERS" value="--dump --all C:\tmp\build-1\graal-tools\test\listdir\test.listdir.listdir.exe -o z.txt" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../../../tmp/build-1/graal-tools/test/listdir/" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="graal object (listdir)" type="Application" factoryName="Application">
+    <configuration name="graal obj (listdir) to dump.txt" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
       <module name="coffutil.main" />
-      <option name="PROGRAM_PARAMETERS" value="--dump -x C:\tmp\build-1\tmp-listdir\SVM-0\listdir.obj" />
+      <option name="PROGRAM_PARAMETERS" value="--dump --all C:\tmp\build-1\graal-tools\test\listdir\SVM-0\test.listdir.listdir.obj -o dump.txt" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../../../tmp/build-1/graal-tools/test/listdir" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="graal obj (listdir)" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
+      <module name="coffutil.main" />
+      <option name="PROGRAM_PARAMETERS" value="--dump --all C:\tmp\build-1\graal-tools\test\listdir\SVM-0\test.listdir.listdir.obj" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="graal object (hello)" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.redhat.coffutil.Main" />
+      <module name="coffutil.main" />
+      <option name="PROGRAM_PARAMETERS" value="--dump -x -v -v /tmp/build-1/hello_java/hello.pdb" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -250,7 +266,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration name="coffutil [customFatJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -269,7 +287,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration name="coffutil [distZip]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -288,7 +308,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration name="coffutil [runApp]" type="GradleRunConfiguration" factoryName="Gradle">
@@ -307,7 +329,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration name="coffutil [run]" type="GradleRunConfiguration" factoryName="Gradle">
@@ -326,7 +350,9 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
@@ -356,35 +382,39 @@
     </configuration>
     <list>
       <item itemvalue="Application.Main" />
-      <item itemvalue="Application.c++ object - helloworld (vc++)" />
-      <item itemvalue="Application.c++ object - helloworld (vc++) pdb" />
-      <item itemvalue="Application.c++ object - helloworld (vc++) vc140.pdb" />
+      <item itemvalue="Application.c++ object - helloworld (gcc)" />
       <item itemvalue="Application.c++ object - helloworld (llvm-o)" />
       <item itemvalue="Application.c++ object - helloworld (llvm-pdb)" />
-      <item itemvalue="Application.c++ object - helloworld (gcc)" />
-      <item itemvalue="Application.graal object (listdir)" />
-      <item itemvalue="Application.graal object (hello)" />
+      <item itemvalue="Application.c++ object - helloworld (vc++) pdb" />
+      <item itemvalue="Application.c++ object - helloworld (vc++) vc140.pdb" />
+      <item itemvalue="Application.c++ object - helloworld (vc++)" />
       <item itemvalue="Application.graal exe (hello)" />
-      <item itemvalue="Gradle.coffutil [run]" />
+      <item itemvalue="Application.graal object (hello)" />
+      <item itemvalue="Application.graal exe (listdir)" />
+      <item itemvalue="Application.graal obj (listdir)" />
+      <item itemvalue="Application.graal obj (listdir) to dump.txt" />
       <item itemvalue="Gradle.coffutil [runApp]" />
-      <item itemvalue="Gradle.coffutil [distZip]" />
+      <item itemvalue="Gradle.coffutil [run]" />
       <item itemvalue="Gradle.coffutil [clean]" />
       <item itemvalue="Gradle.coffutil [customFatJar]" />
+      <item itemvalue="Gradle.coffutil [distZip]" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.coffutil [distZip]" />
         <item itemvalue="Gradle.coffutil [customFatJar]" />
         <item itemvalue="Gradle.coffutil [clean]" />
-        <item itemvalue="Gradle.coffutil [distZip]" />
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="" />
+      <changelist id="0cbad041-7170-4568-998f-6e4a1294c69c" name="intellij files" comment="" />
       <created>1561399098405</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -418,7 +448,70 @@
       <option name="project" value="LOCAL" />
       <updated>1614875080827</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="don't hard code limits in line number + reloc dump()">
+      <created>1630353480253</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1630353480253</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add S_PUB32">
+      <created>1630353511047</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1630353511047</updated>
+    </task>
+    <task id="LOCAL-00007" summary="formatting cleanup">
+      <created>1630353542542</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1630353542542</updated>
+    </task>
+    <task id="LOCAL-00008" summary="print associated relocs under each debug$s entry">
+      <created>1630603243390</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1630603243390</updated>
+    </task>
+    <task id="LOCAL-00009" summary="add parsing of .reloc section">
+      <created>1630682485686</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1630682485686</updated>
+    </task>
+    <task id="LOCAL-00010" summary="check .reloc section exists">
+      <created>1635872924426</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1635872924426</updated>
+    </task>
+    <task id="LOCAL-00011" summary="add S_FRAMECOOKIE">
+      <created>1636057589733</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1636057589733</updated>
+    </task>
+    <task id="LOCAL-00012" summary="some cleanup">
+      <created>1636120770106</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1636120770106</updated>
+    </task>
+    <task id="LOCAL-00013" summary="correctly handle MPROP_IVIRTUAL vs VIRTUAL">
+      <created>1636135145357</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1636135145357</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -426,44 +519,48 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="add initial pom.xml" />
     <MESSAGE value="add S_BLOCK32 decode" />
     <MESSAGE value="fix format() error" />
     <MESSAGE value="parse flags in symbol section" />
-    <option name="LAST_COMMIT_MESSAGE" value="parse flags in symbol section" />
+    <MESSAGE value="don't hard code limits in line number + reloc dump()" />
+    <MESSAGE value="add S_PUB32" />
+    <MESSAGE value="formatting cleanup" />
+    <MESSAGE value="print associated relocs under each debug$s entry" />
+    <MESSAGE value="add parsing of .reloc section" />
+    <MESSAGE value="check .reloc section exists" />
+    <MESSAGE value="add S_FRAMECOOKIE" />
+    <MESSAGE value="some cleanup" />
+    <MESSAGE value="correctly handle MPROP_IVIRTUAL vs VIRTUAL" />
+    <option name="LAST_COMMIT_MESSAGE" value="correctly handle MPROP_IVIRTUAL vs VIRTUAL" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java</url>
-          <line>114</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java</url>
-          <line>199</line>
+          <line>200</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>199</line>
-          <option name="timeStamp" value="17" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java</url>
+          <line>202</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java</url>
-          <line>543</line>
-          <option name="timeStamp" value="18" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java</url>
+          <line>228</line>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -474,6 +571,11 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="com.redhat.coffutil.cv.CVSymbolRecord" memberName="pos" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/coffutil$Main.ic" NAME="Main Coverage Results" MODIFIED="1581702865433" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
