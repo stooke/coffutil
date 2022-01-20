@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.redhat.coffutil.cv.CVConstants.S_GDATA32;
-
 public class CVSymbolSection {
 
     /* parsing ".debug$S" sections */
@@ -35,15 +33,15 @@ public class CVSymbolSection {
     static class FileInfo {
 
         int filePos;
-        String fileName = null;
+        String fileName = "(not set)";
         byte[] checksum;
-        int fileId;
+        int stringId;
         int cb;
         int checksumType;
 
-        FileInfo(int filePos, int fileId, int cb, int checksumType, byte[] checksum) {
+        FileInfo(int filePos, int stringId, int cb, int checksumType, byte[] checksum) {
             this.filePos = filePos;
-            this.fileId = fileId;
+            this.stringId = stringId;
             this.cb = cb;
             this.checksumType = checksumType;
             this.checksum = checksum;
@@ -57,12 +55,12 @@ public class CVSymbolSection {
             return fileName;
         }
 
-        int getFileId() {
-            return fileId;
+        int getStringId() {
+            return stringId;
         }
 
         void dump(PrintStream out) {
-            out.format("  fileid:0x%04x path=0x%04x cb=%d chkType=%d checksum=[", filePos, fileId, cb, checksumType);
+            out.format("  fileid:0x%04x path=0x%04x cb=%d chkType=%d checksum=[", filePos, stringId, cb, checksumType);
             for (byte b : checksum) {
                 out.format("%02x", ((int) (b) & 0xff));
             }
@@ -196,7 +194,7 @@ public class CVSymbolSection {
         out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());
         if (dumpLineNumbers) {
             for (final FileInfo fi : sourceFiles.values()) {
-                StringInfo si = stringTable.get(fi.getFileId());
+                StringInfo si = stringTable.get(fi.getStringId());
                 if (si != null) {
                     fi.setFileName(si.getString());
                 } else {

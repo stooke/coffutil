@@ -100,9 +100,6 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         int fileId = in.getInt();
                         int nLines = in.getInt();
                         int fileBlock = in.getInt();
-                        if (fileId == 0) {
-                            ctx.info("warning: creating LineInfos with fileid 0: pos=0x%04x nlines=%d\n", in.position() - 2 * Integer.BYTES, nLines);
-                        }
                         if (!skipLineNumbers) {
                             infoBuilder.append(String.format("\n    File 0x%04x nLines=%d lineBlockSize=0x%x", fileId, nLines, fileBlock));
                         }
@@ -493,12 +490,75 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=0x%x register=r%d", name, offset, typeIndex, reg);
                     break;
                 }
+                case S_REGISTER: {
+                    int typeIndex = in.getInt();    /* type index */
+                    int reg = in.getShort();        /* register */
+                    String name = Util.getString0(in, next - in.position());
+                    info = String.format("S_REGISTER name=%s typeindex=0x%x register=r%d", name, typeIndex, reg);
+                    break;
+                }
                 case S_LOCAL: {
                     int typeIndex = in.getInt();
                     int localVarFlags = in.getShort();
                     boolean isParam = (localVarFlags & 0x0001) == 0x0001;
                     String name = Util.getString0(in, next - in.position());
-                    info = String.format("S_LOCAL name=%s isParam=%s typeindex=0x%x flags=0x%x", name, isParam, typeIndex, localVarFlags);
+                    info = String.format("S_LOCAL name=%s  typeindex=0x%x flags=0x%x%s", name, typeIndex, localVarFlags, isParam ? "(isParam)" : "");
+                    break;
+                }
+                case S_FILESTATIC: {
+                    int typeIndex = in.getInt();
+                    int modOffset = in.getInt();
+                    int localVarFlags = in.getShort();
+                    boolean isParam = (localVarFlags & 0x0001) == 0x0001;
+                    String name = Util.getString0(in, next - in.position());
+                    info = String.format("S_FILESTATIC name=%s typeindex=0x%x modOffset=0x%x flags=0x%x%s", name, typeIndex, modOffset, localVarFlags, isParam ? "(isParam)" : "");
+                    break;
+                }
+                case S_DEFRANGE: {
+                    int program = in.getInt(); /* Offset to DIA program (could be Debug Access Interface) to evaluate value of symbol. */
+                    int offsetStart = in.getInt();
+                    short isectStart = in.getShort();
+                    short cbRange = in.getShort();  // length
+                    /* some number of gaps: *
+                    //    short gapStartOffset = in.getShort();
+                    //    short gapcbRange = in.getShort();*/
+                    info = String.format("S_DEFRANGE program=0x%x start=0x%x:0x%x length=0x%x %s", program, isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), len));
+                    break;
+                }
+                case S_DEFRANGE_REGISTER: {
+                    int reg = in.getShort();
+                    int rangeAttr = in.getShort();
+                    boolean mayBeAvailable = (rangeAttr & 1) == 1;
+                    int offsetStart = in.getInt();
+                    short isectStart = in.getShort();
+                    short cbRange = in.getShort();  // length
+                    /* some number of gaps: *
+                    //    short gapStartOffset = in.getShort();
+                    //    short gapcbRange = in.getShort();*/
+                    info = String.format("S_DEFRANGE_REGISTER reg=%d attr=0x%x%s 0x%x:0x%x length=0x%x %s", reg, rangeAttr, (mayBeAvailable ? "(maybe)" : ""), isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), len));
+                    break;
+                }
+                case S_DEFRANGE_REGISTER_REL: {
+                    int reg = in.getShort();
+                    int rangeAttr = in.getShort();
+                    int spilled = rangeAttr & 1;
+                    int parentOffset = (rangeAttr >> 4) & 0xfff;
+                    int offsetToRegister = in.getInt();
+                    int offsetStart = in.getInt();
+                    short isectStart = in.getShort();
+                    short cbRange = in.getShort();  // length
+                    /* some number of gaps: *
+                    //    short gapStartOffset = in.getShort();
+                    //    short gapcbRange = in.getShort();*/
+                    info = String.format("S_DEFRANGE_REGISTER_REL reg=%d attr=0x%x spilled=%d parentOffset=0x%x registerOffset=0x%x 0x%x:0x%x length=0x%x %s", reg, rangeAttr, spilled, parentOffset, offsetToRegister, isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), len));
+                    break;
+                }
+                case S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: {
+                    info = String.format("S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE %s", Util.dumpHex(in, in.position(), len));
+                    break;
+                }
+                case S_UNKNOWN_CMD_1168: {
+                    info = String.format("(unknown) %s", Util.dumpHex(in, in.position(), len));
                     break;
                 }
                 case S_DEFRANGE_FRAMEPOINTER_REL: {
@@ -506,10 +566,31 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
-                    info = String.format("S_DEFRANGE_FRAMEPOINTER_REL o1=0x%x os=0x%x is=0x%x cbr=0x%x", offsetToFramPointer, offsetStart, isectStart, cbRange);
                     /* some number of gaps: *
                     //    short gapStartOffset = in.getShort();
                     //    short gapcbRange = in.getShort();*/
+                    info = String.format("S_DEFRANGE_FRAMEPOINTER_REL o1=0x%x os=0x%x is=0x%x cbr=0x%x", offsetToFramPointer, offsetStart, isectStart, cbRange);
+                    break;
+                }
+                case S_INLINESITE:
+                case S_INLINESITE2: {
+                    String opcode = cmd == S_INLINESITE ? "S_INLINESITE" : "S_INLINESITE2";
+                    int parent = in.getInt();
+                    int end = in.getInt();
+                    int itemId = in.getInt();
+                    String invok;
+                    if (cmd == S_INLINESITE2) {
+                        int invocations = in.getInt();
+                        invok = String.format(" invocations=%d", invocations);
+                    } else {
+                        invok = "";
+                    }
+                    info = String.format("%s itemId=0x%x(type) parent=0x%x end=0x%x%s %s", opcode, itemId, parent, end, invok, Util.dumpHex(in, in.position(), len));
+                    break;
+                }
+                case S_INLINESITE_END: {
+                    int something = in.getShort();
+                    info = String.format("S_INLINESITE_END thing=0x%x", something);
                     break;
                 }
                 case S_SSEARCH: {

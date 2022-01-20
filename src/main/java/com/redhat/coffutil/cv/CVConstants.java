@@ -12,6 +12,7 @@ public interface CVConstants {
     int S_WITH32    = 0x1104;
     int S_LDATA32_ST = 0x1007;
     int S_FRAMEPROC = 0x1012;
+    int S_REGISTER  = 0x1106;
     int S_CONSTANT  = 0x1107;
     int S_UDT       = 0x1108;
     int S_LDATA32   = 0x110c;
@@ -25,12 +26,23 @@ public interface CVConstants {
     int S_COMPILE3  = 0x113c;
     int S_ENVBLOCK  = 0x113d;
     int S_LOCAL     = 0x113e;
+    int S_DEFRANGE =  0x113f;
+    //int S_DEFRANGE_SUBFIELD = 0x1140;
+    int S_DEFRANGE_REGISTER = 0x1141;
     int S_DEFRANGE_FRAMEPOINTER_REL = 0x1142;
+   // int S_DEFRANGE_SUBFIELD_REGISTER = 0x1143;
+    int S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE = 0x1144;
+    int S_DEFRANGE_REGISTER_REL = 0x1145;
     int S_LPROC32_ID = 0x1146;
     int S_GPROC32_ID = 0x1147;
+    int S_INLINESITE = 0x114d;
+    int S_INLINESITE2 = 0x115d;
+    int S_INLINESITE_END = 0x114e;
     int S_PROC_ID_END = 0x114f;
-    int S_BUILDINFO  = 0x114c;
+    int S_BUILDINFO = 0x114c;
+    int S_FILESTATIC = 0x1153;
     int S_HEAPALLOCSITE = 0x115e;
+    int S_UNKNOWN_CMD_1168 = 0x1168;
 
     // from https://github.com/MartinNowak/cv2pdb/blob/master/src/mscvpdb.h
     int S_MSTOOL_V3 = 0x1116;
