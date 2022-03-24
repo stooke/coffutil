@@ -124,7 +124,7 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     private CVTypeSection buildTypeInfo(StreamDef stream) {
         final int typeInfoBegin = 0x38; /* derived by inspection and probably inaccurate */
-        return new CVTypeSectionBuilder().build(stream.get(), typeInfoBegin, stream.length());
+        return new CVTypeSectionBuilder(CoffUtilContext.getInstance()).build(stream.get(), typeInfoBegin, stream.length());
     }
 
     private void buildPDBHeader(StreamDef stream) {

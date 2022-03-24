@@ -10,9 +10,13 @@ import java.util.ArrayList;
 
 public class CVTypeSectionBuilder implements CVConstants {
 
-    private CoffUtilContext ctx = CoffUtilContext.getInstance();
+    private final CoffUtilContext ctx;
 
     //private ArrayList<CVTypeRecord> typeRecords = new ArrayList<>(200);
+
+    public  CVTypeSectionBuilder(CoffUtilContext ctx) {
+        this.ctx = ctx;
+    }
 
     public static void dump(PrintStream out, String msg, ByteBuffer buffer, int pos, int len) {
         if (buffer == null) return;

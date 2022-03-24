@@ -26,6 +26,88 @@ public class CVSymbolSection {
    // private static final String[] languageStrings = { "C", "C++", "Fortran", "masm", "Pascal", "Basic", "COBOL", "LINK", "CVTRES", "CVTPGT", "C#", "VisualBasic", "ILASM", "Java", "JScript", "MSIL", "HSIL" };
     private final List<CVSymbolRecord> records = new ArrayList<>(1000);
 
+    private final HashMap<Integer, FileInfo> sourceFiles;
+    private final HashMap<Integer, StringInfo> stringTable;
+    private final ArrayList<LineInfo> lines;
+    private final HashMap<String, String> env;
+    private final PESection section;
+
+    CVSymbolSection(PESection section, HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, ArrayList<LineInfo> lines, HashMap<String,String> env) {
+        this.section = section;
+        this.sourceFiles = sourceFiles;
+        this.stringTable = stringTable;
+        this.lines = lines;
+        this.env = env;
+    }
+
+    public void dump(PrintStream out, PECoffFile coffFile) {
+
+        boolean dumpHex = CoffUtilContext.getInstance().getDumpHex();
+        boolean dumpLineNumbers = CoffUtilContext.getInstance().dumpLinenumbers();
+        boolean dumpRelocations = CoffUtilContext.getInstance().dumpRelocations();
+
+        for (CVSymbolRecord record : records) {
+            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
+            if (dumpHex) {
+                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
+                out.print(dump);
+            }
+            if (dumpRelocations) {
+                /* Dump reloc records (from this section) associated with this symbol record */
+                List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
+                for (CoffRelocationTable.Entry reloc : relocs) {
+                    reloc.dump(out, coffFile);
+                }
+                if (coffFile.getRelocs() != null) {
+                    List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
+                    for (PERelocSection.PERelocEntry relocEntry : perelocs) {
+                        relocEntry.dump(out);
+                    }
+                }
+            }
+        }
+
+        out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());
+        if (dumpLineNumbers) {
+            for (final FileInfo fi : sourceFiles.values()) {
+                StringInfo si = stringTable.get(fi.getStringId());
+                if (si != null) {
+                    fi.setFileName(si.getString());
+                } else {
+                    CoffUtilContext.getInstance().error("****** `invalid fileid on file %s", fi.toString());
+                }
+                fi.dump(out);
+            }
+        }
+
+        if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
+            out.println("CV Strings");
+            for (final StringInfo si : stringTable.values()) {
+                out.format("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
+            }
+        }
+        if (!env.isEmpty()) {
+            out.println("CV env strings:");
+            for (Map.Entry<String, String> entry : env.entrySet()) {
+                out.format("  %-4s: \"%s\"\n", entry.getKey(), entry.getValue());
+            }
+        }
+        if (!lines.isEmpty()) {
+            out.format("CV lines (count=%d):\n", lines.size());
+            if (dumpLineNumbers) {
+                for (final LineInfo line : lines) {
+                    FileInfo fi = sourceFiles.get(line.getFileId());
+                    if (fi != null) {
+                        line.setFileName(fi.getFileName());
+                    } else {
+                        CoffUtilContext.getInstance().error("****** invalid fileid %s", line.toString());
+                    }
+                    line.dump(out);
+                }
+            }
+        }
+    }
+
     void addRecord(CVSymbolRecord record) {
         records.add(record);
     }
@@ -107,6 +189,7 @@ public class CVSymbolSection {
             return fileId;
         }
 
+        @SuppressWarnings("unused")
         String getFileName() {
             return fileName;
         }
@@ -147,88 +230,6 @@ public class CVSymbolSection {
 
         public String toString() {
             return string;
-        }
-    }
-
-    private final HashMap<Integer, FileInfo> sourceFiles;
-    private final HashMap<Integer, StringInfo> stringTable;
-    private final ArrayList<LineInfo> lines;
-    private final HashMap<String, String> env;
-    private final PESection section;
-
-    CVSymbolSection(PESection section, HashMap<Integer, FileInfo> sourceFiles, HashMap<Integer, StringInfo> stringTable, ArrayList<LineInfo> lines, HashMap<String,String> env) {
-        this.section = section;
-        this.sourceFiles = sourceFiles;
-        this.stringTable = stringTable;
-        this.lines = lines;
-        this.env = env;
-    }
-
-    public void dump(PrintStream out, PECoffFile coffFile) {
-
-        boolean dumpHex = CoffUtilContext.getInstance().getDumpHex();
-        boolean dumpLineNumbers = CoffUtilContext.getInstance().dumpLinenumbers();
-        boolean dumpRelocations = CoffUtilContext.getInstance().dumpRelocations();
-
-        for (CVSymbolRecord record : records) {
-            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
-            if (dumpHex) {
-                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
-                out.print(dump);
-            }
-            if (dumpRelocations) {
-                /* Dump reloc records (from this section) associated with this symbol record */
-                List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
-                for (CoffRelocationTable.Entry reloc : relocs) {
-                    reloc.dump(out, coffFile);
-                }
-                if (coffFile.getRelocs() != null) {
-                    List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
-                    for (PERelocSection.PERelocEntry relocEntry : perelocs) {
-                        relocEntry.dump(out);
-                    }
-                }
-            }
-        }
-
-        out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());
-        if (dumpLineNumbers) {
-            for (final FileInfo fi : sourceFiles.values()) {
-                StringInfo si = stringTable.get(fi.getStringId());
-                if (si != null) {
-                    fi.setFileName(si.getString());
-                } else {
-                    CoffUtilContext.getInstance().error("****** `invalid fileid on file %s", fi.toString());
-                }
-                fi.dump(out);
-            }
-        }
-
-        if (CoffUtilContext.getInstance().getDebugLevel() > 1) {
-            out.println("CV Strings");
-            for (final StringInfo si : stringTable.values()) {
-                out.format("  0x%04x: \"%s\"\n", si.getOffset(), si.getString());
-            }
-        }
-        if (!env.isEmpty()) {
-            out.println("CV env strings:");
-            for (Map.Entry<String, String> entry : env.entrySet()) {
-                out.format("  %-4s: \"%s\"\n", entry.getKey(), entry.getValue());
-            }
-        }
-        if (!lines.isEmpty()) {
-            out.format("CV lines (count=%d):\n", lines.size());
-            if (dumpLineNumbers) {
-                for (final LineInfo line : lines) {
-                    FileInfo fi = sourceFiles.get(line.getFileId());
-                    if (fi != null) {
-                        line.setFileName(fi.getFileName());
-                    } else {
-                        CoffUtilContext.getInstance().error("****** invalid fileid %s", line.toString());
-                    }
-                    line.dump(out);
-                }
-            }
         }
     }
 }

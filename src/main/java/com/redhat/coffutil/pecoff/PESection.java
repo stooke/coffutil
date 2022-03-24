@@ -31,54 +31,10 @@ public class PESection {
     private static final int PE_PERM_READ        = 0x40000000; /* IMAGE_SCN_MEM_READ */
     private static final int PE_PERM_WRITE       = 0x80000000; /* IMAGE_SCN_MEM_WRITE */
 
-    private CoffLineNumberTable lineNumberTable;
-    private CoffRelocationTable relocations;
-
     private PESectionHeader sectionHeader;
     private ByteBuffer rawData;
-
-    public static class PESectionHeader {
-
-        private String name;
-        private int virtualSize;
-        private int virtualAddress;
-        private int rawDataSize;
-        private int rawDataPtr;
-        private int relocationPtr;
-        private int lineNumberPtr;
-        private int relocationCount;
-        private int lineNumberCount;
-        private int characteristics;
-
-        private ByteBuffer rawHeaderData;
-
-        private void buildHeader(ByteBuffer in, PEFileHeader fileHeader) {
-
-            //int offset = in.position();
-            if (in.hasArray()) {
-                rawHeaderData = in.slice().asReadOnlyBuffer();
-                rawHeaderData.order(ByteOrder.LITTLE_ENDIAN);
-            } else {
-                CoffUtilContext.getInstance().fatal("**** no backing array ****");
-            }
-            name = PEStringTable.resolve(in, fileHeader);
-            virtualSize = in.getInt();
-            virtualAddress = in.getInt();
-            rawDataSize = in.getInt();
-            rawDataPtr = in.getInt();
-            relocationPtr = in.getInt();
-            lineNumberPtr = in.getInt();
-            relocationCount = 0xffff & (int)in.getShort();
-            lineNumberCount = 0xffff & (int)in.getShort();
-            characteristics = in.getInt();
-        }
-
-        static PESectionHeader build(ByteBuffer in, PEFileHeader fileHeader) {
-            PESectionHeader hdr = new PESectionHeader();
-            hdr.buildHeader(in, fileHeader);
-            return hdr;
-        }
-    }
+    private CoffLineNumberTable lineNumberTable;
+    private CoffRelocationTable relocations;
 
     private PESection() {
     }
@@ -226,5 +182,48 @@ public class PESection {
             sb.append(msg);
         }
         return c;
+    }
+
+    public static class PESectionHeader {
+
+        private String name;
+        private int virtualSize;
+        private int virtualAddress;
+        private int rawDataSize;
+        private int rawDataPtr;
+        private int relocationPtr;
+        private int lineNumberPtr;
+        private int relocationCount;
+        private int lineNumberCount;
+        private int characteristics;
+
+        private ByteBuffer rawHeaderData;
+
+        private void buildHeader(ByteBuffer in, PEFileHeader fileHeader) {
+
+            //int offset = in.position();
+            if (in.hasArray()) {
+                rawHeaderData = in.slice().asReadOnlyBuffer();
+                rawHeaderData.order(ByteOrder.LITTLE_ENDIAN);
+            } else {
+                CoffUtilContext.getInstance().fatal("**** no backing array ****");
+            }
+            name = PEStringTable.resolve(in, fileHeader);
+            virtualSize = in.getInt();
+            virtualAddress = in.getInt();
+            rawDataSize = in.getInt();
+            rawDataPtr = in.getInt();
+            relocationPtr = in.getInt();
+            lineNumberPtr = in.getInt();
+            relocationCount = 0xffff & (int)in.getShort();
+            lineNumberCount = 0xffff & (int)in.getShort();
+            characteristics = in.getInt();
+        }
+
+        static PESectionHeader build(ByteBuffer in, PEFileHeader fileHeader) {
+            PESectionHeader hdr = new PESectionHeader();
+            hdr.buildHeader(in, fileHeader);
+            return hdr;
+        }
     }
 }

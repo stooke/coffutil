@@ -1,5 +1,7 @@
 package com.redhat.coffutil.cv;
 
+import java.util.HashMap;
+
 //@SuppressWarnings("unused")
 public interface CVConstants {
 
@@ -68,13 +70,14 @@ public interface CVConstants {
     int T_VOID         = 0x0003;
     int T_CHAR         = 0x0010; /* 8 bit signed (java byte type) */
     int T_UCHAR        = 0x0020;
+    int T_BOOL08       = 0x0030;
     int T_WCHAR        = 0x0071;
     int T_CHAR16       = 0x007a; /* 16 bit unicode (java char type) */
-    int T_INT1         = 0x0068;
+    int T_INT1         = 0x0068; /* byte */
     int T_UINT1        = 0x0069;
     int T_INT2         = 0x0072;
     int T_UINT2        = 0x0073;
-    int T_SHORT        = 0x0011; /* 16 bit signed int (kava short type) */
+    int T_SHORT        = 0x0011; /* 16 bit signed int (java short type) */
     int T_USHORT       = 0x0021;
     int T_INT4         = 0x0074; /* 32 bit signed (java int type) */
     int T_UINT4        = 0x0075;
@@ -142,7 +145,6 @@ public interface CVConstants {
     int LF_UOCTWORD    = 0x8018;
 
     int LF_PAD0        = 0xf0;
-
 
     int MPROP_VANILLA   = 0;
     int MPROP_VIRTUAL   = (1 << 2);  // redefinition

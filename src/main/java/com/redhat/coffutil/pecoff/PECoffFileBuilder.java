@@ -83,16 +83,18 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
         } /* if there's no symbol table at all, keep symbols null, instead of array[0] */
 
         /* look inside sections */
+        CVSymbolSectionBuilder symbolSectionBuilder = new CVSymbolSectionBuilder(CoffUtilContext.getInstance());
+        CVTypeSectionBuilder typeSectionBuilder = new CVTypeSectionBuilder(CoffUtilContext.getInstance());
         for (PESection shdr : sections) {
             final String sectionName = shdr.getName();
             /* load line numbers and relocations */
             switch (sectionName) {
                 case ".debug$S":
                 case ".debug_info":
-                    cvSymbols.add(new CVSymbolSectionBuilder().build(in, shdr));
+                    cvSymbols.add(symbolSectionBuilder.build(in, shdr));
                     break;
                 case ".debug$T":
-                    cvTypes.add(new CVTypeSectionBuilder().build(in, shdr));
+                    cvTypes.add(typeSectionBuilder.build(in, shdr));
                     break;
                 case ".drectve":
                     in.position(shdr.getRawDataPtr());
