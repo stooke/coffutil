@@ -22,6 +22,10 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
 
     public PECoffFile buildPECoffFile(File file) throws IOException {
         ByteBuffer in = Util.readFile(file);
+        if (!in.hasRemaining()) {
+            CoffUtilContext.getInstance().fatal("Input file %s is empty\n", file);
+            return null;
+        }
         return build(in);
     }
 

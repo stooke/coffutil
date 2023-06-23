@@ -47,6 +47,9 @@ public class OLEFile implements ExeFileBuilder, ExeFile {
             return false;
         }
         for (byte b : MAGIC) {
+            if (!in.hasRemaining()) {
+                return false;
+            }
             if (b != in.get()) {
                 return false;
             }
