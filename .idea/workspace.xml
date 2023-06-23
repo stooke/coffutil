@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="86dcf165-6872-4330-b778-a5bc41c86438" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVRegisters.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVSymbolSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pdb/PDBFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PECoffFileBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/redhat/coffutil/pecoff/PESection.java" afterDir="false" />
     </list>
     <list id="0cbad041-7170-4568-998f-6e4a1294c69c" name="intellij files" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -41,17 +33,7 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="coffutil" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -91,7 +73,7 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/test/java" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15429688" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -101,6 +83,10 @@
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="com.redhat.coffutil.pecoff.Util" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\stooke\dev\graal11\coffutil\src\test\java" />
+      <recent name="C:\Users\stooke\dev\graal11\coffutil\src\test" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.redhat.coffutil.coff" />
     </key>
@@ -108,7 +94,7 @@
       <recent name="com.redhat.coffutil.cv" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.graal obj (listdir) to dump.txt">
+  <component name="RunManager" selected="Gradle.coffutil [clean]">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -254,7 +240,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="coffutil [customFatJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="coffutil [buildTestCode]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -265,7 +251,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="customFatJar" />
+            <option value="buildTestCode" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -275,7 +261,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="coffutil [distZip]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="coffutil [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -286,7 +272,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="distZip" />
+            <option value="clean" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -399,19 +385,19 @@
       <item itemvalue="Application.graal obj (listdir) to dump.txt" />
       <item itemvalue="Gradle.coffutil [runApp]" />
       <item itemvalue="Gradle.coffutil [run]" />
-      <item itemvalue="Gradle.coffutil [customFatJar]" />
-      <item itemvalue="Gradle.coffutil [distZip]" />
       <item itemvalue="Gradle.coffutil [assemble]" />
       <item itemvalue="Gradle.coffutil [installDist]" />
       <item itemvalue="Gradle.coffutil [assembleDist]" />
+      <item itemvalue="Gradle.coffutil [buildTestCode]" />
+      <item itemvalue="Gradle.coffutil [clean]" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.coffutil [clean]" />
         <item itemvalue="Gradle.coffutil [installDist]" />
+        <item itemvalue="Gradle.coffutil [buildTestCode]" />
         <item itemvalue="Gradle.coffutil [assembleDist]" />
         <item itemvalue="Gradle.coffutil [assemble]" />
-        <item itemvalue="Gradle.coffutil [distZip]" />
-        <item itemvalue="Gradle.coffutil [customFatJar]" />
       </list>
     </recent_temporary>
   </component>
@@ -533,7 +519,35 @@
       <option name="project" value="LOCAL" />
       <updated>1642684379944</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Test for empty files.">
+      <created>1687544212601</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1687544212601</updated>
+    </task>
+    <task id="LOCAL-00017" summary="handle LF_INDEX">
+      <created>1687544422913</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1687544422913</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Build C++ test file.">
+      <created>1687544674522</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1687544674522</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Remove Gradle build">
+      <created>1687544782660</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1687544782660</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -566,14 +580,18 @@
     <MESSAGE value="correctly handle MPROP_IVIRTUAL vs VIRTUAL" />
     <MESSAGE value="correctly handle MPROP_PURE_IVIRTUAL" />
     <MESSAGE value="Add support for several more symbol records." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add support for several more symbol records." />
+    <MESSAGE value="Test for empty files." />
+    <MESSAGE value="handle LF_INDEX" />
+    <MESSAGE value="Build C++ test file." />
+    <MESSAGE value="Remove Gradle build" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove Gradle build" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/redhat/coffutil/cv/CVTypeSectionBuilder.java</url>
-          <line>204</line>
+          <line>206</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
