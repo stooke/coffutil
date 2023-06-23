@@ -108,6 +108,7 @@ public interface CVConstants {
     int LF_BCLASS      = 0x1400;
     int LF_VBCLASS     = 0x1401;
     int LF_IVBCLASS    = 0x1402;
+    int LF_INDEX       = 0x1404;
     int LF_VFUNCTAB    = 0x1409;
     int LF_ENUMERATE   = 0x1502;
     int LF_ARRAY       = 0x1503;
