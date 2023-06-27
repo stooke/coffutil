@@ -530,10 +530,12 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
-                    /* some number of gaps: *
-                    //    short gapStartOffset = in.getShort();
-                    //    short gapcbRange = in.getShort();*/
                     info = String.format("S_DEFRANGE program=0x%x start=0x%x:0x%x length=0x%x %s", program, isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), next - in.position()));
+                    while (in.position() < next) {
+                        short gapOffset = in.getShort();
+                        short gapLen = in.getShort();
+                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                    }
                     break;
                 }
                 case S_DEFRANGE_REGISTER: {
@@ -543,10 +545,12 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
-                    /* some number of gaps: *
-                    //    short gapStartOffset = in.getShort();
-                    //    short gapcbRange = in.getShort();*/
                     info = String.format("S_DEFRANGE_REGISTER reg=%s(%d) attr=0x%x%s 0x%x:0x%x length=0x%x %s", CVRegisters.intToRegister(reg), reg, rangeAttr, (mayBeAvailable ? "(maybe)" : ""), isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), next - in.position()));
+                    while (in.position() < next) {
+                        short gapOffset = in.getShort();
+                        short gapLen = in.getShort();
+                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                    }
                     break;
                 }
                 case S_DEFRANGE_REGISTER_REL: {
@@ -558,10 +562,12 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
-                    /* some number of gaps: *
-                    //    short gapStartOffset = in.getShort();
-                    //    short gapcbRange = in.getShort();*/
                     info = String.format("S_DEFRANGE_REGISTER_REL reg=%s(%d) attr=0x%x spilled=%d parentOffset=0x%x registerOffset=0x%x 0x%x:0x%x length=0x%x %s", CVRegisters.intToRegister(reg), reg, rangeAttr, spilled, parentOffset, offsetToRegister, isectStart, offsetStart, cbRange, Util.dumpHex(in, in.position(), next - in.position()));
+                    while (in.position() < next) {
+                        short gapOffset = in.getShort();
+                        short gapLen = in.getShort();
+                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                    }
                     break;
                 }
                 case S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: {
@@ -578,10 +584,12 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
                     short cbRange = in.getShort();  // length
-                    /* some number of gaps: *
-                    //    short gapStartOffset = in.getShort();
-                    //    short gapcbRange = in.getShort();*/
                     info = String.format("S_DEFRANGE_FRAMEPOINTER_REL frame+0x%x  start=0x%x:0x%x range=0x%x", offsetToFramPointer, isectStart, offsetStart, cbRange);
+                    while (in.position() < next) {
+                        short gapOffset = in.getShort();
+                        short gapLen = in.getShort();
+                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                    }
                     break;
                 }
                 case S_INLINESITE:
