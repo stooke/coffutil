@@ -196,7 +196,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         int inlineeId = in.getInt();
                         int fileId = in.getInt();
                         int startLine = in.getInt();
-                        info = String.format("%s (id=0x%x file=0x%x line=%d)", info, inlineeId, fileId, startLine);
+                        info = String.format("%s (funcid=0x%x file=0x%x line=%d)", info, inlineeId, fileId, startLine);
                     }
                 }
                 default -> {
@@ -566,7 +566,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     String opcode = cmd == S_INLINESITE ? "S_INLINESITE" : "S_INLINESITE2";
                     int parent = in.getInt();
                     int end = in.getInt();
-                    int itemIdIdx = in.getInt();
+                    int funcId = in.getInt();
                     String invok;
                     if (cmd == S_INLINESITE2) {
                         int invocations = in.getInt();
@@ -574,7 +574,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     } else {
                         invok = "";
                     }
-                    info = String.format("%s itemIdIdx=0x%x(type) parent=0x%x end=0x%x%s data=%s", opcode, itemIdIdx, parent, end, invok, Util.dumpHex(in, in.position(), next - in.position()));
+                    info = String.format("%s funcId=0x%x(type) parent=0x%x end=0x%x%s data=%s", opcode, funcId, parent, end, invok, Util.dumpHex(in, in.position(), next - in.position()));
                     in.position(next);
                 }
                 case S_INLINESITE_END -> {
