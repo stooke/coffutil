@@ -17,22 +17,15 @@ public class CVSymbolSectionBuilder implements CVConstants {
     private final HashMap<String, String> env = new HashMap<>(10);
     private int alignment = 0;
     private PESection section;
-    private boolean hasNewFileInfos;
-    private boolean hasNewStrings;
 
     public CVSymbolSectionBuilder(CoffUtilContext ctx) {
         this.ctx = ctx;
     }
 
     public CVSymbolSection build(ByteBuffer in, PESection shdr) {
-        /* clear in case of reuse */
-        /* apparently the sourcefile and string tables are file-wide. */
-        //sourceFiles.clear();
-        //stringTable.clear();
+        /* TODO: do we need to clear() these? */
         lines.clear();
         env.clear();
-        hasNewFileInfos = false;
-        hasNewStrings = false;
 
         section = shdr;
         final int sectionBegin = shdr.getRawDataPtr();
@@ -82,20 +75,18 @@ public class CVSymbolSectionBuilder implements CVConstants {
             boolean isDebugSLines = false;
 
             switch (debugCmd) {
-                case DEBUG_S_IGNORE: {
+                case DEBUG_S_IGNORE -> {
                     info = "DEBUG_S_IGNORE";
-                    break;
                 }
-                case DEBUG_S_SYMBOLS: {
+                case DEBUG_S_SYMBOLS -> {
                     if (ctx.getDebugLevel() > 0) {
                         info = String.format("DEBUG_S_SYMBOLS(0xf1) soff=0x%x len=0x%x next=0x%x", (in.position() - sectionBegin), debugLen, (nextPosition - sectionBegin));
                         ctx.debug("  0x%04x %s\n", (startPosition - sectionBegin), info);
                         info = null;
                     }
                     this.parseCVSymbolSubsection(in, sectionBegin, debugLen, symbolSection);
-                    break;
                 }
-                case DEBUG_S_LINES: {
+                case DEBUG_S_LINES -> {
                     isDebugSLines = true;
                     int startOffset = in.getInt();
                     short segment = in.getShort();
@@ -126,9 +117,9 @@ public class CVSymbolSectionBuilder implements CVConstants {
                             boolean isStatement = (lineStuff & 0x80000000) != 0;
                             boolean isSpecial = addr == 0xfeefee || addr == 0xf00f00;
                             //if (hasColumns) {
-                                // ugh
+                            // ugh
                             //}
-                            CVSymbolSection.LineInfo li = new CVSymbolSection.LineInfo(addr, fileId,  line, isStatement, deltaEnd);
+                            CVSymbolSection.LineInfo li = new CVSymbolSection.LineInfo(addr, fileId, line, isStatement, deltaEnd);
                             if (!skipLineNumbers) {
                                 infoBuilder.append(String.format("\n      Line addr=0x%06x delta=%d line=%d isstmt=%s special=%s", addr, deltaEnd, line, isStatement ? "true" : "false", isSpecial ? "true" : "false"));
                             }
@@ -136,14 +127,13 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         }
                     }
                     info = infoBuilder != null ? infoBuilder.toString() : null;
-                    break;
                 }
-                case DEBUG_S_STRINGTABLE: {
+                case DEBUG_S_STRINGTABLE -> {
                     int cvStringTableOffset = in.position();
                     while (in.position() < nextPosition) {
                         int pos = in.position() - cvStringTableOffset;
                         String s = Util.getString0(in, nextPosition - in.position());
-                        stringTable.put(pos, new CVSymbolSection.StringInfo(pos,s));
+                        stringTable.put(pos, new CVSymbolSection.StringInfo(pos, s));
                     }
                     if (ctx.getDebugLevel() > 1) {
                         StringBuilder infoBuilder = new StringBuilder("DEBUG_S_STRINGTABLE");
@@ -157,9 +147,8 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     } else {
                         info = String.format("DEBUG_S_STRINGTABLE nstrings=%d", stringTable.size());
                     }
-                    break;
                 }
-                case DEBUG_S_FILECHKSMS: {
+                case DEBUG_S_FILECHKSMS -> {
                     /* checksum */
                     int recordStart = in.position();
                     while (in.position() < nextPosition) {
@@ -199,10 +188,21 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     } else {
                         info = String.format("DEBUG_S_FILECHKSMS numFiles=%d", sourceFiles.size());
                     }
-                    break;
                 }
-                default:
-                    info = String.format("(unknown cmd=0x%04x)", debugCmd);
+                case DEBUG_S_INLINEELINES -> {
+                    int i1 = in.getInt();
+                    info = String.format("DEBUG_S_INLINEELINES 0x%x: ", i1);
+                    while (in.position() < nextPosition) {
+                        int inlineeId = in.getInt();
+                        int fileId = in.getInt();
+                        int startLine = in.getInt();
+                        info = String.format("%s (id=0x%x file=0x%x line=%d)", info, inlineeId, fileId, startLine);
+                    }
+                }
+                default -> {
+                    info = String.format("(unknown cmd=0x%04x len=0x%x) %s", debugCmd, debugLen, Util.dumpHex(in, in.position(), debugLen));
+                    //in.position(nextPosition);
+                }
             }
             if (info != null) {
                 ctx.debug("  0x%04x %s\n", (startPosition - sectionBegin), info);
@@ -210,7 +210,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                 symbolSection.addRecord(record);
             }
             if (nextPosition != in.position()) {
-                ctx.error("*** debug$S did not consume exact bytes: want=0x%x current=0x%x", nextPosition - sectionBegin, in.position() - sectionBegin);
+                ctx.error("*** debug$S did not consume exact bytes: pos=0x%x cmd=0x%x want=0x%x current=0x%x", startPosition, debugCmd, nextPosition - sectionBegin, in.position() - sectionBegin);
             }
             skipLineNumbers = isDebugSLines && !ctx.dumpLinenumbers();
             in.position(nextPosition);
@@ -237,57 +237,52 @@ public class CVSymbolSectionBuilder implements CVConstants {
             }
             String info;
             switch (cmd) {
-                case S_BUILDINFO: {
+                case S_BUILDINFO -> {
                     int cvTypeIndex = in.getInt();
                     /* cvTypeIndex is a typeIndex that will be found in the current file */
                     info = String.format("S_BUILDINFO local typeIndex=0x%x", cvTypeIndex);
-                    break;
                 }
-                case S_COMPILE: {
+                case S_COMPILE -> {
                     int cmachine = in.get();
                     int f1 = in.get();
                     int f2 = in.get();
                     int f3 = in.get();
                     String version = Util.getString0(in, next - in.position());
                     info = String.format("S_COMPILE machine=%d version=%s f1=%d f2=%d f3=%d", cmachine, version, f1, f2, f3);
-                    break;
                 }
-                case S_COMPILE3: {
+                case S_COMPILE3 -> {
                     int language = in.get();
                     int cf1 = in.get();
                     boolean hasDebug = (cf1 & 0x80) == 0;
-                    /*int cf2 =*/ in.get();
+                    /*int cf2 =*/
+                    in.get();
                     in.get(); // padding
                     int machine = in.getShort();
                     int feMajor = in.getShort();
                     int feMinor = in.getShort();
-                    int feBuild = ((int)in.getShort()) & 0xffff;
+                    int feBuild = ((int) in.getShort()) & 0xffff;
                     int feQFE = in.getShort();
                     int beMajor = in.getShort();
                     int beMinor = in.getShort();
-                    int beBuild = ((int)in.getShort()) & 0xffff;
+                    int beBuild = ((int) in.getShort()) & 0xffff;
                     int beQFE = in.getShort();
                     String compiler = Util.getString0(in, next - in.position());
                     info = String.format("S_COMPILE3 machine=%d lang=%d debug=%s fe=%d.%d.%d-%d be=%d.%d.%d-%d compiler=%s",
                             machine, language, hasDebug ? "true" : "false", feMajor, feMinor, feBuild, feQFE, beMajor, beMinor, beBuild, beQFE, compiler);
-                    break;
                 }
-                case S_CONSTANT: {
+                case S_CONSTANT -> {
                     int typeIndex = in.getInt();
                     int leaf = in.getShort();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_CONSTANT name=%s typeindex=%s leaf=0x%x", name, CVTypeSection.intToType(typeIndex), leaf);
-                    break;
                 }
-                case S_END: {
+                case S_END -> {
                     info = "S_END";
-                    break;
                 }
-                case S_PROC_ID_END: {
+                case S_PROC_ID_END -> {
                     info = "S_PROC_ID_END";
-                    break;
                 }
-                case S_ENVBLOCK: {
+                case S_ENVBLOCK -> {
                     ArrayList<String> strs = new ArrayList<>(20);
                     int flags = in.get(); // should be 0
                     while (in.position() < next) {
@@ -298,36 +293,31 @@ public class CVSymbolSectionBuilder implements CVConstants {
                         strs.add(s);
                     }
                     for (int i = 0; i < strs.size(); i += 2) {
-                        env.put(strs.get(i), strs.get(i+1));
+                        env.put(strs.get(i), strs.get(i + 1));
                     }
                     StringBuilder infoBuilder = new StringBuilder(String.format("S_ENVBLOCK flags=0x%x count=%d", flags, strs.size()));
                     for (int i = 0; i < strs.size(); i += 2) {
                         infoBuilder.append(String.format("\n      %s = %s", strs.get(i), strs.get(i + 1)));
                     }
                     info = infoBuilder.toString();
-                    break;
                 }
-
-                case S_CALLSITEINFO: {
+                case S_CALLSITEINFO -> {
                     int offset = in.getInt();
                     int sectionIndex = in.getShort();
-                    /*int dummy0 =*/ in.getShort();
+                    /*int dummy0 =*/
+                    in.getShort();
                     int funcSig = in.getInt();
                     info = String.format("S_CALLSITEINFO section:offset=0x%x:0x%x functionIndex=0x%x", sectionIndex, offset, funcSig);
-                    break;
                 }
-
-                case S_HEAPALLOCSITE: {
+                case S_HEAPALLOCSITE -> {
                     int offset = in.getInt();
                     int sectionIndex = in.getShort();
                     int length = in.getShort();
                     int funcSig = in.getInt();
                     info = String.format("S_HEAPALLOCSITE section:offset=0x%x:0x%x length=0x%x functionIndex=0x%x", sectionIndex, offset, length, funcSig);
-                    break;
                 }
-
-                case S_FRAMEPROC: {
-                    String[] x64Regs = { "none", "sp", "bp", "r13"};
+                case S_FRAMEPROC -> {
+                    String[] x64Regs = {"none", "sp", "bp", "r13"};
                     //CVSymbolSectionBuilder.java
                     int frameLength = in.getInt();
                     int padLen = in.getInt();
@@ -381,7 +371,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     }
                     int localBasePointer = (flags >> 14) & 3;
                     sb.append(" lbp=").append(x64Regs[localBasePointer]);
-                    int localParamPointer =  (flags >> 16) & 3;
+                    int localParamPointer = (flags >> 16) & 3;
                     sb.append(" pbp=").append(x64Regs[localParamPointer]);
                     if ((flags & 0x040000) != 0) {
                         sb.append(" pogoon");
@@ -427,12 +417,8 @@ public class CVSymbolSectionBuilder implements CVConstants {
                      */
                     info = String.format("S_FRAMEPROC len=0x%x padlen=0x%x paddOffset=0x%x regCount=%d flags=0x%x%s eh=0x%x:%x",
                             frameLength, padLen, padOffset, saveRegsCount, flags, sb, ehSection, ehOffset);
-                    break;
                 }
-                case S_LPROC32_ID:
-                case S_LPROC32:
-                case S_GPROC32_ID:
-                case S_GPROC32: {
+                case S_LPROC32_ID, S_LPROC32, S_GPROC32_ID, S_GPROC32 -> {
                     int pparent = in.getInt();
                     int pend = in.getInt();
                     int pnext = in.getInt();
@@ -444,88 +430,78 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     int segment = in.getShort();
                     int flags = in.get();
                     String name = Util.getString0(in, next - in.position());
-                    String cmdStr = "(unknown)";
-                    switch (cmd) {
-                        case S_LPROC32_ID:  cmdStr = "S_LPROC32_ID";    break;
-                        case S_LPROC32:     cmdStr = "S_LPROC32";       break;
-                        case S_GPROC32_ID:  cmdStr = "S_GPROC32_ID";    break;
-                        case S_GPROC32:     cmdStr = "S_GPROC32";       break;
-                    }
+                    String cmdStr = switch (cmd) {
+                        case S_LPROC32_ID -> "S_LPROC32_ID";
+                        case S_LPROC32 -> "S_LPROC32";
+                        case S_GPROC32_ID -> "S_GPROC32_ID";
+                        case S_GPROC32 -> "S_GPROC32";
+                        default -> "(unknown)";
+                    };
                     info = String.format("%s name=%s parent=%d pend=%d pnext=%d debugStart=0x%x debugEnd=0x%x offset=0x%x:%x procLen=%d typeIndex=%s flags=0x%x",
-                                            cmdStr, name, pparent, pend, pnext, debugStart, debugEnd, segment, offset, proclen, CVTypeSection.intToType(typeIndex), flags);
-                    break;
+                            cmdStr, name, pparent, pend, pnext, debugStart, debugEnd, segment, offset, proclen, CVTypeSection.intToType(typeIndex), flags);
                 }
-                case S_GDATA32: {
+                case S_GDATA32 -> {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_GDATA32 name=%s offset=0x%x:%x typeIndex=%s", name, segment, offset, CVTypeSection.intToType(typeIndex));
-                    break;
                 }
-                case S_PUB32: {
+                case S_PUB32 -> {
                     int flags = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_PUB32 name=%s offset=0x%x:%x flags=0x%x", name, segment, offset, flags);
-                    break;
                 }
-                case S_LDATA32: {
+                case S_LDATA32 -> {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LDATA32 name=%s offset=0x%x:%x typeIndex=%s", name, segment, offset, CVTypeSection.intToType(typeIndex));
-                    break;
                 }
-                case S_LDATA32_ST: {
+                case S_LDATA32_ST -> {
                     int typeIndex = in.getInt();
                     int offset = in.getInt();
                     int segment = in.getShort();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LDATA32_ST name=%s offset=0x%x:%x typeIndex=%s", name, segment, offset, CVTypeSection.intToType(typeIndex));
-                    break;
                 }
-                case S_OBJNAME: {
+                case S_OBJNAME -> {
                     int signature = in.getInt();
                     String objname = Util.getString0(in, next - in.position());
                     info = String.format("S_OBJNAME objectname=%s signature=0x%x", objname, signature);
-                    break;
                 }
-                case S_REGREL32: {
+                case S_REGREL32 -> {
                     int offset = in.getInt();       /* offset from the register */
                     int typeIndex = in.getInt();    /* type index */
                     int reg = in.getShort();        /* register */
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_REGREL32 name=%s offset=0x%x typeindex=%s register=%s(%d)", name, offset, CVTypeSection.intToType(typeIndex), CVRegisters.intToRegister(reg), reg);
-                    break;
                 }
-                case S_REGISTER: {
+                case S_REGISTER -> {
                     int typeIndex = in.getInt();    /* type index */
                     int reg = in.getShort();        /* register */
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_REGISTER name=%s typeindex=%s register=%s(%d)", name, CVTypeSection.intToType(typeIndex), CVRegisters.intToRegister(reg), reg);
-                    break;
                 }
-                case S_LOCAL: {
+                case S_LOCAL -> {
                     int typeIndex = in.getInt();
                     int localVarFlags = in.getShort();
                     boolean isParam = (localVarFlags & 0x0001) == 0x0001;
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_LOCAL name=%s typeindex=%s flags=0x%x%s", name, CVTypeSection.intToType(typeIndex), localVarFlags, isParam ? "(isParam)" : "");
-                    break;
                 }
-                case S_FILESTATIC: {
+                case S_FILESTATIC -> {
                     int typeIndex = in.getInt();
                     int modOffset = in.getInt();
                     int localVarFlags = in.getShort();
                     boolean isParam = (localVarFlags & 0x0001) == 0x0001;
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_FILESTATIC name=%s typeindex=%s modOffset=0x%x flags=0x%x%s", name, CVTypeSection.intToType(typeIndex), modOffset, localVarFlags, isParam ? "(isParam)" : "");
-                    break;
                 }
-                case S_DEFRANGE: {
+                case S_DEFRANGE -> {
                     int program = in.getInt(); /* Offset to DIA program (could be Debug Access Interface) to evaluate value of symbol. */
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
@@ -534,11 +510,10 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     while (in.position() < next) {
                         short gapOffset = in.getShort();
                         short gapLen = in.getShort();
-                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                        info = String.format("%s\n      gap offset=0x%x len=0x%x", info, gapOffset, gapLen);
                     }
-                    break;
                 }
-                case S_DEFRANGE_REGISTER: {
+                case S_DEFRANGE_REGISTER -> {
                     int reg = in.getShort();
                     int rangeAttr = in.getShort();
                     boolean mayBeAvailable = (rangeAttr & 1) == 1;
@@ -549,11 +524,10 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     while (in.position() < next) {
                         short gapOffset = in.getShort();
                         short gapLen = in.getShort();
-                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                        info = String.format("%s\n      gap offset=0x%x len=0x%x", info, gapOffset, gapLen);
                     }
-                    break;
                 }
-                case S_DEFRANGE_REGISTER_REL: {
+                case S_DEFRANGE_REGISTER_REL -> {
                     int reg = in.getShort();
                     int rangeAttr = in.getShort();
                     int spilled = rangeAttr & 1;
@@ -566,20 +540,17 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     while (in.position() < next) {
                         short gapOffset = in.getShort();
                         short gapLen = in.getShort();
-                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                        info = String.format("%s\n      gap offset=0x%x len=0x%x", info, gapOffset, gapLen);
                     }
-                    break;
                 }
-                case S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE: {
+                case S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE -> {
                     int offsetToFramPointer = in.getInt();
                     info = String.format("S_DEFRANGE_FRAMEPOINTER_REL_FULL_SCOPE fpoffset=0x%x %s", offsetToFramPointer, Util.dumpHex(in, in.position(), next - in.position()));
-                    break;
                 }
-                case S_UNKNOWN_CMD_1168: {
+                case S_UNKNOWN_CMD_1168 -> {
                     info = String.format("(unknown) %s", Util.dumpHex(in, in.position(), next - in.position()));
-                    break;
                 }
-                case S_DEFRANGE_FRAMEPOINTER_REL: {
+                case S_DEFRANGE_FRAMEPOINTER_REL -> {
                     int offsetToFramPointer = in.getInt();
                     int offsetStart = in.getInt();
                     short isectStart = in.getShort();
@@ -588,16 +559,14 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     while (in.position() < next) {
                         short gapOffset = in.getShort();
                         short gapLen = in.getShort();
-                        info = info + String.format("\n      gap offset=0x%x len=0x%x", gapOffset, gapLen);
+                        info = String.format("%s\n      gap offset=0x%x len=0x%x", info, gapOffset, gapLen);
                     }
-                    break;
                 }
-                case S_INLINESITE:
-                case S_INLINESITE2: {
+                case S_INLINESITE, S_INLINESITE2 -> {
                     String opcode = cmd == S_INLINESITE ? "S_INLINESITE" : "S_INLINESITE2";
                     int parent = in.getInt();
                     int end = in.getInt();
-                    int itemId = in.getInt();
+                    int itemIdIdx = in.getInt();
                     String invok;
                     if (cmd == S_INLINESITE2) {
                         int invocations = in.getInt();
@@ -605,28 +574,23 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     } else {
                         invok = "";
                     }
-                    info = String.format("%s itemId=0x%x(type) parent=0x%x end=0x%x%s %s", opcode, itemId, parent, end, invok, Util.dumpHex(in, in.position(), next - in.position()));
-                    break;
+                    info = String.format("%s itemIdIdx=0x%x(type) parent=0x%x end=0x%x%s data=%s", opcode, itemIdIdx, parent, end, invok, Util.dumpHex(in, in.position(), next - in.position()));
+                    in.position(next);
                 }
-                case S_INLINESITE_END: {
-                    int something = in.getShort();
-                    info = String.format("S_INLINESITE_END thing=0x%x", something);
-                    break;
+                case S_INLINESITE_END -> {
+                    info = "S_INLINESITE_END";
                 }
-                case S_SSEARCH: {
+                case S_SSEARCH -> {
                     int offset = in.getInt();
                     int segment = in.getShort();
                     info = String.format("S_SSEARCH offset=0x%x:%x", segment, offset);
-                    break;
                 }
-                case S_UDT: {
+                case S_UDT -> {
                     int typeIndex = in.getInt();
                     String name = Util.getString0(in, next - in.position());
                     info = String.format("S_UDT name=%s typeindex=%s", name, CVTypeSection.intToType(typeIndex));
-                    break;
                 }
-                case S_WITH32:
-                case S_BLOCK32: {
+                case S_WITH32, S_BLOCK32 -> {
                     String cmdStr = cmd == S_BLOCK32 ? "S_BLOCK32" : "S_WITH32";
                     //System.out.format("%s %s\n", cmdStr, Util.dumpHex(in, in.position(), len));
                     int parentblock = in.getInt();
@@ -637,20 +601,16 @@ public class CVSymbolSectionBuilder implements CVConstants {
                     String name = Util.getNString(in, next - in.position());
                     info = String.format("%s name=%s parent=0x%x end=0x%x len=0x%x codeoffset=0x%x:%x", cmdStr, name, parentblock, blockend, blocklen, segment, codeoffset);
                     in.position(next);
-                    break;
                 }
-                case S_FRAMECOOKIE: {
+                case S_FRAMECOOKIE -> {
                     int codeoffset = in.getInt();
                     int register = in.getShort();
                     int type = in.get();
                     int flags = in.get();
-                    String[] types = new String[] {"copy", "xor_sp", "xor_bp", "xor_r13"};
+                    String[] types = new String[]{"copy", "xor_sp", "xor_bp", "xor_r13"};
                     info = String.format("S_FRAMECOOKIE reg=%s+0x%x type=%s flags=0x%x", CVRegisters.intToRegister(register), codeoffset, types[type], flags);
-                    break;
                 }
-                default:
-                    info = String.format("(UNKNOWN) cmd=0x%x %s", cmd, Util.dumpHex(in, in.position(), next - in.position()));
-                    break;
+                default -> info = String.format("(UNKNOWN) cmd=0x%x %s", cmd, Util.dumpHex(in, in.position(), next - in.position()));
             }
             if (info != null) {
                 ctx.debug("    0x%05x %s\n", (start - sectionBegin), info);
@@ -666,7 +626,7 @@ public class CVSymbolSectionBuilder implements CVConstants {
             }
 
             if (next != in.position()) {
-                ctx.error("*** debug$S DEBUG_S_SYMBOLS cmd=0x%x addr0x%05x did not consume exact bytes: want=0x%x current=0x%x align=%d", cmd, start - sectionBegin, sectionBegin, next - sectionBegin, in.position() - sectionBegin, alignment);
+                ctx.error("*** debug$S DEBUG_S_SYMBOLS pos=0x%x cmd=0x%x addr0x%05x did not consume exact bytes: want=0x%x current=0x%x align=%d", start, cmd, start - sectionBegin, sectionBegin, next - sectionBegin, in.position() - sectionBegin, alignment);
             }
             in.position(next);
         }

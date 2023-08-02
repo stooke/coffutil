@@ -38,11 +38,11 @@ public interface CVConstants {
     int S_LPROC32_ID = 0x1146;
     int S_GPROC32_ID = 0x1147;
     int S_INLINESITE = 0x114d;
-    int S_INLINESITE2 = 0x115d;
     int S_INLINESITE_END = 0x114e;
     int S_PROC_ID_END = 0x114f;
     int S_BUILDINFO = 0x114c;
     int S_FILESTATIC = 0x1153;
+    int S_INLINESITE2 = 0x115d;
     int S_HEAPALLOCSITE = 0x115e;
     int S_UNKNOWN_CMD_1168 = 0x1168;
 
@@ -64,6 +64,7 @@ public interface CVConstants {
     int DEBUG_S_LINES       = 0xf2;
     int DEBUG_S_STRINGTABLE = 0xf3;
     int DEBUG_S_FILECHKSMS  = 0xf4;
+    int DEBUG_S_INLINEELINES = 0xf6;
 
     /* type table */
     int T_NOTYPE       = 0x0000;
