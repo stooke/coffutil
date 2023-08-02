@@ -46,25 +46,29 @@ public class CVSymbolSection {
         boolean dumpLineNumbers = CoffUtilContext.getInstance().dumpLinenumbers();
         boolean dumpRelocations = CoffUtilContext.getInstance().dumpRelocations();
 
-        for (CVSymbolRecord record : records) {
-            out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
-            if (dumpHex) {
-                String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
-                out.print(dump);
-            }
-            if (dumpRelocations) {
-                /* Dump reloc records (from this section) associated with this symbol record */
-                List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
-                for (CoffRelocationTable.Entry reloc : relocs) {
-                    reloc.dump(out, coffFile);
+        if (CoffUtilContext.getInstance().dumpSymbols()) {
+            for (CVSymbolRecord record : records) {
+                out.format("0x%04x 0x%04x len=%-4d %s\n", record.getPos(), record.getCmd(), record.getLen(), record.toString());
+                if (dumpHex) {
+                    String dump = new HexDump().makeLines(record.getData(), -record.getData().position(), record.getData().position(), record.getLen());
+                    out.print(dump);
                 }
-                if (coffFile.getRelocs() != null) {
-                    List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
-                    for (PERelocSection.PERelocEntry relocEntry : perelocs) {
-                        relocEntry.dump(out);
+                if (dumpRelocations) {
+                    /* Dump reloc records (from this section) associated with this symbol record */
+                    List<CoffRelocationTable.Entry> relocs = section.getRelocations().inRange(record.getPos(), record.getPos() + record.getLen());
+                    for (CoffRelocationTable.Entry reloc : relocs) {
+                        reloc.dump(out, coffFile);
+                    }
+                    if (coffFile.getRelocs() != null) {
+                        List<PERelocSection.PERelocEntry> perelocs = coffFile.getRelocs().inRange(record.getPos(), record.getPos() + record.getLen());
+                        for (PERelocSection.PERelocEntry relocEntry : perelocs) {
+                            relocEntry.dump(out);
+                        }
                     }
                 }
             }
+        } else {
+            out.format("CV symbol count=%d\n", records.size());
         }
 
         out.format("CV sourcefiles (count=%d):\n", sourceFiles.size());

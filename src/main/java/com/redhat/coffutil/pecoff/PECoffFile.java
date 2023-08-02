@@ -26,11 +26,15 @@ public class PECoffFile extends CoffFile {
     public void dump(PrintStream out) {
         super.dump(out);
 
-        for (final CVSymbolSection section : cvSymbols) {
-            section.dump(out, this);
+        if (CoffUtilContext.getInstance().dumpSymbols() || CoffUtilContext.getInstance().dumpLinenumbers()) {
+            for (final CVSymbolSection section : cvSymbols) {
+                section.dump(out, this);
+            }
         }
-        for (final CVTypeSection section : cvTypes) {
-            section.dump(out);
+        if (CoffUtilContext.getInstance().dumpTypes()) {
+            for (final CVTypeSection section : cvTypes) {
+                section.dump(out);
+            }
         }
         if (directive != null) {
             out.format("Link directive: %s\n", directive);

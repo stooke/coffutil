@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CoffUtilContext {
 
@@ -11,18 +12,18 @@ public class CoffUtilContext {
     private PrintStream reportStream = System.out;
 
     /* work variables */
-    String currentInputFilename;
+    private String currentInputFilename;
 
     /* command line */
-    ArrayList<String> inputFiles = new ArrayList<>();
+    private List<String> inputFiles = new ArrayList<>();
     private int debugLevel = 1;
-    boolean dump = false;
+    private boolean dump = false;
     private boolean dumpHex = false;
     private boolean dumpLinenumbers = false;
     private boolean dumpRelocations = false;
-    private boolean dumpTypes = true;
-    private boolean dumpSymbols = true;
-    String split = null;
+    private boolean dumpTypes = false;
+    private boolean dumpSymbols = false;
+    private String split = null;
 
     private static CoffUtilContext instance = null;
 
@@ -59,14 +60,17 @@ public class CoffUtilContext {
                         prev = "--split";
                         break;
                     case "-l":
+                    case "--linenumbers":
                         dump = true;
                         dumpLinenumbers = true;
                         break;
                     case "-s":
+                    case "--symbols":
                         dump = true;
                         dumpSymbols = true;
                         break;
                     case "-t":
+                    case "--types":
                         dump = true;
                         dumpTypes = true;
                         break;
@@ -205,5 +209,25 @@ public class CoffUtilContext {
 
     public boolean dumpSymbols() {
         return dumpSymbols;
+    }
+
+    public String getCurrentInputFilename() {
+        return currentInputFilename;
+    }
+
+    public void setCurrentInputFilename(String fn) {
+        currentInputFilename = fn;
+    }
+
+    public List<String> getInputFiles() {
+        return inputFiles;
+    }
+
+    public boolean isDump() {
+        return dump;
+    }
+
+    public String getSplit() {
+        return split;
     }
 }

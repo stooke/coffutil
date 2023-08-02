@@ -18,15 +18,15 @@ class CoffUtilMain {
 
     void run (String[] args) throws IOException {
         CoffUtilContext ctx = CoffUtilContext.setGlobalContext(args);
-        for (final String fn : ctx.inputFiles) {
-            ctx.currentInputFilename = fn;
+        for (final String fn : ctx.getInputFiles()) {
+            ctx.setCurrentInputFilename(fn);
             ctx.info("processing " + fn + "\n");
             File file = new File(fn);
             ExeFile exefile = ExeFileBuilderFactory.builderFor(file).build(file);
-            if (ctx.dump) {
+            if (ctx.isDump()) {
                 exefile.dump(ctx.getReportStream());
             }
-            if (ctx.split != null) {
+            if (ctx.getSplit() != null) {
                 if (!(exefile instanceof PECoffFile)) {
                     ctx.fatal("File %s is not a PECOFF file; unable to split", file);
                     return;
@@ -37,7 +37,7 @@ class CoffUtilMain {
                     int snum = 0;
                     /* TODO : write header, string table, reloc tables, symbol tables */
                     for (PESection shdr : cf.getSections()) {
-                        String sfn = ctx.split + "-" + snum + "-" + shdr.getName();
+                        String sfn = ctx.getSplit() + "-" + snum + "-" + shdr.getName();
                         ctx.debug("dumping " + shdr.getName() + " to " + sfn + "\n");
                         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(sfn));
                         out.write(in.array(), shdr.getRawDataPtr(), shdr.getRawDataSize());
