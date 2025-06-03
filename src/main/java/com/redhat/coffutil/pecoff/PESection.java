@@ -77,27 +77,37 @@ public class PESection {
     }
 
     void dump(PrintStream out, CoffFile objectFile) {
+        final boolean reproducibleDump = CoffUtilContext.getInstance().reproducibleDump();
         String bName = (getName() + "          ").substring(0, PEStringTable.SHORT_LENGTH);
         out.format("section: %8s flags=[%s]", getName(), translateCharacteristics(getCharacteristics()));
-        if (getVirtualSize() != 0) {
-            out.format(" vaddr=0x%x,vsize=0x%x", getVirtualAddress(), getVirtualSize());
-        }
-        if (getRawDataSize() != 0) {
-            out.format(" rawPtr=0x%x,rawSize=0x%x", getRawDataPtr(), getRawDataSize());
-        }
-        if (getLineNumberCount() != 0) {
-            out.format(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
-        }
-        if (getRelocationCount() != 0) {
-            out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
-        }
-        if (CoffUtilContext.getInstance().dumpLinenumbers() && getLineNumberCount() != 0) {
-            out.println();
-            lineNumberTable.dump(out, Integer.MAX_VALUE);
-        }
-        if (CoffUtilContext.getInstance().dumpRelocations() && getRelocationCount() != 0) {
-            out.println();
-            relocations.dump(out, objectFile, Integer.MAX_VALUE);
+        if (reproducibleDump) {
+            if (getLineNumberCount() != 0) {
+                out.format(" lineSize=0x%x", getLineNumberCount());
+            }
+            if (getRelocationCount() != 0) {
+                out.format(" relocSize=0x%x", getRelocationCount());
+            }
+        } else {
+            if (getVirtualSize() != 0) {
+                out.format(" vaddr=0x%x,vsize=0x%x", getVirtualAddress(), getVirtualSize());
+            }
+            if (getRawDataSize() != 0) {
+                out.format(" rawPtr=0x%x,rawSize=0x%x", getRawDataPtr(), getRawDataSize());
+            }
+            if (getLineNumberCount() != 0) {
+                out.format(" linePtr=0x%x,lineSize=0x%x", getLineNumberPtr(), getLineNumberCount());
+            }
+            if (getRelocationCount() != 0) {
+                out.format(" relocPtr=0x%x,relocSize=0x%x", getRelocationPtr(), getRelocationCount());
+            }
+            if (CoffUtilContext.getInstance().dumpLinenumbers() && getLineNumberCount() != 0) {
+                out.println();
+                lineNumberTable.dump(out, Integer.MAX_VALUE);
+            }
+            if (CoffUtilContext.getInstance().dumpRelocations() && getRelocationCount() != 0) {
+                out.println();
+                relocations.dump(out, objectFile, Integer.MAX_VALUE);
+            }
         }
         out.println();
     }

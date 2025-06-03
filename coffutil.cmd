@@ -1,20 +1,20 @@
-@echo off
+@echo on
 setlocal EnableDelayedExpansion
 
-set COFFUTIL_HOME=%~dp0
-set COFFUTIL_JAR_NAME=coffutil-fat-1.0-SNAPSHOT.jar
-set COFFUTIL_FAT_JAR=%COFFUTIL_HOME%\build\libs\%COFFUTIL_JAR_NAME%
+set "COFFUTIL_HOME=%~dp0"
+set "COFFUTIL_JAR_NAME=coffutil-1.0-SNAPSHOT.jar"
+set "COFFUTIL_FAT_JAR=%COFFUTIL_HOME%target\%COFFUTIL_JAR_NAME%"
 
-rem *** find JDK runtime
-if not defined XXJAVA_HOME (
-    set JAVA_HOME=\Users\stooke\dev\tools\openjdk-11.0.5_10
+if not defined JAVA_HOME (
+    set JAVA_HOME=C:\graal\graal\jdk
 )
+
 if not exist %JAVA_HOME%\bin\java.exe (
     @echo "no JAVA_HOME set; cannot start"
     exit /b 1
 )
 
-set COFFUTIL_REPO=C:/Users/stooke/dev/graal11/coffutil
+set COFFUTIL_REPO=C:/graal/coffutil
 set MAIN_CLASS=com.redhat.coffutil.Main
 
 rem *** first, find most recent class files - if found, run them instead of fat jar

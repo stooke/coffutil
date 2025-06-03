@@ -23,6 +23,7 @@ public class CoffUtilContext {
     private boolean dumpRelocations = false;
     private boolean dumpTypes = false;
     private boolean dumpSymbols = false;
+    private boolean reproducibleDump = false;
     private String split = null;
 
     private static CoffUtilContext instance = null;
@@ -64,6 +65,9 @@ public class CoffUtilContext {
                         dump = true;
                         dumpLinenumbers = true;
                         break;
+                    case "-R":
+                        reproducibleDump = true;
+                        break;
                     case "-s":
                     case "--symbols":
                         dump = true;
@@ -104,7 +108,7 @@ public class CoffUtilContext {
                     case "-h":
                     case "--help":
                     case "/?":
-                        error("Usage:\ncoffutil [--dump] [-l] [-s] [-t] [--all] [--only types|line|recloc|sym] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
+                        error("Usage:\ncoffutil [--dump] [-l] [-s] [-t] [--all] [-R] [--only types|line|recloc|sym] [--split prefix] [--debug] [--help] inputfiles... [--out filename]");
                         System.exit(0);
                         break;
                     default:
@@ -210,6 +214,8 @@ public class CoffUtilContext {
     public boolean dumpSymbols() {
         return dumpSymbols;
     }
+
+    public boolean reproducibleDump() { return reproducibleDump; }
 
     public String getCurrentInputFilename() {
         return currentInputFilename;

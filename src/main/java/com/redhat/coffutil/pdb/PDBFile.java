@@ -81,36 +81,45 @@ public class PDBFile extends MultiStreamFile implements ExeFile {
 
     public void dump(PrintStream out) {
         CoffUtilContext ctx = CoffUtilContext.getInstance();
+        final boolean reproducibleDump = ctx.reproducibleDump();
+        if (reproducibleDump) {
+            out.println("pdbHeaderStream: " + pdbHeaderStream.toString());
+            out.format("pdbinfo: version=%d sig=%d(%s) age=%d\n", version, signature, sig.toString(), age);
+            out.println("typeInfoStream: " + typeInfoStream.toString());
+            if (ctx.dumpTypes()) {
+                typeSection.dump(out);
+            }
+        } else {
+            if (ctx.getDebugLevel() > 1) {
+                super.dump(out);
+            }
 
-        if (ctx.getDebugLevel() > 1) {
-            super.dump(out);
-        }
+            out.println("pdbHeaderStream: " + pdbHeaderStream.toString());
+            out.format("pdbinfo: version=%d sig=%d(%s) age=%d len=%d checksum=[%s]\n", version, signature, sig.toString(), age, pdbHeaderStream.length(), Util.dumpHex(checksum));
+            if (ctx.getDumpHex()) {
+                pdbHeaderStream.dumpData(out);
+            }
 
-        out.println("pdbHeaderStream: " + pdbHeaderStream.toString());
-        out.format("pdbinfo: version=%d sig=%d(%s) age=%d len=%d checksum=[%s]\n", version, signature, sig.toString(), age, pdbHeaderStream.length(), Util.dumpHex(checksum));
-        if (ctx.getDumpHex()) {
-            pdbHeaderStream.dumpData(out);
-        }
+            out.println("typeInfoStream: " + typeInfoStream.toString());
+            if (ctx.dumpTypes()) {
+                typeSection.dump(out);
+            }
+            if (ctx.getDumpHex()) {
+                typeInfoStream.dumpData(out);
+            }
 
-        out.println("typeInfoStream: " + typeInfoStream.toString());
-        if (ctx.dumpTypes()) {
-            typeSection.dump(out);
-        }
-        if (ctx.getDumpHex()) {
-            typeInfoStream.dumpData(out);
-        }
+            out.println("idStream: " + idStream.toString());
+            if (ctx.dumpTypes()) {
+                idSection.dump(out);
+            }
+            if (ctx.getDumpHex()) {
+                idStream.dumpData(out);
+            }
 
-        out.println("idStream: " + idStream.toString());
-        if (ctx.dumpTypes()) {
-            idSection.dump(out);
-        }
-        if (ctx.getDumpHex()) {
-            idStream.dumpData(out);
-        }
-
-        dumpStream(ctx, out, 4);
-        for (int i = 6; i < streamCount(); i++) {
-            dumpStream(ctx, out, i);
+            dumpStream(ctx, out, 4);
+            for (int i = 6; i < streamCount(); i++) {
+                dumpStream(ctx, out, i);
+            }
         }
     }
 
