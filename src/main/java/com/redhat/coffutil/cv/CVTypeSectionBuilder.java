@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class CVTypeSectionBuilder implements CVConstants {
 
     private final CoffUtilContext ctx;
+    private CVTypeSection typeSection;
 
     public  CVTypeSectionBuilder(CoffUtilContext ctx) {
         this.ctx = ctx;
@@ -42,9 +43,12 @@ public class CVTypeSectionBuilder implements CVConstants {
         return build(in, in.position(), sectionEnd);
     }
 
-    public CVTypeSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
+    String typeIdToName(int typeId) {
+        return typeSection.typeIdToTypename(typeId);
+    }
 
-        CVTypeSection typeSection = new CVTypeSection();
+    public CVTypeSection build(ByteBuffer in, int sectionBegin, int sectionEnd) {
+        typeSection = new CVTypeSection();
 
         int currentTypeIndex = 0x1000;
         in.position(sectionBegin);
@@ -75,6 +79,7 @@ public class CVTypeSectionBuilder implements CVConstants {
             ByteBuffer data = ByteBuffer.wrap(in.array(), in.position(), nextPosition - in.position());
 
             int leaf = in.getShort();
+            String name = null;
             String info;
 
             switch (leaf) {
@@ -84,7 +89,12 @@ public class CVTypeSectionBuilder implements CVConstants {
                     boolean isConst = (modifiers & 0x0001) == 0x0001;
                     boolean isVolatile = (modifiers & 0x0002) == 0x0002;
                     boolean isUnaligned = (modifiers & 0x0004) == 0x0004;
-                    info = String.format("LF_MODIFIER refType=0x%04x modifiers=0x%04x%s%s%s", referentType, modifiers, isConst ? " const" : "", isVolatile ? " volatile" : "", isUnaligned ? " unaligned" : "");
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(isConst ? " const" : "");
+                    sb.append(isVolatile ? " volatile" : "");
+                    sb.append(isUnaligned ? " unaligned" : "");
+                    name = sb.isEmpty() ? "*" + typeIdToName(referentType) : sb + " *" + typeIdToName(referentType);
+                    info = String.format("LF_MODIFIER refType=%s modifiers=0x%04x%s%s%s", typeIdToName(referentType), modifiers, isConst ? " const" : "", isVolatile ? " volatile" : "", isUnaligned ? " unaligned" : "");
                 }
                 case LF_POINTER -> {
                     String[] ptrType = {"near16", "far16", "huge", "base-seg", "base-val", "base-segval", "base-addr", "base-segaddr", "base-type", "base-self", "near32", "far32", "64"};
@@ -99,13 +109,14 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int size = (attributes & 0x07e000) >> 13;
                     int flags2 = (attributes & 0x380000) >> 19;
                     StringBuilder sb = new StringBuilder();
-                    sb.append((flags1 & 1) != 0 ? "flat32" : "");
-                    sb.append((flags1 & 2) != 0 ? " volatile" : "");
+                    sb.append((flags1 & 1) != 0 ? "flat32" : "");                    sb.append((flags1 & 4) != 0 ? " const" : "");
                     sb.append((flags1 & 4) != 0 ? " const" : "");
+                    sb.append((flags1 & 2) != 0 ? " volatile" : "");
                     sb.append((flags1 & 8) != 0 ? " unaligned" : "");
                     sb.append((flags1 & 16) != 0 ? " restricted" : "");
-                    info = String.format("LF_POINTER refType=0x%04x attrib=0x%x kind=%d (%s) mode=%d(%s) flags1=0x%x (%s) size=%d flags2=0x%x",
-                            referentType, attributes, kind, ptrType[kind], mode, modeStrs[mode], flags1, sb, size, flags2);
+                    name = sb.isEmpty() ? "*" + typeIdToName(referentType) : sb + " *" + typeIdToName(referentType);
+                    info = String.format("LF_POINTER refType=%s attrib=0x%x kind=%d (%s) mode=%d(%s) flags1=0x%x (%s) size=%d flags2=0x%x",
+                            typeIdToName(referentType), attributes, kind, ptrType[kind], mode, modeStrs[mode], flags1, sb, size, flags2);
                 }
                 case LF_MFUNCTION -> {
                     int returnType = in.getInt();
@@ -116,7 +127,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     short paramCount = in.getShort();
                     int argList = in.getInt();
                     int thisAdjustment = in.getInt();
-                    info = String.format("LF_MFUNCTION returnType=0x%04x classType=0x%04x thisType=0x%04x callType=0x%04x funcAttr=0x%x nparam=%d argListType=0x%04x thisAdjust=%d", returnType, classType, thisType, callType, funcAttr, paramCount, argList, thisAdjustment);
+                    info = String.format("LF_MFUNCTION returnType=%s classType=%s thisType=%s callType=0x%04x funcAttr=0x%x nparam=%d argListType=0x%04x thisAdjust=%d", typeIdToName(returnType), typeIdToName(classType), typeIdToName(thisType), callType, funcAttr, paramCount, argList, thisAdjustment);
                 }
                 case LF_PROCEDURE -> {
                     int returnType = in.getInt();
@@ -125,13 +136,13 @@ public class CVTypeSectionBuilder implements CVConstants {
                     short paramCount = in.getShort();
                     int argList = in.getInt();
                     boolean instanceConstructor = (funcAttr & 0x2) == 0x2;
-                    info = String.format("LF_PROCEDURE returnType=0x%04x callType=0x%04x funcAttr=0x%x nparam=%d argListType=0x%04x constructor=%s", returnType, callType, funcAttr, paramCount, argList, instanceConstructor ? "true" : "false");
+                    info = String.format("LF_PROCEDURE returnType=%s callType=0x%04x funcAttr=0x%x nparam=%d argListType=0x%04x constructor=%s", typeIdToName(returnType), callType, funcAttr, paramCount, argList, instanceConstructor ? "true" : "false");
                 }
                 case LF_ARRAY -> {
                     int elementType = in.getInt();
                     int indexType = in.getInt();
                     long size = fetchVariable(in);
-                    info = String.format("LF_ARRAY elementType=0x%04x indexType=0x%04x size(total bytes)=%d", elementType, indexType, size);
+                    info = String.format("LF_ARRAY elementType=%s indexType=%s size(total bytes)=%d", typeIdToName(elementType), typeIdToName(indexType), size);
                 }
                 case LF_ARGLIST -> {
                     int argCount = in.getInt();
@@ -140,11 +151,15 @@ public class CVTypeSectionBuilder implements CVConstants {
                         argTypes.add(in.getInt());
                     }
                     StringBuilder infoBuilder = new StringBuilder();
-                    infoBuilder.append(String.format("LF_ARGLIST count=%d [", argCount));
+                    infoBuilder.append(String.format("LF_ARGLIST count=%d (", argCount));
+                    String fmt = "%s";
                     for (int i = 0; i < argCount; i++) {
-                        infoBuilder.append(String.format(" 0x%04x", argTypes.get(i)));
+                        if (i == 1) {
+                            fmt = ",%s";
+                        }
+                        infoBuilder.append(String.format(fmt, typeIdToName(argTypes.get(i))));
                     }
-                    infoBuilder.append("]");
+                    infoBuilder.append(")");
                     info = infoBuilder.toString();
                 }
                 case LF_METHODLIST -> {
@@ -155,7 +170,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                         int padding = in.getShort();
                         int typeIndex = in.getInt();
                         int vtable_offset = ((attr & MPROP_VSF_MASK) == MPROP_IVIRTUAL || (attr & MPROP_VSF_MASK) == MPROP_PURE_IVIRTUAL) ? in.getInt() : 0;
-                        infoBuilder.append(String.format("\n  attr=0x%x (%s) d1=%d vtlb_offset=%d type=0x%04x", attr, fieldString(attr), padding, vtable_offset, typeIndex));
+                        infoBuilder.append(String.format("\n  attr=0x%x (%s) d1=%d vtlb_offset=%d type=%s", attr, fieldString(attr), padding, vtable_offset, typeIdToName(typeIndex)));
                     }
                     info = infoBuilder.toString();
                 }
@@ -164,7 +179,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int attr = in.getShort();
                     int descriptorListIndex = in.getInt();
                     long length = fetchVariable(in);
-                    String name = Util.getString0(in, nextPosition);
+                    name = Util.getString0(in, nextPosition);
                     info = String.format("LF_UNION count=%d attr=0x%x (%s) fieldType=0x%04x len=%d %s", count, attr, propertyString(attr), descriptorListIndex, length, name);
                 }
                 case LF_FIELDLIST -> {
@@ -178,16 +193,16 @@ public class CVTypeSectionBuilder implements CVConstants {
                             case LF_ENUMERATE -> {
                                 short attr = in.getShort();
                                 long value = fetchVariable(in);
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_ENUMERATE(0x%04x) attr=0x%x (%s) value=%d %s", startFieldEntryPos, type, attr, fieldString(attr), value, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_ENUMERATE(0x%04x) attr=0x%x (%s) value=%d %s", startFieldEntryPos, type, attr, fieldString(attr), value, fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_BCLASS -> {
                                 short attr = in.getShort();
                                 int baseTypeIndex = in.getInt();
                                 long offset = fetchVariable(in);
-                                //  String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_BCLASS(0x%04x) attr=0x%x (%s) baseindex=0x%04x offset=%x", startFieldEntryPos, type, attr, fieldString(attr), baseTypeIndex, offset);
+                                //  String fieldName = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_BCLASS(0x%04x) attr=0x%x (%s) base=%s offset=%x", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(baseTypeIndex), offset);
                                 infoBuilder.append(field);
                             }
                             case LF_VBCLASS, LF_IVBCLASS -> {
@@ -196,15 +211,15 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int vbPointerIndex = in.getInt();
                                 long vbpOffset = fetchVariable(in);
                                 long vbteIndex = fetchVariable(in);
-                                //String name = PEStringTable.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_VBCLASS/LF_IVBCLASS(0x%04x) attr=0x%x (%s) vbType=0x%04x", startFieldEntryPos, type, attr, fieldString(attr), vbIndex);
+                                //String fieldName = PEStringTable.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_VBCLASS/LF_IVBCLASS(0x%04x) attr=0x%x (%s) vbType=%s", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(vbIndex));
                                 infoBuilder.append(field);
                             }
                             case LF_STMEMBER -> {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_STMEMBER(0x%04x) attr=0x%x (%s) typeidx=0x%04x %s", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_STMEMBER(0x%04x) attr=0x%x (%s) type=%s %s", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(fieldTypeIdx), fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_MEMBER -> {
@@ -212,35 +227,35 @@ public class CVTypeSectionBuilder implements CVConstants {
                                 int fieldTypeIdx = in.getInt();
                                 long offset = fetchVariable(in);
                                 // TODO - probably need to skip forward by 'l' bytes
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_MEMBER(0x%04x) attr=0x%x (%s) typeidx=0x%04x offset=0x%x %s", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx, offset, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_MEMBER(0x%04x) attr=0x%x (%s) type=%s offset=0x%x %s", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(fieldTypeIdx), offset, fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_VFUNCTAB -> {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                infoBuilder.append(String.format("\n  0x%04x field LF_VFUNCTAB(0x%04x) attr=0x%x (%s) type=0x%04x", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx));
+                                infoBuilder.append(String.format("\n  0x%04x field LF_VFUNCTAB(0x%04x) attr=0x%x (%s) type=%s", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(fieldTypeIdx)));
                             }
                             case LF_METHOD -> {
                                 short count = in.getShort();
                                 int listIdx = in.getInt();
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_METHOD(0x%04x) count=0x%x listidx=0x%04x %s", startFieldEntryPos, type, count, listIdx, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_METHOD(0x%04x) count=0x%x listidx=0x%04x %s", startFieldEntryPos, type, count, listIdx, fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_ONEMETHOD -> {
                                 int attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
                                 int vtbleOffset = ((attr & MPROP_VSF_MASK) == MPROP_IVIRTUAL || (attr & MPROP_VSF_MASK) == MPROP_PURE_IVIRTUAL) ? in.getInt() : 0;
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_ONEMETHOD(0x%04x) attr=0x%x (%s) funcIdx=0x%04x voffset=%d %s", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx, vtbleOffset, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_ONEMETHOD(0x%04x) attr=0x%x (%s) funcIdx=%s voffset=%d %s", startFieldEntryPos, type, attr, fieldString(attr), typeIdToName(fieldTypeIdx), vtbleOffset, fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_NESTTYPE -> {
                                 short attr = in.getShort();
                                 int fieldTypeIdx = in.getInt();
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field LF_NESTTYPE(0x%04x) attr=0x%x (%s) typeidx=0x%04x %s", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field LF_NESTTYPE(0x%04x) attr=0x%x (%s) typeidx=0x%04x %s", startFieldEntryPos, type, attr, fieldString(attr), fieldTypeIdx, fieldName);
                                 infoBuilder.append(field);
                             }
                             case LF_INDEX -> {
@@ -252,8 +267,8 @@ public class CVTypeSectionBuilder implements CVConstants {
                             default -> {
                                 short attr = in.getShort();
                                 int n = in.getInt();
-                                String name = Util.getString0(in, nextPosition);
-                                String field = String.format("\n  0x%04x field *** type=0x%04x (unknown) attr=0x%x (%s) 0x%x %s", startFieldEntryPos, type, attr, fieldString(attr), n, name);
+                                String fieldName = Util.getString0(in, nextPosition);
+                                String field = String.format("\n  0x%04x field *** type=0x%04x (unknown) attr=0x%x (%s) 0x%x %s", startFieldEntryPos, type, attr, fieldString(attr), n, fieldName);
                                 infoBuilder.append(field);
                             }
                         }
@@ -265,7 +280,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int typeIndex = in.getInt();
                     int length = in.get() & 0xff;
                     int pos = in.get() & 0xff;
-                    info = String.format("LF_BITFIELD: type=0x%04x length=%d pos=%d", typeIndex, length, pos);
+                    info = String.format("LF_BITFIELD: type=%s length=%d pos=%d", typeIdToName(typeIndex), length, pos);
                 }
 
                 //case LF_INTERFACE:
@@ -276,44 +291,44 @@ public class CVTypeSectionBuilder implements CVConstants {
                     int derivedFromIndex = in.getInt();
                     int vshapeIndex = in.getInt();
                     long size = fetchVariable(in);
-                    String name = Util.getString0(in, nextPosition);
+                    name = Util.getString0(in, nextPosition);
                     String uniqueName = ((attr & 0x0200) != 0) ? Util.getString0(in, nextPosition) : "";
                     String ln = leaf == LF_CLASS ? "LF_CLASS" : "LF_STRUCTURE";
-                    info = String.format("%s count=%d attr=0x%04x (%s) fieldList=0x%04x derivedFrom=0x%04x vshape=0x%x size=%d %s (%s)", ln, count, attr, propertyString(attr), fieldListIndex, derivedFromIndex, vshapeIndex, size, name, uniqueName);
+                    info = String.format("%s count=%d attr=0x%04x (%s) fieldList=0x%04x derivedFrom=%s vshape=0x%x size=%d %s (%s)", ln, count, attr, propertyString(attr), fieldListIndex, typeIdToName(derivedFromIndex), vshapeIndex, size, name, uniqueName);
                 }
                 case LF_ENUM -> {
                     int count = in.getShort();
                     int attr = in.getShort();
                     int underLyingTypeIndex = in.getInt();
                     int fieldListIndex = in.getInt();
-                    String name = Util.getString0(in, nextPosition - in.position());
+                    name = Util.getString0(in, nextPosition - in.position());
                     String uniqueName = ((attr & 0x0200) != 0) ? Util.getString0(in, nextPosition) : "";
-                    info = String.format("LF_ENUM count=%d attr=0x%04x (%s) fieldListIndex=0x%04x underLyingTypeIndex=0x%04x %s (%s)", count, attr, propertyString(attr), fieldListIndex, underLyingTypeIndex, name, uniqueName);
+                    info = String.format("LF_ENUM count=%d attr=0x%04x (%s) fieldListIndex=0x%04x underLyingType=%s %s (%s)", count, attr, propertyString(attr), fieldListIndex, typeIdToName(underLyingTypeIndex), name, uniqueName);
                 }
                 case LF_FUNC_ID -> {
                     int cvTypeIndex = in.getInt();
                     int funcTypeIndex = in.getInt();
-                    String name = Util.getString0(in, nextPosition - in.position());
+                    name = Util.getString0(in, nextPosition - in.position());
                     info = String.format("LF_FUNC_ID localscopeIndex=0x%x functionType=0x%04x %s", cvTypeIndex, funcTypeIndex, name);
                 }
                 case LF_MFUNC_ID -> {
                     int parentTypeIndex = in.getInt();
                     int typeIndex = in.getInt();
-                    String name = Util.getString0(in, nextPosition - in.position());
+                    name = Util.getString0(in, nextPosition - in.position());
                     info = String.format("LF_MFUNC_ID parentType=0x%04x functionType=0x%04x %s", parentTypeIndex, typeIndex, name);
                 }
                 case LF_UDT_SRC_LINE -> {
                     int typeIndex = in.getInt();
                     int stringIndex = in.getInt();
                     int line = in.getInt();
-                    info = String.format("LF_UDT_SRC_LINE typeIndex=0x%04x filename-typeIndex=0x%04x line=%d", typeIndex, stringIndex, line);
+                    info = String.format("LF_UDT_SRC_LINE type=%s filename-typeIndex=0x%04x line=%d", typeIdToName(typeIndex), stringIndex, line);
                 }
                 case LF_UDT_MOD_SRC_LINE -> {
                     int typeIndex = in.getInt();
                     int stringIndex = in.getInt();
                     int line = in.getInt();
                     int mod = in.getShort();
-                    info = String.format("LF_UDT_MOD_SRC_LINE typeIndex=0x%04x filename-typeIndex=0x%04x line=%d module=%d", typeIndex, stringIndex, line, mod);
+                    info = String.format("LF_UDT_MOD_SRC_LINE type=%s filename-typeIndex=0x%04x line=%d module=%d", typeIdToName(typeIndex), stringIndex, line, mod);
                 }
                 case LF_SUBSTR_LIST -> {
                     int count = in.getInt();
@@ -329,7 +344,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                 }
                 case LF_STRING_ID -> {
                     int substringIndex = in.getInt();
-                    String name = Util.getString0(in, nextPosition - in.position());
+                    name = Util.getString0(in, nextPosition - in.position());
                     info = String.format("LF_STRING_ID substringIndex=0x%04x string=%s", substringIndex, name);
                 }
                 case LF_BUILDINFO -> {
@@ -389,7 +404,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                     swap(guid, 6, 7);
 
                     int age = in.getInt();
-                    String name = Util.getString0(in, nextPosition - in.position());
+                    name = Util.getString0(in, nextPosition - in.position());
                     StringBuilder infoBuilder = new StringBuilder(String.format("LF_TYPESERVER2 age=0x%08x, GUID=[", age));
                     for (byte b : guid) {
                         infoBuilder.append(String.format("%02x", b));
@@ -406,7 +421,7 @@ public class CVTypeSectionBuilder implements CVConstants {
                 if (ctx.dumpTypes()) {
                     ctx.debug("  0x%04x 0x%04x 0x%04x %s\n", (startPosition - sectionBegin), currentTypeIndex, leaf, info);
                 }
-                CVTypeRecord typeRecord = new CVTypeRecord((startPosition - sectionBegin), currentTypeIndex, leaf, len, info, data);
+                CVTypeRecord typeRecord = new CVTypeRecord((startPosition - sectionBegin), currentTypeIndex, leaf, len, info, name, data);
                 typeSection.addRecord(typeRecord);
             }
             currentTypeIndex++;

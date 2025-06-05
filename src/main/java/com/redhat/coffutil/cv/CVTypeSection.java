@@ -25,6 +25,12 @@ import static com.redhat.coffutil.cv.CVConstants.T_WCHAR;
 public class CVTypeSection {
 
     private final List<CVTypeRecord> records = new ArrayList<>(1000);
+    private final boolean showTypeIds;
+
+    CVTypeSection() {
+        showTypeIds = true;
+        //showTypeIds = !CoffUtilContext.getInstance().reproducibleDump();
+    }
 
     void addRecord(CVTypeRecord record) {
         records.add(record);
@@ -68,6 +74,29 @@ public class CVTypeSection {
             return primitiveTypeMap.get(idx);
         } else {
             return String.format("0x%04x", idx);
+        }
+    }
+
+    public String typeIdToTypename(int typeId) {
+        if (primitiveTypeMap.containsKey(typeId)) {
+            return primitiveTypeMap.get(typeId);
+        } else if (typeId < 0x1000) {
+            return String.format("0x%04x", typeId);
+        } else {
+            assert !records.isEmpty();
+            int minIdx = records.get(0).getIdx();
+            int adjustedIdx = typeId - minIdx;
+            if (adjustedIdx >= records.size()) {
+                return String.format("0x%04x", typeId);
+            } else {
+                CVTypeRecord record = records.get(adjustedIdx);
+                assert record.getIdx() == typeId;
+                if (showTypeIds) {
+                    return record.getName() == null ? String.format("0x%04x", typeId) : record.getName();
+                } else {
+                    return record.getName() == null ? String.format("0x%04x", typeId) : String.format("0x%04x(%s)", typeId, record.getName());
+                }
+            }
         }
     }
 }

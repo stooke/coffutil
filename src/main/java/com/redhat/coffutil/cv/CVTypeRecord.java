@@ -9,6 +9,7 @@ public class CVTypeRecord {
     private final int leafType;
     private final int len;
     private final String description;
+    private final String name;
     private final ByteBuffer data;
 
     CVTypeRecord(int pos, int idx, int leafType, int len, String description, ByteBuffer data) {
@@ -18,6 +19,17 @@ public class CVTypeRecord {
         this.len = len;
         this.description = description;
         this.data = data;
+        this.name = null;
+    }
+
+    CVTypeRecord(int pos, int idx, int leafType, int len, String description, String name, ByteBuffer data) {
+        this.pos = pos;
+        this.idx = idx;
+        this.leafType = leafType;
+        this.len = len;
+        this.description = description;
+        this.data = data;
+        this.name = name;
     }
 
     public String toString() {
@@ -42,6 +54,10 @@ public class CVTypeRecord {
 
     String getDescription() {
         return description;
+    }
+
+    String getName() {
+        return name;
     }
 
     ByteBuffer getData() {

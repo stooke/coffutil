@@ -66,6 +66,7 @@ public class CoffUtilContext {
                         dumpLinenumbers = true;
                         break;
                     case "-R":
+                    case "--reproducible":
                         reproducibleDump = true;
                         break;
                     case "-s":

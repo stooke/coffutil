@@ -107,6 +107,8 @@ public class PECoffFileBuilder extends CoffObjectFileBuilder implements ExeFileB
                 case ".reloc":
                     relocSection = new PERelocSection(in, shdr, hdr);
                     break;
+                default:
+                    CoffUtilContext.getInstance().debug("unknown COFF section '" + shdr.getName() + "' \n");
             }
         }
 
